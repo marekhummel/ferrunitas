@@ -5,10 +5,7 @@ use crate::{
 };
 
 // Base quantities
-pub const LENGTH: Quantity = Quantity {
-    dimension: [1, 0, 0, 0, 0, 0, 0],
-    name: Some("length"),
-};
+pub const LENGTH: Quantity = Quantity::new([1, 0, 0, 0, 0, 0, 0], Some("length"));
 pub const MASS: Quantity = Quantity {
     dimension: [0, 1, 0, 0, 0, 0, 0],
     name: Some("mass"),

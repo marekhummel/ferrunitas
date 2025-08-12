@@ -16,12 +16,12 @@ impl Unit {
         value * self.prefix.multiplier() * self.factor
     }
 
-    pub fn repr(&self) -> String {
+    pub fn repr(&mut self) -> String {
         format!(
             "{} ({}{})",
             self.name,
             self.prefix.abbreviation(),
-            self.quantity.canonical_name()
+            self.quantity.repr()
         )
     }
 }

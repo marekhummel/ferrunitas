@@ -1,34 +1,17 @@
 use std::collections::HashMap;
-use std::sync::{LazyLock, Mutex, OnceLock};
-
-pub struct QuantityRegistry {
-    map: HashMap<[i32; 7], &'static str>,
-}
-
-impl QuantityRegistry {
-    pub fn new() -> Self {
-        let mut map = HashMap::new();
-        QuantityRegistry { map }
-    }
-
-    pub fn get_name(&self, dim: &[i32; 7]) -> Option<&'static str> {
-        self.map.get(dim).copied()
-    }
-}
-
-static QUANTITY_REGISTRY: LazyLock<Mutex<QuantityRegistry>> =
-    LazyLock::new(|| Mutex::new(QuantityRegistry::new()));
-
 use std::ops::{Div, Mul};
+use std::sync::{LazyLock, Mutex};
+
+pub type DimensionVector = [i32; 7];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Quantity {
-    pub dimension: [i32; 7], // L, M, T, I, Θ, N, J
-    pub name: Option<&'static str>,
+    pub dimension: DimensionVector, // L, M, T, I, Θ, N, J
+    name: Option<&'static str>,
 }
 
 impl Quantity {
-    pub fn new(dimension: [i32; 7], name: Option<&'static str>) -> Self {
+    pub fn new(dimension: DimensionVector, name: Option<&'static str>) -> Self {
         let mut registry = QUANTITY_REGISTRY.lock().unwrap();
         let reg_name = registry.get_name(&dimension);
         if reg_name.is_some() && name.is_some() {
@@ -38,58 +21,53 @@ impl Quantity {
                 name.unwrap()
             );
         }
+
         if let Some(n) = name {
             registry.map.insert(dimension, n);
         }
-        let canonical = name.or(reg_name);
+        let local_name = name.or(reg_name);
         Quantity {
             dimension,
-            name: canonical,
+            name: local_name,
         }
     }
 
-    pub const fn powi(self, n: i32) -> Quantity {
-        let new_dim = [
-            self.dimension[0] * n,
-            self.dimension[1] * n,
-            self.dimension[2] * n,
-            self.dimension[3] * n,
-            self.dimension[4] * n,
-            self.dimension[5] * n,
-            self.dimension[6] * n,
-        ];
-        Quantity {
-            dimension: new_dim,
-            name: None,
-        }
-    }
-
-    pub fn recip(self) -> Quantity {
+    pub fn combine(components: &[(Quantity, i32)], name: Option<&'static str>) -> Self {
         let mut new_dim = [0; 7];
-        for i in 0..7 {
-            new_dim[i] = -self.dimension[i];
+        for (qty, exp) in components {
+            new_dim.iter_mut().enumerate().for_each(|(i, val)| {
+                *val += qty.dimension[i] * exp;
+            });
         }
-        Quantity {
-            dimension: new_dim,
-            name: None,
-        }
+        Quantity::new(new_dim, name)
     }
 
     pub fn set_name(&mut self, name: &'static str) {
-        self.name = Some(name);
         let mut registry = QUANTITY_REGISTRY.lock().unwrap();
+        let reg_name = registry.get_name(&self.dimension);
+        if let Some(existing_name) = reg_name {
+            panic!(
+                "Quantity name already set: registry has '{}'",
+                existing_name
+            );
+        }
+
+        self.name = Some(name);
         registry.map.insert(self.dimension, name);
     }
 
-    pub fn repr(&self) -> String {
-        format!("{} [{:?}]", self.canonical_name(), self.dimension)
+    pub fn repr(&mut self) -> String {
+        format!("{} [{:?}]", self.name().unwrap_or(""), self.dimension)
     }
 
-    pub fn canonical_name(&self) -> &'static str {
+    pub fn name(&mut self) -> Option<&'static str> {
         let registry = QUANTITY_REGISTRY.lock().unwrap();
+        let reg_name = registry.get_name(&self.dimension);
+        if self.name.is_none() && reg_name.is_some() {
+            self.name = reg_name;
+        }
+
         self.name
-            .or_else(|| registry.get_name(&self.dimension))
-            .unwrap_or("unknown")
     }
 }
 
@@ -121,30 +99,21 @@ impl Div for Quantity {
     }
 }
 
-// Macro to create a const Quantity from base quantities and exponents
-#[macro_export]
-macro_rules! quantity {
-    (
-        name: $name:expr,
-        components: [ $( ($qty:expr, $exp:expr) ),* ]
-    ) => {{
-        const fn build_dim() -> [i32; 7] {
-            let mut dim = [0; 7];
-            $(
-                dim[0] += $qty.dimension[0] * $exp;
-                dim[1] += $qty.dimension[1] * $exp;
-                dim[2] += $qty.dimension[2] * $exp;
-                dim[3] += $qty.dimension[3] * $exp;
-                dim[4] += $qty.dimension[4] * $exp;
-                dim[5] += $qty.dimension[5] * $exp;
-                dim[6] += $qty.dimension[6] * $exp;
-            )*
-            dim
-        }
-        Quantity {
-            dimension: build_dim(),
-            name: $name,
-        }
-    }};
+pub struct QuantityRegistry {
+    pub map: HashMap<DimensionVector, &'static str>,
 }
-pub(crate) use quantity;
+
+impl QuantityRegistry {
+    pub fn new() -> Self {
+        QuantityRegistry {
+            map: HashMap::new(),
+        }
+    }
+
+    pub fn get_name(&self, dim: &DimensionVector) -> Option<&'static str> {
+        self.map.get(dim).copied()
+    }
+}
+
+pub static QUANTITY_REGISTRY: LazyLock<Mutex<QuantityRegistry>> =
+    LazyLock::new(|| Mutex::new(QuantityRegistry::new()));
