@@ -5,10 +5,15 @@ pub trait Quantity {
     type BaseUnit: Unit<Quantity = Self>;
 }
 
+// A trait for units to define their conversion to the quantity's canonical base.
+pub trait ConvertibleToQuantityBaseUnit {
+    const FACTOR_TO_QUANTITY_BASE: f64;
+}
+
 pub trait Unit: Copy + Clone + Default + Display {
     type Quantity: Quantity;
     type Base: Unit<Quantity = Self::Quantity>;
-    const CONVERSION_FACTOR_TO_BASE: f64;
+    const FACTOR_TO_UNIT_BASE: f64;
 }
 
 pub trait Prefix: Copy + Clone + Default + Display {
@@ -22,7 +27,7 @@ pub struct PrefixedUnit<P, U>(std::marker::PhantomData<(P, U)>);
 impl<P: Prefix, U: Unit> Unit for PrefixedUnit<P, U> {
     type Quantity = U::Quantity;
     type Base = U;
-    const CONVERSION_FACTOR_TO_BASE: f64 = P::FACTOR;
+    const FACTOR_TO_UNIT_BASE: f64 = P::FACTOR;
 }
 
 impl<P: Prefix, U: Unit> Default for PrefixedUnit<P, U> {
@@ -61,30 +66,25 @@ where
 {
     pub fn convert<TargetU: Unit>(self) -> Value<V, TargetU>
     where
+        // Ensures both units belong to the same physical quantity.
         U::Quantity: PartialEq<TargetU::Quantity>,
-        // U::Base: PartialEq<<U::Quantity::BaseUnit as Unit>::Base>,
+        // Requires the raw base units to be convertible to the quantity's base.
+        U::Base: ConvertibleToQuantityBaseUnit,
+        TargetU::Base: ConvertibleToQuantityBaseUnit,
     {
-        // // Convert the value to the base unit of its dimension.
-        // let value_in_base = self.value.into() * U::CONVERSION_FACTOR_TO_BASE;
-
-        // // Convert the value from the base unit to the target unit.
-        // let final_value = value_in_base / TargetU::CONVERSION_FACTOR_TO_BASE;
-
-        // Value::new(V::from(final_value))
-
         // 1. Convert source value to its raw base (e.g., Millistone -> Stone).
-        let value_in_raw_base = self.value.into() * U::FACTOR_TO_RAW_BASE;
+        let value_in_raw_base = self.value.into() * U::FACTOR_TO_UNIT_BASE;
 
         // 2. Convert raw base to quantity's canonical base (e.g., Stone -> Kilogram).
         let value_in_quantity_base =
-            value_in_raw_base * <U::Base as ConvertibleToBase>::FACTOR_TO_QUANTITY_BASE;
+            value_in_raw_base * <U::Base as ConvertibleToQuantityBaseUnit>::FACTOR_TO_QUANTITY_BASE;
 
         // 3. Convert from the quantity's canonical base to the target's raw base (e.g., Kilogram -> Pound).
-        let value_to_target_base =
-            value_in_quantity_base / <TargetU::Base as ConvertibleToBase>::FACTOR_TO_QUANTITY_BASE;
+        let value_to_target_base = value_in_quantity_base
+            / <TargetU::Base as ConvertibleToQuantityBaseUnit>::FACTOR_TO_QUANTITY_BASE;
 
         // 4. Convert the target's raw base to the final target unit (e.g., Pound -> Megapound).
-        let final_value = value_to_target_base / TargetU::FACTOR_TO_RAW_BASE;
+        let final_value = value_to_target_base / TargetU::FACTOR_TO_UNIT_BASE;
 
         Value::new(V::from(final_value))
     }
@@ -127,43 +127,88 @@ macro_rules! prefix {
 
 #[macro_export]
 macro_rules! quantity {
-    ($qty_name:ident, ($full_name:ident, $prefix_name:ident, $base_unit_name:ident), $base_unit_symbol:literal) => {
-        // STEP 1
+    // Pattern for when the base unit of the quantity is prefixed (kg for mass)
+    ($qty_name:ident, ($base_unit:ident, $prefix_name:ident, $raw_unit_name:ident), $base_unit_symbol:literal) => {
+        use $crate::gemini::Prefix;
+
         // Declare the structs for the quantity and its base unit.
         // These need to exist before we can refer to them in the implementations.
         #[derive(Debug, Copy, Clone, PartialEq, Eq)]
         pub struct $qty_name;
 
         #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-        pub struct $base_unit_name;
+        pub struct $raw_unit_name;
 
         // Define the type alias for the prefixed base unit.
-        // For example, `type Kilogram = PrefixedUnit<Kilo, Gram>;`
-        pub type $full_name = $crate::gemini::PrefixedUnit<$prefix_name, $base_unit_name>;
+        pub type $base_unit = $crate::gemini::PrefixedUnit<$prefix_name, $raw_unit_name>;
 
-        // STEP 2
         // Implement the Quantity trait for the quantity.
         impl $crate::gemini::Quantity for $qty_name {
-            type BaseUnit = $full_name;
+            type BaseUnit = $base_unit;
         }
 
         // Implement the Unit trait for the raw base unit.
-        impl $crate::gemini::Unit for $base_unit_name {
+        impl $crate::gemini::Unit for $raw_unit_name {
             type Quantity = $qty_name;
-            // The `Base` type for the raw unit is itself.
-            type Base = $full_name;
+            type Base = $base_unit;
 
-            // The conversion factor from this unit to itself is 1.0.
-            const CONVERSION_FACTOR_TO_BASE: f64 = 1.0 / $full_name::CONVERSION_FACTOR_TO_BASE;
+            // The conversion factor from this unit to the base_unit is the prefix factor
+            const FACTOR_TO_UNIT_BASE: f64 = $prefix_name::FACTOR;
         }
 
-        impl Default for $base_unit_name {
+        // Implement ConvertibleToQuantityBaseUnit  trait for the raw base unit.
+        impl $crate::gemini::ConvertibleToQuantityBaseUnit for $raw_unit_name {
+            // Conversion factor to the quantity's base unit is the inverse of the factor to the raw base.
+            const FACTOR_TO_QUANTITY_BASE: f64 = 1.0 / $base_unit::FACTOR_TO_UNIT_BASE;
+        }
+
+        impl Default for $raw_unit_name {
             fn default() -> Self {
-                $base_unit_name
+                $raw_unit_name
             }
         }
 
-        impl std::fmt::Display for $base_unit_name {
+        impl std::fmt::Display for $raw_unit_name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, $base_unit_symbol)
+            }
+        }
+    };
+
+    // Pattern for when the base unit of the quantity is not prefixed (e.g., s for time)
+    ($qty_name:ident, $base_unit:ident, $base_unit_symbol:literal) => {
+        // Declare the structs for the quantity and its base unit.
+        // These need to exist before we can refer to them in the implementations.
+        #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+        pub struct $qty_name;
+
+        #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+        pub struct $base_unit;
+
+        // Implement the Quantity trait for the quantity.
+        impl $crate::gemini::Quantity for $qty_name {
+            type BaseUnit = $base_unit;
+        }
+
+        // Implement the Unit trait for the raw base unit.
+        impl $crate::gemini::Unit for $base_unit {
+            type Quantity = $qty_name;
+            type Base = $base_unit;
+            const FACTOR_TO_UNIT_BASE: f64 = 1.0;
+        }
+
+        // Implement ConvertibleToQuantityBaseUnit  trait for the raw base unit.
+        impl $crate::gemini::ConvertibleToQuantityBaseUnit for $base_unit {
+            const FACTOR_TO_QUANTITY_BASE: f64 = 1.0;
+        }
+
+        impl Default for $base_unit {
+            fn default() -> Self {
+                $base_unit
+            }
+        }
+
+        impl std::fmt::Display for $base_unit {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, $base_unit_symbol)
             }
@@ -177,11 +222,15 @@ macro_rules! unit {
         #[derive(Debug, Copy, Clone, PartialEq, Eq)]
         pub struct $name;
 
+        // Implement ConvertibleToBase to set the factor to the quantity's base unit.
+        impl $crate::gemini::ConvertibleToQuantityBaseUnit for $name {
+            const FACTOR_TO_QUANTITY_BASE: f64 = $conversion;
+        }
+
         impl $crate::gemini::Unit for $name {
             type Quantity = $quantity;
-            // type Base = <<Self::Quantity as $crate::gemini::Quantity>::BaseUnit as $crate::gemini::Unit>::Base;
-            type Base = <Self::Quantity as $crate::gemini::Quantity>::BaseUnit;
-            const CONVERSION_FACTOR_TO_BASE: f64 = $conversion;
+            type Base = $name; // <Self::Quantity as $crate::gemini::Quantity>::BaseUnit;
+            const FACTOR_TO_UNIT_BASE: f64 = 1.0;
         }
 
         impl Default for $name {
