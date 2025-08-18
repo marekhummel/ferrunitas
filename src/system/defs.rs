@@ -1,4 +1,6 @@
+use crate::model::prefix::*;
 use crate::model::quantity::Quantity;
+use crate::{base_unit, define_prefix, derived_unit, prefixed_unit};
 use typenum::*;
 
 // ============================================================================
@@ -17,88 +19,45 @@ pub type Energy = Quantity<P1, P2, N2, Z0, Z0, Z0, Z0>; // [1,2,-2,0,0,0,0] = M�
 pub type Power = Quantity<P1, P2, N3, Z0, Z0, Z0, Z0>; // [1,2,-3,0,0,0,0] = M⋅L²/T³
 
 // ============================================================================
-// Unit Constructor Functions
+// SI Prefixes
 // ============================================================================
 
-// Base units (using gram as mass base)
-pub fn gram(value: f64) -> Mass {
-    Mass::new(value)
-}
-
-pub fn meter(value: f64) -> Length {
-    Length::new(value)
-}
-
-pub fn second(value: f64) -> Time {
-    Time::new(value)
-}
-
-// Prefixed base units
-pub fn kilogram(value: f64) -> Mass {
-    Mass::new(value * 1000.0) // Convert to grams
-}
-
-pub fn centimeter(value: f64) -> Length {
-    Length::new(value * 0.01) // Convert to meters
-}
-
-pub fn millimeter(value: f64) -> Length {
-    Length::new(value * 0.001) // Convert to meters
-}
-
-pub fn kilometer(value: f64) -> Length {
-    Length::new(value * 1000.0) // Convert to meters
-}
-
-// Derived units
-pub fn newton(value: f64) -> Force {
-    Force::new(value * 1000.0) // 1 N = 1000 g⋅m/s²
-}
-
-pub fn joule(value: f64) -> Energy {
-    Energy::new(value * 1000.0) // 1 J = 1000 g⋅m²/s²
-}
-
-pub fn watt(value: f64) -> Power {
-    Power::new(value * 1000.0) // 1 W = 1000 g⋅m²/s³
-}
+define_prefix!(Kilo, 1000.0, "k", "kilo");
+define_prefix!(Centi, 0.01, "c", "centi");
+define_prefix!(Milli, 0.001, "m", "milli");
+define_prefix!(Micro, 0.000001, "μ", "micro");
+define_prefix!(Mega, 1_000_000.0, "M", "mega");
+define_prefix!(Giga, 1_000_000_000.0, "G", "giga");
 
 // ============================================================================
-// Unit Conversion Functions
+// Base Units
 // ============================================================================
 
-pub fn to_kilograms(mass: Mass) -> f64 {
-    mass.value() / 1000.0
-}
+base_unit!(Gram, Mass);
+base_unit!(Meter, Length);
+base_unit!(Second, Time);
 
-pub fn to_grams(mass: Mass) -> f64 {
-    mass.value()
-}
+// ============================================================================
+// Derived Units (defined in terms of base units)
+// ============================================================================
 
-pub fn to_meters(length: Length) -> f64 {
-    length.value()
-}
+// Mass units - prefixed
+prefixed_unit!(Kilogram, Kilo, Gram);
 
-pub fn to_kilometers(length: Length) -> f64 {
-    length.value() / 1000.0
-}
+// Mass units - non-SI
+derived_unit!(Pound, Mass, 453.592); // 1 lb = 453.592 g
+derived_unit!(Ounce, Mass, 28.3495); // 1 oz = 28.3495 g
 
-pub fn to_centimeters(length: Length) -> f64 {
-    length.value() / 0.01
-}
+// Length units - prefixed
+prefixed_unit!(Kilometer, Kilo, Meter);
+prefixed_unit!(Centimeter, Centi, Meter);
+prefixed_unit!(Millimeter, Milli, Meter);
 
-pub fn to_seconds(time: Time) -> f64 {
-    time.value()
-}
+// Length units - non-SI
+derived_unit!(Inch, Length, 0.0254); // 1 in = 0.0254 m
+derived_unit!(Foot, Length, 0.3048); // 1 ft = 0.3048 m
+derived_unit!(Mile, Length, 1609.34); // 1 mile = 1609.34 m
 
-pub fn to_newtons(force: Force) -> f64 {
-    force.value() / 1000.0
-}
-
-pub fn to_joules(energy: Energy) -> f64 {
-    energy.value() / 1000.0
-}
-
-pub fn to_watts(power: Power) -> f64 {
-    power.value() / 1000.0
-}
+// Time units - non-SI (no SI prefixes commonly used for time)
+derived_unit!(Minute, Time, 60.0); // 1 min = 60 s
+derived_unit!(Hour, Time, 3600.0); // 1 hr = 3600 s
