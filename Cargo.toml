@@ -2,6 +2,18 @@
 name = "ferrunitas"
 version = "0.1.0"
 edition = "2021"
+description = "A type-safe unit conversion library with compile-time dimensional analysis"
+license = "MIT OR Apache-2.0"
+keywords = ["units", "physics", "dimensional-analysis", "type-safety"]
+categories = ["science", "mathematics"]
+
+[[bin]]
+name = "ferrunitas-demo"
+path = "src/main.rs"
+
+[lib]
+name = "ferrunitas"
+path = "src/lib.rs"
 
 [dependencies]
 typenum = "1.18.0"

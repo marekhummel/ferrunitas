@@ -1,7 +1,7 @@
 use std::fmt;
 use std::marker::PhantomData;
 use std::ops::{Add, Div, Mul, Sub};
-use typenum::*;
+// use typenum::*;
 
 // ============================================================================
 // Type-Level Dimensional System
@@ -30,7 +30,7 @@ impl<M, L, T, I, Theta, N, J> Quantity<M, L, T, I, Theta, N, J> {
 
 impl<M, L, T, I, Theta, N, J> fmt::Display for Quantity<M, L, T, I, Theta, N, J> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.value)
+        fmt::Display::fmt(&self.value, f)
     }
 }
 

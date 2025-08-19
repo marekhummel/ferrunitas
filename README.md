@@ -1,54 +1,109 @@
-# Rust Unit Converter
+# Ferrunitas - Type-Safe Unit Conversion Library
 
-This project implements a unit conversion system in Rust, leveraging the language's strong type system to define and convert between various physical quantities. The converter supports the seven SI base quantities and allows for derived quantities, unit conversions, and SI prefixes.
+A Rust library for compile-time dimensional analysis and unit conversions. Ferrunitas provides type safety for physical quantities and prevents dimensional errors at compile time.
 
 ## Features
 
-- **SI Base Quantities**: The project defines the seven SI base quantities:
-  - Length
-  - Mass
-  - Time
-  - Electric Current
-  - Temperature
-  - Amount of Substance
-  - Luminous Intensity
-
-- **Derived Quantities**: Users can define derived quantities such as:
-  - Acceleration (length/time²)
-  - Force (mass × acceleration)
-  - Energy (force × distance)
-
-- **Unit Definitions**: The project includes various units for each quantity, along with conversion factors to facilitate conversions between units.
-
-- **SI Prefixes**: Support for SI prefixes such as kilo (10³), milli (10⁻³), and others, allowing for easy manipulation of unit scales.
+- **Compile-time dimensional analysis**: Prevents adding masses to lengths or other dimensional errors
+- **Type-safe unit conversions**: No runtime errors for invalid conversions
+- **Physics calculations**: Built-in functions for common physics formulas (KE = ½mv², F = ma, etc.)
+- **Extensive prefix system**: Support for metric prefixes (kilo, centi, milli, etc.)
+- **Zero-cost abstractions**: All dimensional checking happens at compile time
+- **Temperature conversions**: Celsius ↔ Fahrenheit conversions
 
 ## Usage
 
-To use the unit converter, follow these steps:
+Add this to your `Cargo.toml`:
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd rust-unit-converter
-   ```
+```toml
+[dependencies]
+ferrunitas = "0.1.0"
+```
 
-2. Build the project:
-   ```
-   cargo build
-   ```
+### Basic Usage
 
-3. Run the example conversions:
-   ```
-   cargo run
-   ```
+```rust
+use ferrunitas::*;
 
-## Example Conversions
+// Create quantities
+let mass = Mass::new(5.0);
+let length = Length::new(10.0);
+let time = Time::new(2.0);
 
-The unit converter can perform various conversions, such as:
+// Convert between units
+let kg = Kilogram::from_quantity(mass);
+let meters = Meter::from_quantity(length);
 
-- Convert 10 meters to kilometers
-- Convert 5 kilograms to grams
-- Convert 2 hours to seconds
+// Physics calculations with compile-time checking
+let velocity = calculate_velocity(length, time);  // v = d/t
+let kinetic_energy = calculate_kinetic_energy(mass, velocity);  // KE = ½mv²
+
+// Temperature conversions
+let fahrenheit = celsius_to_fahrenheit(25.0);  // 77°F
+let celsius = fahrenheit_to_celsius(77.0);     // 25°C
+```
+
+### Dimensional Arithmetic
+
+```rust
+use ferrunitas::*;
+
+let distance = Length::new(100.0);  // 100 m
+let time = Time::new(10.0);         // 10 s
+let velocity = distance / time;      // 10 m/s (automatically Velocity type)
+
+let mass = Mass::new(5.0);          // 5 kg
+let force = mass * acceleration;    // F = ma (automatically Force type)
+
+// This would fail at compile time:
+// let invalid = mass + distance;   // ❌ Cannot add Mass and Length!
+```
+
+### Unit Conversions
+
+```rust
+use ferrunitas::*;
+
+// Forward conversions (Unit → Quantity)
+let kg_unit = Kilogram::new(5.0);
+let mass_quantity = kg_unit.into_quantity();
+
+// Backward conversions (Quantity → Unit)
+let mass = Mass::new(5000.0);  // 5000 g in base units
+let kg = Kilogram::from_quantity(mass);  // 5.0 kg
+let lb = Pound::from_quantity(mass);     // 11.023 lb
+```
+
+## Library Structure
+
+- `src/lib.rs` - Main library entry point with physics functions
+- `src/model/` - Core types (Quantity, Unit, Prefix)
+- `src/system/` - Unit definitions and system setup
+- `tests/` - Comprehensive test suites
+
+## Testing
+
+Run the test suite:
+
+```bash
+cargo test
+```
+
+Run the demo:
+
+```bash
+cargo run --bin ferrunitas-demo
+```
+
+## Examples
+
+See the demo binary (`src/main.rs`) for comprehensive examples of:
+- Unit conversions
+- Physics calculations
+- Temperature handling
+- Recipe conversions
+- Round-trip precision tests
+- Prefix system usage
 
 ## Contributing
 
@@ -56,4 +111,4 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the MIT License.
