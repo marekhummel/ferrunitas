@@ -1,9 +1,16 @@
-use std::fmt::Debug;
+use std::{
+    fmt::Debug,
+    ops::{Add, Div, Mul, Sub},
+};
 
-use crate::model::{prefix::Prefix, quantity::QuantityMarker};
+use crate::model::{
+    prefix::Prefix,
+    quantity::{Quantity, QuantityMarker},
+};
 
 pub trait Unit:
-    Debug + Clone + Copy + PartialEq + PartialOrd + Into<Self::Quantity> + From<Self::Quantity>
+    Debug + Clone + Copy + PartialEq + PartialOrd + From<Self::Quantity> + Into<Self::Quantity> + Sized
+// + Add<Unit<Quantity = Self::Quantity>>
 {
     type Quantity: QuantityMarker;
     const FACTOR: f64;
@@ -17,22 +24,71 @@ macro_rules! unit {
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $unit_name(pub f64);
 
+        impl $crate::model::unit::Unit for $unit_name {
+            type Quantity = $quantity_type;
+            const FACTOR: f64 = $factor;
+            const ABBREV: &'static str = $abbrev;
+        }
+
+        impl From<$quantity_type> for $unit_name {
+            fn from(unit: $quantity_type) -> Self {
+                $unit_name(unit.value / $factor)
+            }
+        }
+
         impl From<$unit_name> for $quantity_type {
             fn from(unit: $unit_name) -> Self {
                 <$quantity_type as $crate::model::quantity::QuantityMarker>::new(unit.0 * $factor)
             }
         }
 
-        impl From<$quantity_type> for $unit_name {
-            fn from(quantity: $quantity_type) -> Self {
-                Self(quantity.value / $factor) // Divide by factor to convert back
+        impl<U> std::ops::Add<U> for $unit_name
+        where
+            U: $crate::model::unit::Unit<Quantity = $quantity_type>,
+        {
+            type Output = $unit_name;
+
+            fn add(self, rhs: U) -> Self::Output {
+                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into();
+                let rhs: <Self as $crate::model::unit::Unit>::Quantity = rhs.into();
+                Self::from(lhs + rhs)
             }
         }
 
-        impl $crate::model::unit::Unit for $unit_name {
-            type Quantity = $quantity_type;
-            const FACTOR: f64 = $factor;
-            const ABBREV: &'static str = $abbrev;
+        impl<U> std::ops::Sub<U> for $unit_name
+        where
+            U: $crate::model::unit::Unit<Quantity = $quantity_type>,
+        {
+            type Output = $unit_name;
+
+            fn sub(self, rhs: U) -> Self::Output {
+                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into();
+                let rhs: <Self as $crate::model::unit::Unit>::Quantity = rhs.into();
+                Self::from(lhs - rhs)
+            }
+        }
+
+        impl<U> std::ops::Mul<U> for $unit_name
+        where
+            U: $crate::model::unit::Unit,
+            $quantity_type: std::ops::Mul<U::Quantity>,
+        {
+            type Output = <$quantity_type as std::ops::Mul<U::Quantity>>::Output;
+
+            fn mul(self, rhs: U) -> Self::Output {
+                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into();
+                let rhs: <U as $crate::model::unit::Unit>::Quantity = rhs.into();
+                lhs * rhs
+            }
+        }
+
+        impl std::ops::Mul<f64> for $unit_name {
+            type Output = $quantity_type;
+
+            fn mul(self, rhs: f64) -> Self::Output {
+                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into();
+                lhs * rhs
+            }
         }
 
         impl std::fmt::Display for $unit_name {

@@ -8,8 +8,12 @@ keywords = ["units", "physics", "dimensional-analysis", "type-safety"]
 categories = ["science", "mathematics"]
 
 [[bin]]
+name = "ferrunitas-test"
+path = "examples/test_conf_impls.rs"
+
+[[bin]]
 name = "ferrunitas-demo"
-path = "src/main.rs"
+path = "examples/main.rs"
 
 [lib]
 name = "ferrunitas"
@@ -17,4 +21,5 @@ path = "src/lib.rs"
 
 [dependencies]
 const_format = "0.2.34"
+dimensioned = "0.8.0"
 typenum = "1.18.0"

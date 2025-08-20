@@ -1,18 +1,26 @@
 // Example usage of the Ferrunitas library
 // This serves as both documentation and demonstration of the library's capabilities
 
-use ferrunitas::{model::quantity::QuantityMarker, model::unit::Unit, system::defs::*};
+use ferrunitas::{model::quantity::Quantity, model::unit::Unit, system::defs::*};
 
 // ============================================================================
 // Physics Functions with Compile-Time Type Safety
 // ============================================================================
+
+fn add_masses<M1, M2>(mass1: M1, mass2: M2) -> Mass
+where
+    M1: Unit<Quantity = Mass> + std::ops::Add<M2, Output = M1>,
+    M2: Unit<Quantity = Mass>,
+{
+    (mass1 + mass2).into()
+}
 
 fn calculate_kinetic_energy(
     mass: impl Unit<Quantity = Mass>,
     velocity: impl Unit<Quantity = Velocity>,
 ) -> Energy {
     let v = velocity.into();
-    mass.into() * v * v * 0.5 // KE = ½mv² - type checked at compile time!
+    mass.into() * v * v // KE = ½mv² - type checked at compile time!
 }
 
 fn calculate_work(
@@ -129,6 +137,7 @@ fn main() {
     let mass2: Mass = Pound(10.0).into();
     // println!("5 kg = {:.2}", mass1.as_unit::<Gram>());
     println!("10 lb = {:.2}", mass2.as_unit::<Gram>());
+    println!("{:.2}", (mass2 + mass2).as_unit::<Gram>());
 
     // Backward conversion: Quantity -> Unit
     println!("\nBackward conversions (Quantity -> Unit):");

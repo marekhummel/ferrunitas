@@ -1,26 +1,32 @@
 use std::fmt;
 use std::marker::PhantomData;
 use std::ops::{Add, Div, Mul, Sub};
-// use typenum::*;
+
+use typenum::{Diff, Sum};
+
+use crate::model::unit::Unit;
 
 // ============================================================================
 // Type-Level Dimensional System
 // ============================================================================
 
-pub trait QuantityMarker {
+pub(crate) trait QuantityMarker {
     fn new(value: f64) -> Self; // This should not be public
-
-    fn as_unit<U>(self) -> U
-    where
-        U: crate::model::unit::Unit<Quantity = Self>;
 }
 
 // Quantity with type-level dimensional signature
 // Dimensions: [Mass, Length, Time, Current, Temperature, Amount, Luminosity]
 #[derive(Debug, Clone, Copy)]
 pub struct Quantity<M, L, T, I, Theta, N, J> {
+    /// This value holds the raw f64 value of the quantity, only meant for internal use
     pub(crate) value: f64,
     _phantom: PhantomData<(M, L, T, I, Theta, N, J)>,
+}
+
+impl<M, L, T, I, Theta, N, J> Quantity<M, L, T, I, Theta, N, J> {
+    pub fn as_unit<U: Unit<Quantity = Self>>(self) -> U {
+        U::from(self)
+    }
 }
 
 impl<M, L, T, I, Theta, N, J> QuantityMarker for Quantity<M, L, T, I, Theta, N, J> {
@@ -29,13 +35,6 @@ impl<M, L, T, I, Theta, N, J> QuantityMarker for Quantity<M, L, T, I, Theta, N, 
             value,
             _phantom: PhantomData,
         }
-    }
-
-    fn as_unit<U>(self) -> U
-    where
-        U: crate::model::unit::Unit<Quantity = Self>,
-    {
-        U::from(self)
     }
 }
 
@@ -79,24 +78,14 @@ where
     N1: Add<N2>,
     J1: Add<J2>,
 {
-    // type Output = Quantity<
-    //     Sum<M1, M2>,
-    //     Sum<L1, L2>,
-    //     Sum<T1, T2>,
-    //     Sum<I1, I2>,
-    //     Sum<Theta1, Theta2>,
-    //     Sum<N1, N2>,
-    //     Sum<J1, J2>,
-    // >;
-
     type Output = Quantity<
-        <M1 as Add<M2>>::Output,
-        <L1 as Add<L2>>::Output,
-        <T1 as Add<T2>>::Output,
-        <I1 as Add<I2>>::Output,
-        <Theta1 as Add<Theta2>>::Output,
-        <N1 as Add<N2>>::Output,
-        <J1 as Add<J2>>::Output,
+        Sum<M1, M2>,
+        Sum<L1, L2>,
+        Sum<T1, T2>,
+        Sum<I1, I2>,
+        Sum<Theta1, Theta2>,
+        Sum<N1, N2>,
+        Sum<J1, J2>,
     >;
 
     fn mul(self, rhs: Quantity<M2, L2, T2, I2, Theta2, N2, J2>) -> Self::Output {
@@ -117,13 +106,13 @@ where
     J1: Sub<J2>,
 {
     type Output = Quantity<
-        <M1 as Sub<M2>>::Output,
-        <L1 as Sub<L2>>::Output,
-        <T1 as Sub<T2>>::Output,
-        <I1 as Sub<I2>>::Output,
-        <Theta1 as Sub<Theta2>>::Output,
-        <N1 as Sub<N2>>::Output,
-        <J1 as Sub<J2>>::Output,
+        Diff<M1, M2>,
+        Diff<L1, L2>,
+        Diff<T1, T2>,
+        Diff<I1, I2>,
+        Diff<Theta1, Theta2>,
+        Diff<N1, N2>,
+        Diff<J1, J2>,
     >;
 
     fn div(self, rhs: Quantity<M2, L2, T2, I2, Theta2, N2, J2>) -> Self::Output {
