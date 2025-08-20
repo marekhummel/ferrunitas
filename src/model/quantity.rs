@@ -7,24 +7,35 @@ use std::ops::{Add, Div, Mul, Sub};
 // Type-Level Dimensional System
 // ============================================================================
 
+pub trait QuantityMarker {
+    fn new(value: f64) -> Self; // This should not be public
+
+    fn as_unit<U>(self) -> U
+    where
+        U: crate::model::unit::Unit<Quantity = Self>;
+}
+
 // Quantity with type-level dimensional signature
 // Dimensions: [Mass, Length, Time, Current, Temperature, Amount, Luminosity]
 #[derive(Debug, Clone, Copy)]
 pub struct Quantity<M, L, T, I, Theta, N, J> {
-    value: f64,
+    pub(crate) value: f64,
     _phantom: PhantomData<(M, L, T, I, Theta, N, J)>,
 }
 
-impl<M, L, T, I, Theta, N, J> Quantity<M, L, T, I, Theta, N, J> {
-    pub fn new(value: f64) -> Self {
+impl<M, L, T, I, Theta, N, J> QuantityMarker for Quantity<M, L, T, I, Theta, N, J> {
+    fn new(value: f64) -> Self {
         Self {
             value,
             _phantom: PhantomData,
         }
     }
 
-    pub fn value(&self) -> f64 {
-        self.value
+    fn as_unit<U>(self) -> U
+    where
+        U: crate::model::unit::Unit<Quantity = Self>,
+    {
+        U::from(self)
     }
 }
 

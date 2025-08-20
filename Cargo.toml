@@ -16,4 +16,5 @@ name = "ferrunitas"
 path = "src/lib.rs"
 
 [dependencies]
+const_format = "0.2.34"
 typenum = "1.18.0"
