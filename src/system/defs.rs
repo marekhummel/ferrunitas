@@ -36,6 +36,11 @@ define_prefix!(Giga, 1_000_000_000.0, "G", "giga");
 base_unit!(Gram, Mass);
 base_unit!(Meter, Length);
 base_unit!(Second, Time);
+base_unit!(MeterPerSecond, Velocity);
+base_unit!(MeterPerSecondSquared, Acceleration);
+base_unit!(Newton, Force);
+base_unit!(Joule, Energy);
+base_unit!(Watt, Power);
 
 // ============================================================================
 // Derived Units (defined in terms of base units)

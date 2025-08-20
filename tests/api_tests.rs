@@ -35,14 +35,14 @@ fn test_public_api_visibility() {
 }
 
 #[test]
-fn test_from_quantity_trait() {
+fn test_from_trait() {
     // Ensure FromQuantity trait is accessible and works
     let mass = Mass::new(1000.0);
-    let kg = Kilogram::from_quantity(mass);
+    let kg = Kilogram::from(mass);
     assert_eq!(kg.0, 1.0);
 
     let length = Length::new(1000.0);
-    let km = Kilometer::from_quantity(length);
+    let km = Kilometer::from(length);
     assert_eq!(km.0, 1.0);
 }
 
@@ -128,7 +128,7 @@ fn test_precision_and_accuracy() {
     // Test round-trip precision
     let pound = Pound(original);
     let mass: Mass = pound.into();
-    let back_to_pound = Pound::from_quantity(mass);
+    let back_to_pound = Pound::from(mass);
     let difference = (back_to_pound.0 - original).abs();
     assert!(difference < 1e-12); // Should have very high precision
 }
@@ -139,7 +139,7 @@ fn test_edge_cases() {
     let zero_mass = Mass::new(0.0);
     assert_eq!(zero_mass.value(), 0.0);
 
-    let zero_kg = Kilogram::from_quantity(zero_mass);
+    let zero_kg = Kilogram::from(zero_mass);
     assert_eq!(zero_kg.0, 0.0);
 
     // Test very small values

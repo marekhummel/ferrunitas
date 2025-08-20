@@ -1,8 +1,4 @@
 /// Trait for converting quantities back to unit values
-pub trait FromQuantity<Q> {
-    /// Convert a quantity back to this unit's value
-    fn from_quantity(quantity: Q) -> Self;
-}
 
 /// Macro to define a base unit for a quantity type
 #[macro_export]
@@ -17,8 +13,8 @@ macro_rules! base_unit {
             }
         }
 
-        impl $crate::model::unit::FromQuantity<$quantity_type> for $unit_name {
-            fn from_quantity(quantity: $quantity_type) -> Self {
+        impl From<$quantity_type> for $unit_name {
+            fn from(quantity: $quantity_type) -> Self {
                 Self(quantity.value()) // Base unit: no conversion needed
             }
         }
@@ -38,8 +34,8 @@ macro_rules! derived_unit {
             }
         }
 
-        impl $crate::model::unit::FromQuantity<$quantity_type> for $unit_name {
-            fn from_quantity(quantity: $quantity_type) -> Self {
+        impl From<$quantity_type> for $unit_name {
+            fn from(quantity: $quantity_type) -> Self {
                 Self(quantity.value() / $factor) // Divide by factor to convert back
             }
         }

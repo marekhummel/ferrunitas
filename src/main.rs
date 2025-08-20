@@ -111,7 +111,7 @@ pub fn recipe_example() {
     let flour_mass: Mass = recipe_flour.into();
 
     // Convert to grams (common in metric recipes)
-    let as_grams = Gram::from_quantity(flour_mass);
+    let as_grams = Gram::from(flour_mass);
 
     println!("Recipe: 2.5 lb flour = {:.0} g", as_grams.0);
 }
@@ -125,7 +125,7 @@ pub fn distance_example() {
     let distance: Length = marathon.into();
 
     // Convert to miles for US runners
-    let in_miles = Mile::from_quantity(distance);
+    let in_miles = Mile::from(distance);
 
     println!("Marathon: 42.195 km = {:.2} miles", in_miles.0);
 }
@@ -136,7 +136,7 @@ pub fn time_example() {
 
     let meeting = Minute(90.0); // 90 minute meeting
     let time: Time = meeting.into();
-    let in_hours = Hour::from_quantity(time);
+    let in_hours = Hour::from(time);
 
     println!("Meeting: 90 minutes = {:.1} hours", in_hours.0);
 }
@@ -159,8 +159,8 @@ pub fn bulk_calculation_example() {
         .fold(Mass::new(0.0), |acc, mass: Mass| acc + mass);
 
     // Convert to different units for display
-    let total_pounds = Pound::from_quantity(total_mass);
-    let total_ounces = Ounce::from_quantity(total_mass);
+    let total_pounds = Pound::from(total_mass);
+    let total_ounces = Ounce::from(total_mass);
 
     println!("Total ingredients:");
     println!("  {:.0} g", total_mass.value());
@@ -181,14 +181,14 @@ pub fn round_trip_example() {
     println!("As quantity: {:.2} g", as_quantity.value());
 
     // Convert to different units
-    let as_kg = Kilogram::from_quantity(as_quantity);
-    let as_oz = Ounce::from_quantity(as_quantity);
+    let as_kg = Kilogram::from(as_quantity);
+    let as_oz = Ounce::from(as_quantity);
 
     println!("As kilograms: {:.3} kg", as_kg.0);
     println!("As ounces: {:.1} oz", as_oz.0);
 
     // Convert back to original unit
-    let back_to_pounds = Pound::from_quantity(as_quantity);
+    let back_to_pounds = Pound::from(as_quantity);
     println!("Back to pounds: {:.1} lb", back_to_pounds.0);
 
     // Verify precision
@@ -243,9 +243,9 @@ fn main() {
     // Backward conversion: Quantity -> Unit
     println!("\nBackward conversions (Quantity -> Unit):");
     let mass_in_grams = Mass::new(5000.0); // 5000 grams
-    let as_kg = Kilogram::from_quantity(mass_in_grams);
-    let as_pounds = Pound::from_quantity(mass_in_grams);
-    let as_grams = Gram::from_quantity(mass_in_grams);
+    let as_kg = Kilogram::from(mass_in_grams);
+    let as_pounds = Pound::from(mass_in_grams);
+    let as_grams = Gram::from(mass_in_grams);
     println!("5000 g = {:.2} kg", as_kg.0);
     println!("5000 g = {:.2} lb", as_pounds.0);
     println!("5000 g = {:.0} g", as_grams.0);

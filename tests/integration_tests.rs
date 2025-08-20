@@ -9,20 +9,20 @@ use ferrunitas::*;
 fn test_basic_unit_conversions() {
     // Test mass conversions
     let kg_mass: Mass = Kilogram(1.0).into();
-    let gram_unit = Gram::from_quantity(kg_mass);
+    let gram_unit = Gram::from(kg_mass);
     assert_eq!(gram_unit.0, 1000.0);
 
     let pound_mass: Mass = Pound(1.0).into();
-    let gram_from_pound = Gram::from_quantity(pound_mass);
+    let gram_from_pound = Gram::from(pound_mass);
     assert!((gram_from_pound.0 - 453.592).abs() < 1e-3);
 
     // Test length conversions
     let km_length: Length = Kilometer(1.0).into();
-    let meter_unit = Meter::from_quantity(km_length);
+    let meter_unit = Meter::from(km_length);
     assert_eq!(meter_unit.0, 1000.0);
 
     let mile_length: Length = Mile(1.0).into();
-    let meter_from_mile = Meter::from_quantity(mile_length);
+    let meter_from_mile = Meter::from(mile_length);
     assert!((meter_from_mile.0 - 1609.34).abs() < 1e-2);
 }
 
@@ -32,21 +32,21 @@ fn test_round_trip_conversions() {
     let original_pounds = 25.5;
     let pound_unit = Pound(original_pounds);
     let mass: Mass = pound_unit.into();
-    let back_to_pounds = Pound::from_quantity(mass);
+    let back_to_pounds = Pound::from(mass);
     assert!((back_to_pounds.0 - original_pounds).abs() < 1e-10);
 
     // Length round trip
     let original_km = 42.195;
     let km_unit = Kilometer(original_km);
     let length: Length = km_unit.into();
-    let back_to_km = Kilometer::from_quantity(length);
+    let back_to_km = Kilometer::from(length);
     assert!((back_to_km.0 - original_km).abs() < 1e-10);
 
     // Time round trip
     let original_hours = 2.5;
     let hour_unit = Hour(original_hours);
     let time: Time = hour_unit.into();
-    let back_to_hours = Hour::from_quantity(time);
+    let back_to_hours = Hour::from(time);
     assert!((back_to_hours.0 - original_hours).abs() < 1e-10);
 }
 
@@ -77,16 +77,16 @@ fn test_dimensional_arithmetic() {
 fn test_prefix_system() {
     // Test that prefixed units work correctly
     let km: Length = Kilometer(5.0).into();
-    let cm_unit = Centimeter::from_quantity(km);
+    let cm_unit = Centimeter::from(km);
     assert_eq!(cm_unit.0, 500000.0); // 5 km = 500,000 cm
 
     let kg: Mass = Kilogram(2.5).into();
-    let gram_unit = Gram::from_quantity(kg);
+    let gram_unit = Gram::from(kg);
     assert_eq!(gram_unit.0, 2500.0); // 2.5 kg = 2500 g
 
     // Test millimeter
     let meter: Length = Meter(0.5).into();
-    let mm_unit = Millimeter::from_quantity(meter);
+    let mm_unit = Millimeter::from(meter);
     assert_eq!(mm_unit.0, 500.0); // 0.5 m = 500 mm
 }
 
@@ -94,15 +94,15 @@ fn test_prefix_system() {
 fn test_derived_units() {
     // Test non-SI units
     let inch_length: Length = Inch(12.0).into();
-    let meter_unit = Meter::from_quantity(inch_length);
+    let meter_unit = Meter::from(inch_length);
     assert!((meter_unit.0 - 0.3048).abs() < 1e-4); // 12 inches = 1 foot = 0.3048 m
 
     let foot_length: Length = Foot(3.0).into();
-    let meter_from_foot = Meter::from_quantity(foot_length);
+    let meter_from_foot = Meter::from(foot_length);
     assert!((meter_from_foot.0 - 0.9144).abs() < 1e-4); // 3 feet = 0.9144 m
 
     let ounce_mass: Mass = Ounce(16.0).into();
-    let gram_from_ounce = Gram::from_quantity(ounce_mass);
+    let gram_from_ounce = Gram::from(ounce_mass);
     assert!((gram_from_ounce.0 - 453.592).abs() < 1e-3); // 16 oz = 1 lb ≈ 453.592 g
 }
 
@@ -110,17 +110,17 @@ fn test_derived_units() {
 fn test_time_units() {
     // Test minute to second conversion
     let minute_time: Time = Minute(5.0).into();
-    let second_unit = Second::from_quantity(minute_time);
+    let second_unit = Second::from(minute_time);
     assert_eq!(second_unit.0, 300.0); // 5 minutes = 300 seconds
 
     // Test hour to second conversion
     let hour_time: Time = Hour(1.5).into();
-    let second_from_hour = Second::from_quantity(hour_time);
+    let second_from_hour = Second::from(hour_time);
     assert_eq!(second_from_hour.0, 5400.0); // 1.5 hours = 5400 seconds
 
     // Test minute to hour conversion
     let minute_time: Time = Minute(90.0).into();
-    let hour_unit = Hour::from_quantity(minute_time);
+    let hour_unit = Hour::from(minute_time);
     assert_eq!(hour_unit.0, 1.5); // 90 minutes = 1.5 hours
 }
 
@@ -159,7 +159,7 @@ fn test_display_formatting() {
 fn test_zero_and_negative_values() {
     // Test that zero values work correctly
     let zero_mass = Mass::new(0.0);
-    let zero_kg = Kilogram::from_quantity(zero_mass);
+    let zero_kg = Kilogram::from(zero_mass);
     assert_eq!(zero_kg.0, 0.0);
 
     let negative_velocity = Velocity::new(-5.0);
@@ -172,12 +172,12 @@ fn test_zero_and_negative_values() {
 fn test_large_and_small_values() {
     // Test very large values
     let large_distance: Length = Kilometer(1000000.0).into(); // 1 million km
-    let meter_unit = Meter::from_quantity(large_distance);
+    let meter_unit = Meter::from(large_distance);
     assert_eq!(meter_unit.0, 1e9); // 1 billion meters
 
     // Test very small values
     let small_length: Length = Millimeter(0.001).into(); // 0.001 mm
-    let meter_from_small = Meter::from_quantity(small_length);
+    let meter_from_small = Meter::from(small_length);
     assert_eq!(meter_from_small.0, 1e-6); // 1 micrometer
 }
 

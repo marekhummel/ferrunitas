@@ -78,10 +78,10 @@ macro_rules! impl_prefix_conversions {
             }
         }
 
-        impl<P: $crate::model::prefix::Prefix, U> $crate::model::unit::FromQuantity<$quantity_type>
+        impl<P: $crate::model::prefix::Prefix, U> From<$quantity_type>
             for $crate::model::prefix::PrefixedUnit<P, U>
         {
-            fn from_quantity(quantity: $quantity_type) -> Self {
+            fn from(quantity: $quantity_type) -> Self {
                 Self::new(quantity.value() / P::FACTOR)
             }
         }

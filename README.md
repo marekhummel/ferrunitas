@@ -31,8 +31,8 @@ let length = Length::new(10.0);
 let time = Time::new(2.0);
 
 // Convert between units
-let kg = Kilogram::from_quantity(mass);
-let meters = Meter::from_quantity(length);
+let kg = Kilogram::from(mass);
+let meters = Meter::from(length);
 
 // Physics calculations with compile-time checking
 let velocity = calculate_velocity(length, time);  // v = d/t
@@ -70,8 +70,8 @@ let mass_quantity = kg_unit.into_quantity();
 
 // Backward conversions (Quantity → Unit)
 let mass = Mass::new(5000.0);  // 5000 g in base units
-let kg = Kilogram::from_quantity(mass);  // 5.0 kg
-let lb = Pound::from_quantity(mass);     // 11.023 lb
+let kg = Kilogram::from(mass);  // 5.0 kg
+let lb = Pound::from(mass);     // 11.023 lb
 ```
 
 ## Library Structure

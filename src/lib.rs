@@ -7,7 +7,7 @@ pub mod model;
 pub mod system;
 
 // Re-export the most commonly used items
-pub use model::{prefix::Prefix, quantity::Quantity, unit::FromQuantity};
+pub use model::{prefix::Prefix, quantity::Quantity};
 
 // TODO: Rework when defs are split into sub modules
 pub use system::defs::{
