@@ -18,15 +18,15 @@ where
     M1: Unit<Quantity = Mass> + std::ops::Add<M2, Output = M1>,
     M2: Unit<Quantity = Mass>,
 {
-    (mass1 + mass2).into()
+    (mass1 + mass2).into_q()
 }
 
 fn calculate_kinetic_energy(
     mass: impl Unit<Quantity = Mass>,
     velocity: impl Unit<Quantity = Velocity>,
 ) -> Energy {
-    let v = velocity.into();
-    0.5 * mass.into() * v * v // KE = ½mv² - type checked at compile time!
+    let v = velocity.into_q();
+    0.5 * mass.into_q() * v * v // KE = ½mv² - type checked at compile time!
 }
 
 fn calculate_work<F, L>(force: F, distance: L) -> Energy
@@ -34,7 +34,7 @@ where
     F: Unit<Quantity = Force>,
     L: Unit<Quantity = Length>,
 {
-    force.into() * distance.into() // W = F⋅d - type checked at compile time!
+    force.into_q() * distance.into_q() // W = F⋅d - type checked at compile time!
 }
 
 fn calculate_power_from_work_and_time(
@@ -48,21 +48,21 @@ fn calculate_force(
     mass: impl Unit<Quantity = Mass>,
     acceleration: impl Unit<Quantity = Acceleration>,
 ) -> Force {
-    mass.into() * acceleration.into() // F = ma - type checked at compile time!
+    mass.into_q() * acceleration.into_q() // F = ma - type checked at compile time!
 }
 
 fn calculate_velocity(
     distance: impl Unit<Quantity = Length>,
     time: impl Unit<Quantity = Time>,
 ) -> Velocity {
-    distance.into() / time.into() // v = d/t - type checked at compile time!
+    distance.into_q() / time.into_q() // v = d/t - type checked at compile time!
 }
 
 fn calculate_acceleration(
     velocity_change: impl Unit<Quantity = Velocity>,
     time: impl Unit<Quantity = Time>,
 ) -> Acceleration {
-    velocity_change.into() / time.into() // a = Δv/t - type checked at compile time!
+    velocity_change.into_q() / time.into_q() // a = Δv/t - type checked at compile time!
 }
 
 /// Demonstrate dimensional analysis prevents errors at compile time
@@ -111,7 +111,7 @@ fn test_physics_functions() {
     assert_eq!(work.as_unit::<Joule>().0, 42.0); // 12 * 3.5 = 42 J
     let area1 = distance * distance;
 
-    let length: Length = distance.into();
+    let length: Length = distance.into_q();
     let area2 = length * length; // Also Length²
     println!("Area:\n{:.4}\n{}", area1, area2);
 
@@ -147,8 +147,8 @@ fn main() {
     println!("Forward conversions (Unit -> Quantity):");
     let lb1 = Gram(53.0);
     let lb2 = Pound(10.0);
-    let mass1: Mass = lb1.into();
-    let mass2: Mass = lb2.into();
+    let mass1: Mass = lb1.into_q();
+    let mass2: Mass = lb2.into_q();
     // println!("5 kg = {:.2}", mass1.as_unit::<Gram>());
     println!("Single: {:.2}, {:.2}", lb1, lb2);
     println!("Sum: {:.2}", lb1 + lb2);
@@ -164,22 +164,19 @@ fn main() {
         (lb1 + lb2).to_q().as_unit::<Pound>()
     );
     println!(
-        "Inline Convert: {:.2}, {:.2}",
+        "Inline Convert: {:.5}, {:.2}",
         lb1.convert::<Pound>(),
         lb2.convert::<Gram>()
     );
 
-    type Kilogram = PrefixedUnit<Kilo, Gram>;
-    let x: Kilogram = Kilogram::new(5.0);
-
     // Backward conversion: Quantity -> Unit
     println!("\nBackward conversions (Quantity -> Unit):");
     let grams = Gram(5000.0); // 5000 grams
-    let mass: Mass = grams.into();
-    // let as_kg = Kilogram::from(mass);
-    let as_pounds = Pound::from(mass);
-    let as_grams = Gram::from(mass);
-    // println!("5000 g = {:.2} kg", as_kg.0);
+    let mass: Mass = grams.into_q();
+    let as_kg = mass.as_unit::<Kilogram>();
+    let as_pounds = mass.as_unit::<Pound>();
+    let as_grams = mass.as_unit::<Gram>();
+    println!("5000 g = {:.2} kg", as_kg.0);
     println!("5000 g = {:.2}", as_pounds);
     println!("5000 g = {:.0}", as_grams);
 

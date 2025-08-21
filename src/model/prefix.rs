@@ -13,6 +13,8 @@ pub trait Prefix {
     const NAME: &'static str;
 }
 
+pub trait Prefixable {}
+
 /// Generic prefixed unit that combines a base unit with a prefix
 
 // ============================================================================
@@ -23,7 +25,9 @@ pub trait Prefix {
 #[macro_export]
 macro_rules! prefix {
     ($prefix_name:ident, $factor:expr, $symbol:expr, $name:expr) => {
+        #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $prefix_name;
+
         impl $crate::model::prefix::Prefix for $prefix_name {
             const FACTOR: f64 = $factor;
             const SYMBOL: &'static str = $symbol;

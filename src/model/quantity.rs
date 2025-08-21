@@ -1,4 +1,4 @@
-use std::fmt;
+use std::fmt::{self, Debug, Display};
 use std::marker::PhantomData;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
@@ -12,8 +12,18 @@ use crate::model::unit::Unit;
 // Type-Level Dimensional System
 // ============================================================================
 
-pub(crate) trait QuantityMarker {
+pub trait QuantityMarker {
     fn new(value: f64) -> Self; // This should not be public
+    fn raw_value(&self) -> f64;
+}
+
+pub trait IntoUnit: Sized + Clone {
+    fn into_unit<U: Unit<Quantity = Self>>(self) -> U {
+        U::from_q(self)
+    }
+    fn to_unit<U: Unit<Quantity = Self>>(&self) -> U {
+        self.clone().into_unit()
+    }
 }
 
 // Quantity with type-level dimensional signature
@@ -25,18 +35,36 @@ pub struct Quantity<M, L, T, I, Theta, N, J> {
     _phantom: PhantomData<(M, L, T, I, Theta, N, J)>,
 }
 
-impl<M, L, T, I, Theta, N, J> Quantity<M, L, T, I, Theta, N, J> {
-    pub fn as_unit<U: Unit<Quantity = Self>>(self) -> U {
-        U::from(self)
-    }
-}
-
 impl<M, L, T, I, Theta, N, J> QuantityMarker for Quantity<M, L, T, I, Theta, N, J> {
     fn new(value: f64) -> Self {
         Self {
             value,
             _phantom: PhantomData,
         }
+    }
+    fn raw_value(&self) -> f64 {
+        self.value
+    }
+}
+
+impl<M, L, T, I, Theta, N, J> IntoUnit for Quantity<M, L, T, I, Theta, N, J>
+where
+    M: Sized + Clone,
+    L: Sized + Clone,
+    T: Sized + Clone,
+    I: Sized + Clone,
+    Theta: Sized + Clone,
+    N: Sized + Clone,
+    J: Sized + Clone,
+{
+    fn into_unit<U: Unit<Quantity = Self>>(self) -> U {
+        U::from_q(self)
+    }
+}
+
+impl<M, L, T, I, Theta, N, J> Quantity<M, L, T, I, Theta, N, J> {
+    pub fn as_unit<U: Unit<Quantity = Self>>(self) -> U {
+        U::from_q(self)
     }
 }
 
@@ -70,7 +98,7 @@ where
             dim_string.pop();
         }
 
-        self.value.fmt(f)?;
+        std::fmt::Display::fmt(&self.value, f)?;
         write!(f, " in [{}]", dim_string)?;
         Ok(())
     }

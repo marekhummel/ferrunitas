@@ -1,7 +1,7 @@
 // use crate::model::prefix::*;
 use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
-use crate::{prefix, unit};
+use crate::{prefix, prefixed_unit, unit};
 use typenum::*;
 
 // ============================================================================
@@ -53,14 +53,14 @@ unit!(Watt, Power, "W");
 // ============================================================================
 
 // Mass units - prefixed
-// prefixed_unit!(Kilogram, Kilo, Gram);
+prefixed_unit!(Kilogram, Kilo, Gram);
 
 // Mass units - non-SI
 unit!(Pound, Mass, 453.592, "lb"); // 1 lb = 453.592 g
 unit!(Ounce, Mass, 28.3495, "oz"); // 1 oz = 28.3495 g
 
 // Length units - prefixed
-// prefixed_unit!(Kilometer, Kilo, Meter);
+prefixed_unit!(Kilometer, Kilo, Meter);
 // prefixed_unit!(Centimeter, Centi, Meter);
 // prefixed_unit!(Millimeter, Milli, Meter);
 
