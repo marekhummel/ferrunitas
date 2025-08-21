@@ -71,9 +71,7 @@ macro_rules! unit {
             type Output = $unit_name;
 
             fn add(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <Self as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                Self::from_q(lhs + rhs)
+                Self::from_q(self.into_q() + rhs.into_q())
             }
         }
 
@@ -84,9 +82,7 @@ macro_rules! unit {
             type Output = $unit_name;
 
             fn sub(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <Self as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                Self::from_q(lhs - rhs)
+                Self::from_q(self.into_q() - rhs.into_q())
             }
         }
 
@@ -98,9 +94,7 @@ macro_rules! unit {
             type Output = <$quantity_type as std::ops::Mul<U::Quantity>>::Output;
 
             fn mul(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <U as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                lhs * rhs
+                self.into_q() * rhs.into_q()
             }
         }
 
@@ -128,9 +122,7 @@ macro_rules! unit {
             type Output = <$quantity_type as std::ops::Div<U::Quantity>>::Output;
 
             fn div(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <U as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                lhs / rhs
+                self.into_q() / rhs.into_q()
             }
         }
 
@@ -168,44 +160,15 @@ macro_rules! unit {
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct PrefixedUnit<P: Prefix, U: Unit>(pub f64, pub(crate) std::marker::PhantomData<(P, U)>);
 
-// impl<P: Prefix, U: Unit> From<PrefixedUnit<P, U>> for U::Quantity {
-//     fn from(unit: PrefixedUnit<P, U>) -> Self {
-//         <U::Quantity as QuantityMarker>::new(unit.0 * P::FACTOR * U::FACTOR)
-//     }
-// }
-
-// impl<P, U, Q> From<Q> for PrefixedUnit<P, U>
-// where
-//     P: Prefix,
-//     U: Unit<Quantity = Q>,
-// {
-//     fn from(quantity: Q) -> Self {
-//         Self::new(quantity / (P::FACTOR * U::FACTOR))
-//     }
-// }
-
-// impl<P, U, Q> From<PrefixedUnit<P, U>> for Q
-// where
-//     P: Prefix,
-//     U: Unit<Quantity = Q>,
-// {
-//     fn from(unit: PrefixedUnit<P, U>) -> Self {
-//         Q::new(unit.0 * P::FACTOR * U::FACTOR)
-//     }
-// }
-
-// impl<P, U, V> std::ops::Add<V> for PrefixedUnit<P, U>
+// impl<P, U> std::fmt::Display for PrefixedUnit<P, U>
 // where
 //     P: Prefix,
 //     U: Unit,
-//     V: Unit<Quantity = U::Quantity>,
 // {
-//     type Output = Self;
-
-//     fn add(self, rhs: V) -> Self::Output {
-//         let lhs: U::Quantity = self.into();
-//         let rhs: V::Quantity = rhs.into();
-//         Self::from(lhs + rhs)
+//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+//         std::fmt::Display::fmt(&self.0, f)?;
+//         write!(f, " {}", <Self as Unit>::ABBREV)?;
+//         Ok(())
 //     }
 // }
 
@@ -261,9 +224,7 @@ macro_rules! prefixed_unit {
             type Output = $alias;
 
             fn add(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <Self as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                Self::from_q(lhs + rhs)
+                Self::from_q(self.into_q() + rhs.into_q())
             }
         }
 
@@ -274,9 +235,7 @@ macro_rules! prefixed_unit {
             type Output = $alias;
 
             fn sub(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <Self as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                Self::from_q(lhs - rhs)
+                Self::from_q(self.into_q() - rhs.into_q())
             }
         }
 
@@ -288,9 +247,7 @@ macro_rules! prefixed_unit {
             type Output = <<$base_unit as $crate::model::unit::Unit>::Quantity as std::ops::Mul<U::Quantity>>::Output;
 
             fn mul(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <U as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                lhs * rhs
+                self.into_q() * rhs.into_q()
             }
         }
 
@@ -318,9 +275,7 @@ macro_rules! prefixed_unit {
             type Output = <<$base_unit as $crate::model::unit::Unit>::Quantity as std::ops::Div<U::Quantity>>::Output;
 
             fn div(self, rhs: U) -> Self::Output {
-                let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into_q();
-                let rhs: <U as $crate::model::unit::Unit>::Quantity = rhs.into_q();
-                lhs / rhs
+                self.into_q() / rhs.into_q()
             }
         }
 
@@ -336,8 +291,7 @@ macro_rules! prefixed_unit {
             type Output = <<$base_unit as $crate::model::unit::Unit>::Quantity as num_traits::Inv>::Output;
 
             fn div(self, rhs: $alias) -> Self::Output {
-                let rhs_quantity: <$base_unit as $crate::model::unit::Unit>::Quantity = rhs.into();
-                self / rhs_quantity
+                self / rhs.into_q()
             }
         }
 
