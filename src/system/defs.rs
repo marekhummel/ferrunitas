@@ -1,5 +1,6 @@
 // use crate::model::prefix::*;
 use crate::model::quantity::Quantity;
+use crate::model::unit::Unit;
 use crate::{prefix, unit};
 use typenum::*;
 

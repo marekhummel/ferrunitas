@@ -1,9 +1,11 @@
 use std::fmt;
 use std::marker::PhantomData;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use typenum::{Diff, Sum};
+use num_traits::{Inv, Pow, Unsigned};
+use typenum::{Diff, Exp, Integer, Negate, NonZero, Prod, Sum};
 
+use crate::model::quantity;
 use crate::model::unit::Unit;
 
 // ============================================================================
@@ -38,9 +40,39 @@ impl<M, L, T, I, Theta, N, J> QuantityMarker for Quantity<M, L, T, I, Theta, N, 
     }
 }
 
-impl<M, L, T, I, Theta, N, J> fmt::Display for Quantity<M, L, T, I, Theta, N, J> {
+impl<M, L, T, I, Theta, N, J> fmt::Display for Quantity<M, L, T, I, Theta, N, J>
+where
+    M: typenum::Integer,
+    L: typenum::Integer,
+    T: typenum::Integer,
+    I: typenum::Integer,
+    Theta: typenum::Integer,
+    N: typenum::Integer,
+    J: typenum::Integer,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Display::fmt(&self.value, f)
+        let mut dim_string = String::new();
+        for (d, exp) in [
+            ("M", M::to_i32()),
+            ("L", L::to_i32()),
+            ("T", T::to_i32()),
+            ("I", I::to_i32()),
+            ("Θ", Theta::to_i32()),
+            ("N", N::to_i32()),
+            ("J", J::to_i32()),
+        ] {
+            if exp == 0 {
+                continue; // Skip zero dimensions
+            }
+            dim_string.push_str(&format!("{}^{}·", d, exp));
+        }
+        if !dim_string.is_empty() {
+            dim_string.pop();
+        }
+
+        self.value.fmt(f)?;
+        write!(f, " in [{}]", dim_string)?;
+        Ok(())
     }
 }
 
@@ -129,11 +161,55 @@ impl<M, L, T, I, Theta, N, J> Mul<f64> for Quantity<M, L, T, I, Theta, N, J> {
     }
 }
 
+impl<M, L, T, I, Theta, N, J> Mul<Quantity<M, L, T, I, Theta, N, J>> for f64 {
+    type Output = Quantity<M, L, T, I, Theta, N, J>;
+
+    fn mul(self, quantity: Quantity<M, L, T, I, Theta, N, J>) -> Self::Output {
+        Self::Output::new(self * quantity.value)
+    }
+}
+
 // Scalar division - scales the value but keeps dimensions
 impl<M, L, T, I, Theta, N, J> Div<f64> for Quantity<M, L, T, I, Theta, N, J> {
     type Output = Self;
 
     fn div(self, scalar: f64) -> Self::Output {
         Self::new(self.value / scalar)
+    }
+}
+
+impl<M, L, T, I, Theta, N, J> Div<Quantity<M, L, T, I, Theta, N, J>> for f64
+where
+    M: Neg,
+    L: Neg,
+    T: Neg,
+    I: Neg,
+    Theta: Neg,
+    N: Neg,
+    J: Neg,
+{
+    type Output =
+        Quantity<Negate<M>, Negate<L>, Negate<T>, Negate<I>, Negate<Theta>, Negate<N>, Negate<J>>;
+
+    fn div(self, quantity: Quantity<M, L, T, I, Theta, N, J>) -> Self::Output {
+        Self::Output::new(self / quantity.value)
+    }
+}
+
+impl<M, L, T, I, Theta, N, J> Inv for Quantity<M, L, T, I, Theta, N, J>
+where
+    M: Neg,
+    L: Neg,
+    T: Neg,
+    I: Neg,
+    Theta: Neg,
+    N: Neg,
+    J: Neg,
+{
+    type Output =
+        Quantity<Negate<M>, Negate<L>, Negate<T>, Negate<I>, Negate<Theta>, Negate<N>, Negate<J>>;
+
+    fn inv(self) -> Self::Output {
+        Self::Output::new(1.0 / self.value)
     }
 }

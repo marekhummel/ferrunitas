@@ -9,12 +9,25 @@ use crate::model::{
 };
 
 pub trait Unit:
-    Debug + Clone + Copy + PartialEq + PartialOrd + From<Self::Quantity> + Into<Self::Quantity> + Sized
-// + Add<Unit<Quantity = Self::Quantity>>
+    Debug
+    + Clone
+    + Copy
+    + PartialEq
+    + PartialOrd
+    + From<Self::Quantity>
+    + Into<Self::Quantity>
+    + Sized
+    + Add<Self, Output = Self>
+    + Sub<Self, Output = Self>
+    + Mul<f64, Output = Self>
+    + Div<f64, Output = Self>
 {
     type Quantity: QuantityMarker;
     const FACTOR: f64;
     const ABBREV: &'static str;
+
+    fn to_q(&self) -> Self::Quantity;
+    fn convert<U: Unit<Quantity = Self::Quantity>>(self) -> U;
 }
 
 /// Macro to define a derived unit in terms of a base unit with a conversion factor
@@ -28,6 +41,15 @@ macro_rules! unit {
             type Quantity = $quantity_type;
             const FACTOR: f64 = $factor;
             const ABBREV: &'static str = $abbrev;
+
+            fn to_q(&self) -> Self::Quantity {
+                (*self).into()
+            }
+
+            fn convert<U: $crate::model::unit::Unit<Quantity = Self::Quantity>>(self) -> U {
+                let quantity: Self::Quantity = self.into();
+                quantity.as_unit::<U>()
+            }
         }
 
         impl From<$quantity_type> for $unit_name {
@@ -83,22 +105,57 @@ macro_rules! unit {
         }
 
         impl std::ops::Mul<f64> for $unit_name {
-            type Output = $quantity_type;
+            type Output = $unit_name;
 
             fn mul(self, rhs: f64) -> Self::Output {
+                $unit_name(self.0 * rhs)
+            }
+        }
+
+        impl std::ops::Mul<$unit_name> for f64 {
+            type Output = $unit_name;
+
+            fn mul(self, rhs: $unit_name) -> Self::Output {
+                $unit_name(self * rhs.0)
+            }
+        }
+
+        impl<U> std::ops::Div<U> for $unit_name
+        where
+            U: $crate::model::unit::Unit,
+            $quantity_type: std::ops::Div<U::Quantity>,
+        {
+            type Output = <$quantity_type as std::ops::Div<U::Quantity>>::Output;
+
+            fn div(self, rhs: U) -> Self::Output {
                 let lhs: <Self as $crate::model::unit::Unit>::Quantity = self.into();
-                lhs * rhs
+                let rhs: <U as $crate::model::unit::Unit>::Quantity = rhs.into();
+                lhs / rhs
+            }
+        }
+
+        impl std::ops::Div<f64> for $unit_name {
+            type Output = $unit_name;
+
+            fn div(self, rhs: f64) -> Self::Output {
+                $unit_name(self.0 / rhs)
+            }
+        }
+
+        impl std::ops::Div<$unit_name> for f64 {
+            type Output = <$quantity_type as num_traits::Inv>::Output;
+
+            fn div(self, rhs: $unit_name) -> Self::Output {
+                let rhs_quantity: $quantity_type = rhs.into();
+                self / rhs_quantity
             }
         }
 
         impl std::fmt::Display for $unit_name {
             fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(
-                    f,
-                    "{} {}",
-                    self.0,
-                    <Self as $crate::model::unit::Unit>::ABBREV
-                )
+                self.0.fmt(f)?;
+                write!(f, " {}", <Self as $crate::model::unit::Unit>::ABBREV)?;
+                Ok(())
             }
         }
     };
@@ -108,15 +165,15 @@ macro_rules! unit {
     };
 }
 
-// #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-// pub struct PrefixedUnit<P: Prefix, U: Unit>(pub f64, std::marker::PhantomData<(P, U)>);
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct PrefixedUnit<P: Prefix, U: Unit>(pub f64, std::marker::PhantomData<(P, U)>);
 
-// impl<P: Prefix, U: Unit> PrefixedUnit<P, U> {
-//     /// Create a new prefixed unit with the given value
-//     pub fn new(value: f64) -> Self {
-//         Self(value, std::marker::PhantomData)
-//     }
-// }
+impl<P: Prefix, U: Unit> PrefixedUnit<P, U> {
+    /// Create a new prefixed unit with the given value
+    pub fn new(value: f64) -> Self {
+        Self(value, std::marker::PhantomData)
+    }
+}
 
 // impl<P: Prefix, U: Unit> From<PrefixedUnit<P, U>> for U::Quantity {
 //     fn from(unit: PrefixedUnit<P, U>) -> Self {

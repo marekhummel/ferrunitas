@@ -1,7 +1,13 @@
 // Example usage of the Ferrunitas library
 // This serves as both documentation and demonstration of the library's capabilities
 
-use ferrunitas::{model::quantity::Quantity, model::unit::Unit, system::defs::*};
+use ferrunitas::{
+    model::{
+        quantity::Quantity,
+        unit::{PrefixedUnit, Unit},
+    },
+    system::defs::*,
+};
 
 // ============================================================================
 // Physics Functions with Compile-Time Type Safety
@@ -20,13 +26,14 @@ fn calculate_kinetic_energy(
     velocity: impl Unit<Quantity = Velocity>,
 ) -> Energy {
     let v = velocity.into();
-    mass.into() * v * v // KE = ½mv² - type checked at compile time!
+    0.5 * mass.into() * v * v // KE = ½mv² - type checked at compile time!
 }
 
-fn calculate_work(
-    force: impl Unit<Quantity = Force>,
-    distance: impl Unit<Quantity = Length>,
-) -> Energy {
+fn calculate_work<F, L>(force: F, distance: L) -> Energy
+where
+    F: Unit<Quantity = Force>,
+    L: Unit<Quantity = Length>,
+{
     force.into() * distance.into() // W = F⋅d - type checked at compile time!
 }
 
@@ -34,7 +41,7 @@ fn calculate_power_from_work_and_time(
     work: impl Unit<Quantity = Energy>,
     time: impl Unit<Quantity = Time>,
 ) -> Power {
-    work.into() / time.into() // P = W/t - type checked at compile time!
+    work.to_q() / time.to_q() // P = W/t - type checked at compile time!
 }
 
 fn calculate_force(
@@ -102,6 +109,11 @@ fn test_physics_functions() {
     let distance = Meter(3.5); // 3.5 m
     let work = calculate_work(force, distance);
     assert_eq!(work.as_unit::<Joule>().0, 42.0); // 12 * 3.5 = 42 J
+    let area1 = distance * distance;
+
+    let length: Length = distance.into();
+    let area2 = length * length; // Also Length²
+    println!("Area:\n{:.4}\n{}", area1, area2);
 
     // Test power: P = W/t
     let work = Joule(150.0); // 150 J
@@ -133,11 +145,32 @@ fn main() {
 
     // Show basic conversions using the library
     println!("Forward conversions (Unit -> Quantity):");
-    // let mass1: Mass = Kilogram(5.0).into();
-    let mass2: Mass = Pound(10.0).into();
+    let lb1 = Gram(53.0);
+    let lb2 = Pound(10.0);
+    let mass1: Mass = lb1.into();
+    let mass2: Mass = lb2.into();
     // println!("5 kg = {:.2}", mass1.as_unit::<Gram>());
-    println!("10 lb = {:.2}", mass2.as_unit::<Gram>());
-    println!("{:.2}", (mass2 + mass2).as_unit::<Gram>());
+    println!("Single: {:.2}, {:.2}", lb1, lb2);
+    println!("Sum: {:.2}", lb1 + lb2);
+    println!("As Mass: {:.2}, {:.2}", mass1, mass2);
+    println!("Mass Sum: {:.2}", (mass1 + mass2));
+    println!(
+        "Sum converted: {:.2}, {:.2}",
+        (mass1 + mass2).as_unit::<Gram>(),
+        (mass1 + mass2).as_unit::<Pound>()
+    );
+    println!(
+        "Inline Sum Conv: {:.2}",
+        (lb1 + lb2).to_q().as_unit::<Pound>()
+    );
+    println!(
+        "Inline Convert: {:.2}, {:.2}",
+        lb1.convert::<Pound>(),
+        lb2.convert::<Gram>()
+    );
+
+    type Kilogram = PrefixedUnit<Kilo, Gram>;
+    let x: Kilogram = Kilogram::new(5.0);
 
     // Backward conversion: Quantity -> Unit
     println!("\nBackward conversions (Quantity -> Unit):");
