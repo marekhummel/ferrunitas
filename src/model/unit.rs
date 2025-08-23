@@ -43,9 +43,17 @@ pub trait Unit:
     }
 }
 
+pub trait Prefixable {}
+
 /// Macro to define a derived unit in terms of a base unit with a conversion factor
 #[macro_export]
 macro_rules! unit {
+    ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal, prefixable) => {
+        unit!($unit_name, $quantity_type, $factor, $abbrev);
+
+        impl $crate::model::unit::Prefixable for $unit_name {}
+    };
+
     ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $unit_name(pub f64);
@@ -68,13 +76,20 @@ macro_rules! unit {
         $crate::__impl_display!($unit_name);
     };
 
+    ($unit_name:ident, $quantity_type:ty, $abbrev:literal, prefixable) => {
+        unit!($unit_name, $quantity_type, 1.0, $abbrev, prefixable);
+    };
+
     ($unit_name:ident, $quantity_type:ty, $abbrev:literal) => {
         unit!($unit_name, $quantity_type, 1.0, $abbrev);
     };
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-pub struct PrefixedUnit<P: Prefix, U: Unit>(pub f64, pub(crate) std::marker::PhantomData<(P, U)>);
+pub struct PrefixedUnit<P: Prefix, U: Unit + Prefixable>(
+    pub f64,
+    pub(crate) std::marker::PhantomData<(P, U)>,
+);
 
 // ============================================================================
 // Macro for creating prefixed unit type aliases with conversions

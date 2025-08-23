@@ -39,14 +39,14 @@ prefix!(Giga, 1_000_000_000.0, "G", "giga");
 // Base Units
 // ============================================================================
 
-unit!(Gram, Mass, "g");
-unit!(Meter, Length, "m");
-unit!(Second, Time, "s");
+unit!(Gram, Mass, "g", prefixable);
+unit!(Meter, Length, "m", prefixable);
+unit!(Second, Time, "s", prefixable);
 unit!(MeterPerSecond, Velocity, "m/s");
 unit!(MeterPerSecondSquared, Acceleration, "m/s²");
-unit!(Newton, Force, "N");
-unit!(Joule, Energy, "J");
-unit!(Watt, Power, "W");
+unit!(Newton, Force, "N", prefixable);
+unit!(Joule, Energy, "J", prefixable);
+unit!(Watt, Power, "W", prefixable);
 
 // ============================================================================
 // Derived Units (defined in terms of base units)
