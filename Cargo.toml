@@ -6,10 +6,7 @@ description = "A type-safe unit conversion library with compile-time dimensional
 license = "MIT OR Apache-2.0"
 keywords = ["units", "physics", "dimensional-analysis", "type-safety"]
 categories = ["science", "mathematics"]
-
-[[bin]]
-name = "ferrunitas-test"
-path = "examples/test_conf_impls.rs"
+autoexamples = false
 
 [[bin]]
 name = "ferrunitas-demo"

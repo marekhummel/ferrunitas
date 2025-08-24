@@ -1,5 +1,4 @@
-/// SI prefixes for units
-/// This module defines standard SI prefixes and provides a generic PrefixedUnit type
+//! SI prefixes for units
 
 /// Trait for SI prefixes
 pub trait Prefix {
@@ -13,13 +12,8 @@ pub trait Prefix {
     const NAME: &'static str;
 }
 
+/// Implemented by types that can have SI prefixes
 pub trait Prefixable {}
-
-/// Generic prefixed unit that combines a base unit with a prefix
-
-// ============================================================================
-// Macro to define SI prefixes
-// ============================================================================
 
 /// Macro to define a prefix with its factor, symbol, and name
 #[macro_export]

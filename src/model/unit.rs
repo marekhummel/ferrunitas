@@ -4,10 +4,11 @@ use std::{
 };
 
 use crate::model::{
-    prefix::Prefix,
+    prefix::{Prefix, Prefixable},
     quantity::{IntoUnit, QuantityMarker},
 };
 
+/// Top-Level definition of a Unit.
 pub trait Unit:
     Debug
     + Display
@@ -25,77 +26,78 @@ pub trait Unit:
     const FACTOR: f64;
     const ABBREV: &'static str;
 
+    /// Create a new unit from a raw value
     fn new(value: f64) -> Self;
+
+    /// Return internal value
     fn raw_value(&self) -> f64;
 
+    /// Convert quantity instance into a unit
     fn from_q(q: Self::Quantity) -> Self {
         Self::new(q.raw_value() / Self::FACTOR)
     }
+
+    /// Convert unit instance into a quantity
     fn into_q(self) -> Self::Quantity {
         Self::Quantity::new(self.raw_value() * Self::FACTOR)
     }
+
+    /// Convert unit instance to a quantity (just borrowed)
     fn to_q(&self) -> Self::Quantity {
         (*self).into_q()
     }
 
+    /// Directly convert into another unit of same quantity
     fn convert<U: Unit<Quantity = Self::Quantity>>(self) -> U {
         self.to_q().to_unit::<U>()
     }
 }
 
-pub trait Prefixable {}
-
-/// Macro to define a derived unit in terms of a base unit with a conversion factor
-#[macro_export]
-macro_rules! unit {
-    ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal, prefixable) => {
-        unit!($unit_name, $quantity_type, $factor, $abbrev);
-
-        impl $crate::model::unit::Prefixable for $unit_name {}
-    };
-
-    ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
-        #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-        pub struct $unit_name(pub f64);
-
-        impl $crate::model::unit::Unit for $unit_name {
-            type Quantity = $quantity_type;
-            const FACTOR: f64 = $factor;
-            const ABBREV: &'static str = $abbrev;
-
-            fn new(value: f64) -> Self {
-                $unit_name(value / $factor)
-            }
-
-            fn raw_value(&self) -> f64 {
-                self.0
-            }
-        }
-
-        $crate::__impl_arithmetics!($unit_name, $quantity_type);
-        $crate::__impl_display!($unit_name);
-    };
-
-    ($unit_name:ident, $quantity_type:ty, $abbrev:literal, prefixable) => {
-        unit!($unit_name, $quantity_type, 1.0, $abbrev, prefixable);
-    };
-
-    ($unit_name:ident, $quantity_type:ty, $abbrev:literal) => {
-        unit!($unit_name, $quantity_type, 1.0, $abbrev);
-    };
-}
-
+/// A compound struct for units with prefixes.
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct PrefixedUnit<P: Prefix, U: Unit + Prefixable>(
     pub f64,
     pub(crate) std::marker::PhantomData<(P, U)>,
 );
 
-// ============================================================================
-// Macro for creating prefixed unit type aliases with conversions
-// ============================================================================
+/// Macro to define a new unit
+#[macro_export]
+macro_rules! unit {
+    // Base units (prefixable or not)
+    ($unit_name:ident, $quantity_type:ty, $abbrev:literal, prefixable) => {
+        unit!($unit_name, $quantity_type, $abbrev);
 
-// Macro to create a type alias for a prefixed unit (conversions implemented generically)
+        impl $crate::model::prefix::Prefixable for $unit_name {}
+    };
+
+    ($unit_name:ident, $quantity_type:ty, $abbrev:literal) => {
+        $crate::model::unit::__inner_macros::__unit!($unit_name, $quantity_type, 1.0, $abbrev);
+    };
+
+
+    // Derived units based on other unit
+    ($unit_name:ident, $quantity_type:ty, $factor:expr, $base_unit:ty, $abbrev:literal, prefixable) => {
+        unit!($unit_name, $quantity_type, $factor, $base_unit:ty, $abbrev);
+
+        impl $crate::model::prefix::Prefixable for $unit_name {}
+    };
+
+    ($unit_name:ident, $quantity_type:ty, ($factor:expr, $base_unit:ty), $abbrev:literal) => {
+        $crate::model::unit::__inner_macros::__unit!(
+            $unit_name,
+            $quantity_type,
+            ($factor as f64) * <$base_unit as $crate::model::unit::Unit>::FACTOR,
+            $abbrev
+        );
+    };
+
+    // Compound unit (not prefixable by default?)
+    ($unit_name:ident, $abbrev:literal, [$(($units:ty, $exps:ty)),+] ) => {
+        $crate::model::unit::__inner_macros::__compound_unit!($unit_name, $abbrev, [Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>, 1.0; $(($units, $exps)),+]);
+    };
+}
+
+/// Macro to create a type alias for a prefixed unit
 #[macro_export]
 macro_rules! prefixed_unit {
     ($alias:ident, $prefix:ty, $base_unit:ty) => {
@@ -122,146 +124,186 @@ macro_rules! prefixed_unit {
             }
         }
 
-        $crate::__impl_arithmetics!($alias, <$base_unit as $crate::model::unit::Unit>::Quantity);
-        $crate::__impl_display!($alias);
+        $crate::model::unit::__inner_macros::__impl_arithmetics!(
+            $alias,
+            <$base_unit as $crate::model::unit::Unit>::Quantity
+        );
+        $crate::model::unit::__inner_macros::__impl_display!($alias);
     };
 }
 
-#[macro_export]
-macro_rules! __impl_arithmetics {
-    ($unit:ty, $quantity:ty) => {
-        macro_rules! __impl_ops_within_unit {
-            ($trait:ident, $method:ident, $op:tt) => {
-                impl<U> std::ops::$trait<U> for $unit
-                where
-                    U: $crate::model::unit::Unit<Quantity = $quantity>,
-                {
-                    type Output = $unit;
+pub(crate) mod __inner_macros {
+    macro_rules! __unit {
+        ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
+            #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+            pub struct $unit_name(f64);
 
-                    fn $method(self, rhs: U) -> Self::Output {
-                        Self::from_q(self.into_q() $op rhs.into_q())
-                    }
-                }
-            };
-        }
+            impl $crate::model::unit::Unit for $unit_name {
+                type Quantity = $quantity_type;
+                const FACTOR: f64 = $factor;
+                const ABBREV: &'static str = $abbrev;
 
-        __impl_ops_within_unit!(Add, add, +);
-        __impl_ops_within_unit!(Sub, sub, -);
-
-        macro_rules! __impl_ops_to_quantity {
-            ($trait:ident, $method:ident, $op:tt) => {
-                impl<U> std::ops::$trait<U> for $unit
-                where
-                    U: $crate::model::unit::Unit,
-                    $quantity: std::ops::$trait<U::Quantity>,
-                {
-                    type Output = <$quantity as std::ops::$trait<U::Quantity>>::Output;
-
-                    fn $method(self, rhs: U) -> Self::Output {
-                        self.into_q() $op rhs.into_q()
-                    }
-                }
-            };
-        }
-
-        __impl_ops_to_quantity!(Mul, mul, *);
-        __impl_ops_to_quantity!(Div, div, /);
-
-        macro_rules! __impl_ops_scalar {
-            () => {
-                impl std::ops::Mul<f64> for $unit {
-                    type Output = $unit;
-
-                    fn mul(self, rhs: f64) -> Self::Output {
-                        <$unit>::new(self.0 * rhs)
-                    }
+                fn new(value: f64) -> Self {
+                    $unit_name(value)
                 }
 
-                impl std::ops::Mul<$unit> for f64 {
-                    type Output = $unit;
-
-                    fn mul(self, rhs: $unit) -> Self::Output {
-                        <$unit>::new(self * rhs.0)
-                    }
+                fn raw_value(&self) -> f64 {
+                    self.0
                 }
-
-                impl std::ops::Div<f64> for $unit {
-                    type Output = $unit;
-
-                    fn div(self, rhs: f64) -> Self::Output {
-                        <$unit>::new(self.0 / rhs)
-                    }
-                }
-
-                impl std::ops::Div<$unit> for f64 {
-                    type Output = <$quantity as num_traits::Inv>::Output;
-
-                    fn div(self, rhs: $unit) -> Self::Output {
-                        let rhs_quantity: $quantity = rhs.into_q();
-                        self / rhs_quantity
-                    }
-                }
-            };
-        }
-
-        __impl_ops_scalar!();
-    };
-}
-
-#[macro_export]
-macro_rules! __impl_display {
-    ($unit:ty) => {
-        impl std::fmt::Display for $unit {
-            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                self.0.fmt(f)?;
-                write!(f, " {}", <$unit>::ABBREV)?;
-                Ok(())
             }
+
+            $crate::model::unit::__inner_macros::__impl_arithmetics!($unit_name, $quantity_type);
+            $crate::model::unit::__inner_macros::__impl_display!($unit_name);
+        };
+    }
+
+    macro_rules! __impl_arithmetics {
+        ($unit:ty, $quantity:ty) => {
+            $crate::model::unit::__inner_macros::__impl_ops_within_unit!($unit, $quantity, Add, add, +);
+            $crate::model::unit::__inner_macros::__impl_ops_within_unit!($unit, $quantity, Sub, sub, -);
+
+            $crate::model::unit::__inner_macros::__impl_ops_to_quantity!($unit, $quantity, Mul, mul, *);
+            $crate::model::unit::__inner_macros::__impl_ops_to_quantity!($unit, $quantity, Div, div, /);
+
+            $crate::model::unit::__inner_macros::__impl_ops_scalar!($unit, $quantity);
+        };
+    }
+
+    macro_rules! __impl_ops_within_unit {
+        ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
+            impl<U> std::ops::$trait<U> for $unit
+            where
+                U: $crate::model::unit::Unit<Quantity = $quantity>,
+            {
+                type Output = $unit;
+
+                fn $method(self, rhs: U) -> Self::Output {
+                    Self::from_q(self.into_q() $op rhs.into_q())
+                }
+            }
+        };
+    }
+
+    macro_rules! __impl_ops_to_quantity {
+        ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
+            impl<U> std::ops::$trait<U> for $unit
+            where
+                U: $crate::model::unit::Unit,
+                $quantity: std::ops::$trait<U::Quantity>,
+            {
+                type Output = <$quantity as std::ops::$trait<U::Quantity>>::Output;
+
+                fn $method(self, rhs: U) -> Self::Output {
+                    self.into_q() $op rhs.into_q()
+                }
+            }
+        };
+    }
+
+    macro_rules! __impl_ops_scalar {
+        ($unit:ty, $quantity:ty) => {
+            impl std::ops::Mul<f64> for $unit {
+                type Output = $unit;
+
+                fn mul(self, rhs: f64) -> Self::Output {
+                    <$unit>::new(self.0 * rhs)
+                }
+            }
+
+            impl std::ops::Mul<$unit> for f64 {
+                type Output = $unit;
+
+                fn mul(self, rhs: $unit) -> Self::Output {
+                    <$unit>::new(self * rhs.0)
+                }
+            }
+
+            impl std::ops::Div<f64> for $unit {
+                type Output = $unit;
+
+                fn div(self, rhs: f64) -> Self::Output {
+                    <$unit>::new(self.0 / rhs)
+                }
+            }
+
+            impl std::ops::Div<$unit> for f64 {
+                type Output = <$quantity as num_traits::Inv>::Output;
+
+                fn div(self, rhs: $unit) -> Self::Output {
+                    let rhs_quantity: $quantity = rhs.into_q();
+                    self / rhs_quantity
+                }
+            }
+        };
+    }
+
+    macro_rules! __impl_display {
+        ($unit:ty) => {
+            impl std::fmt::Display for $unit {
+                fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                    self.0.fmt(f)?;
+                    write!(f, " {}", <$unit>::ABBREV)?;
+                    Ok(())
+                }
+            }
+        };
+    }
+
+    macro_rules! __compound_unit {
+        ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; ($unit:ty, $exp:ty), $(($units:ty, $exps:ty)),*] ) => {
+            $crate::model::unit::__inner_macros::__compound_unit!(
+                $unit_name,
+                $abbrev,
+                [
+                    <$quantity_acc as std::ops::Mul<
+                        <<$unit as $crate::model::unit::Unit>::Quantity as $crate::model::quantity::TypePow<$exp>>::Output
+                    >>::Output,
+                    $factor_acc * $crate::model::unit::__inner_macros::powi_const(<$unit as $crate::model::unit::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT);
+                    $( ($units, $exps) ),* ,
+                ]
+            );
+        };
+
+        ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; , ] ) => {
+            $crate::model::unit::__inner_macros::__unit!(
+                $unit_name,
+                $quantity_acc,
+                $factor_acc,
+                $abbrev
+            );
+        };
+    }
+
+    pub(crate) const fn powi_const(mut base: f64, mut exp: i32) -> f64 {
+        if exp == 0 {
+            return 1.0;
         }
-    };
+        let neg = exp < 0;
+        if neg {
+            exp = -exp;
+        }
+        let mut e = exp as u32;
+        let mut acc = 1.0;
+        while e != 0 {
+            if (e & 1) == 1 {
+                acc *= base;
+            }
+            base *= base;
+            e >>= 1;
+        }
+        if neg {
+            1.0 / acc
+        } else {
+            acc
+        }
+    }
+
+    pub(crate) use __impl_arithmetics;
+    pub(crate) use __impl_display;
+    pub(crate) use __impl_ops_scalar;
+    pub(crate) use __impl_ops_to_quantity;
+    pub(crate) use __impl_ops_within_unit;
+
+    pub(crate) use __compound_unit;
+    pub(crate) use __unit;
 }
-
-// Implement conversions for specific quantity types
-// #[macro_export]
-// macro_rules! impl_prefix_conversions {
-//     ($quantity_type:ty) => {
-//         impl<P: $crate::model::prefix::Prefix, U> From<$crate::model::unit::PrefixedUnit<P, U>>
-//             for $quantity_type
-//         {
-//             fn from(unit: $crate::model::unit::PrefixedUnit<P, U>) -> Self {
-//                 <$quantity_type>::new(unit.0 * P::FACTOR)
-//             }
-//         }
-
-//         impl<P: $crate::model::prefix::Prefix, U> From<$quantity_type>
-//             for $crate::model::unit::PrefixedUnit<P, U>
-//         {
-//             fn from(quantity: $quantity_type) -> Self {
-//                 Self::new(quantity.value / P::FACTOR)
-//             }
-//         }
-//     };
-// }
-
-// #[cfg(test)]
-// mod tests {
-//     use crate::model::quantity::Quantity;
-//     use typenum::*;
-
-//     type TestMass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
-
-//     unit!(TestGram, TestMass, "tg");
-//     unit!(TestKilogram, TestMass, 1000.0, "tkg");
-
-//     #[test]
-//     fn test_base_unit_conversion() {
-//         let mass: TestMass = TestGram(5.0).into();
-//         assert_eq!(mass.value, 5.0);
-//     }
-
-//     #[test]
-//     fn test_derived_unit_conversion() {
-//         let mass: TestMass = TestKilogram(2.0).into();
-//         assert_eq!(mass.value, 2000.0); // 2 kg = 2000 g
-//     }
-// }

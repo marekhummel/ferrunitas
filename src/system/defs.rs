@@ -11,6 +11,10 @@ use typenum::*;
 pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>; // [1,0,0,0,0,0,0]
 pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>; // [0,1,0,0,0,0,0]
 pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>; // [0,0,1,0,0,0,0]
+pub type ElectricCurrent = Quantity<Z0, Z0, Z0, P1, Z0, Z0, Z0>; // [0,0,0,1,0,0,0]
+pub type Temperature = Quantity<Z0, Z0, Z0, Z0, P1, Z0, Z0>; // [0,0,0,0,1,0,0]
+pub type AmountOfSubstance = Quantity<Z0, Z0, Z0, Z0, Z0, P1, Z0>; // [0,0,0,0,0,1,0]
+pub type LuminousIntensity = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>; // [0,0,0,0,0,0,1]
 
 // Derived quantities
 pub type Velocity = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0>; // [0,1,-1,0,0,0,0] = L/T
@@ -30,11 +34,6 @@ prefix!(Micro, 0.000001, "μ", "micro");
 prefix!(Mega, 1_000_000.0, "M", "mega");
 prefix!(Giga, 1_000_000_000.0, "G", "giga");
 
-// Implement conversions for all quantity types
-// impl_prefix_conversions!(crate::system::defs::Mass);
-// impl_prefix_conversions!(crate::system::defs::Length);
-// impl_prefix_conversions!(crate::system::defs::Time);
-
 // ============================================================================
 // Base Units
 // ============================================================================
@@ -42,11 +41,24 @@ prefix!(Giga, 1_000_000_000.0, "G", "giga");
 unit!(Gram, Mass, "g", prefixable);
 unit!(Meter, Length, "m", prefixable);
 unit!(Second, Time, "s", prefixable);
-unit!(MeterPerSecond, Velocity, "m/s");
+
+unit!(Ampere, ElectricCurrent, "A", prefixable);
+unit!(Kelvin, Temperature, "K");
+unit!(Mole, AmountOfSubstance, "mol");
+unit!(Candela, LuminousIntensity, "cd", prefixable);
+
+// Derived
+
+// unit!(MeterPerSecond, Velocity, "m/s");
 unit!(MeterPerSecondSquared, Acceleration, "m/s²");
 unit!(Newton, Force, "N", prefixable);
 unit!(Joule, Energy, "J", prefixable);
 unit!(Watt, Power, "W", prefixable);
+
+unit!(MeterSeconds, "ms", [(Kilometer, P1), (Second, N2)]); // m⋅s
+unit!(NauticalMile, Length, (1852, Meter), "nmi"); // 1 nmi = 1852 m
+unit!(Knots, "kn", [(NauticalMile, P1), (Hour, N1)]); // 1 kn = 1 nmi/h
+unit!(MeterPerSecond, "m/s", [(Meter, P1), (Second, N1)]);
 
 // ============================================================================
 // Derived Units (defined in terms of base units)
@@ -56,19 +68,20 @@ unit!(Watt, Power, "W", prefixable);
 prefixed_unit!(Kilogram, Kilo, Gram);
 
 // Mass units - non-SI
-unit!(Pound, Mass, 453.592, "lb"); // 1 lb = 453.592 g
-unit!(Ounce, Mass, 28.3495, "oz"); // 1 oz = 28.3495 g
+unit!(Pound, Mass, (453.592, Gram), "lb"); // 1 lb = 453.592 g
+unit!(Ounce, Mass, (28.3495, Gram), "oz"); // 1 oz = 28.3495 g
 
 // Length units - prefixed
 prefixed_unit!(Kilometer, Kilo, Meter);
-// prefixed_unit!(Centimeter, Centi, Meter);
-// prefixed_unit!(Millimeter, Milli, Meter);
+prefixed_unit!(Centimeter, Centi, Meter);
+prefixed_unit!(Millimeter, Milli, Meter);
 
 // Length units - non-SI
-unit!(Inch, Length, 0.0254, "in"); // 1 in = 0.0254 m
-unit!(Foot, Length, 0.3048, "ft"); // 1 ft = 0.3048 m
-unit!(Mile, Length, 1609.34, "mi"); // 1 mile = 1609.34 m
+unit!(Inch, Length, (0.0254, Meter), "in");
+unit!(Foot, Length, (12, Inch), "ft");
+unit!(Yard, Length, (3, Foot), "yd");
+unit!(Mile, Length, (1760, Yard), "mi");
 
 // Time units - non-SI (no SI prefixes commonly used for time)
-unit!(Minute, Time, 60.0, "min"); // 1 min = 60 s
-unit!(Hour, Time, 3600.0, "hr"); // 1 hr = 3600 s
+unit!(Minute, Time, (60, Second), "min"); // 1 min = 60 s
+unit!(Hour, Time, (60, Minute), "hr"); // 1 hr = 3600 s
