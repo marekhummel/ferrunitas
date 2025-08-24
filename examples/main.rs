@@ -85,16 +85,16 @@ fn demonstrate_compile_time_safety() {
 
 fn test_physics_functions() {
     // Test kinetic energy: KE = ½mv²
-    let mass = Gram::new(4.0); // 4 grams
-    let velocity = MeterPerSecond::new(6.0); // 6 m/s
+    let mass = Gram::new(4.0);
+    let velocity = MeterPerSecond::new(6.0);
     let ke = calculate_kinetic_energy(mass, velocity);
-    assert_eq!(ke.as_unit::<Joule>().raw_value(), 72.0); // ½ * 4 * 6² = 72 g⋅m²/s²
+    assert_eq!(ke.as_unit::<Joule>().raw_value(), 0.072);
 
     // Test work: W = F⋅d
-    let force = Newton::new(12.0); // 12 N
-    let distance = Meter::new(3.5); // 3.5 m
+    let force = Newton::new(12.0);
+    let distance = Meter::new(3.5);
     let work = calculate_work(force, distance);
-    assert_eq!(work.as_unit::<Joule>().raw_value(), 42.0); // 12 * 3.5 = 42 J
+    assert_eq!(work.as_unit::<Joule>().raw_value(), 42.0);
     let area1 = distance * distance;
 
     let length: Length = distance.into_q();
@@ -102,31 +102,31 @@ fn test_physics_functions() {
     println!("Area:\n{:.4}\n{}", area1, area2);
 
     // Test power: P = W/t
-    let work = Joule::new(150.0); // 150 J
-    let time = Second::new(10.0); // 10 s
+    let work = Joule::new(150.0);
+    let time = Second::new(10.0);
     let power = calculate_power_from_work_and_time(work, time);
-    assert_eq!(power.as_unit::<Watt>().raw_value(), 15.0); // 150 / 10 = 15 W
+    assert_eq!(power.as_unit::<Watt>().raw_value(), 15.0);
 
     // Test force: F = ma
-    let mass = Gram::new(8.0); // 8 kg
-    let acceleration = MeterPerSecondSquared::new(2.5); // 2.5 m/s²
+    let mass = Gram::new(8.0);
+    let acceleration = MeterPerSecondSquared::new(2.5);
     let force = calculate_force(mass, acceleration);
-    assert_eq!(force.as_unit::<Newton>().raw_value(), 20.0); // 8 * 2.5 = 20 N
+    assert_eq!(force.as_unit::<Newton>().raw_value(), 0.02);
 
     // Test velocity: v = d/t
-    let distance = Meter::new(200.0); // 200 m
-    let time = Second::new(25.0); // 25 s
+    let distance = Meter::new(200.0);
+    let time = Second::new(25.0);
     let velocity = calculate_velocity(distance, time);
-    assert_eq!(velocity.as_unit::<MeterPerSecond>().raw_value(), 8.0); // 200 / 25 = 8 m/s
+    assert_eq!(velocity.as_unit::<MeterPerSecond>().raw_value(), 8.0);
 
     // Test acceleration: a = Δv/t
-    let velocity_change = MeterPerSecond::new(30.0); // 30 m/s change
-    let time = Second::new(6.0); // 6 s
+    let velocity_change = MeterPerSecond::new(30.0);
+    let time = Second::new(6.0);
     let acceleration = calculate_acceleration(velocity_change, time);
     assert_eq!(
         acceleration.as_unit::<MeterPerSecondSquared>().raw_value(),
         5.0
-    ); // 30 / 6 = 5 m/s²
+    );
 }
 
 fn main() {
@@ -165,7 +165,7 @@ fn main() {
     let as_kg = mass.as_unit::<Kilogram>();
     let as_pounds = mass.as_unit::<Pound>();
     let as_grams = mass.as_unit::<Gram>();
-    println!("5000 g = {:.2} kg", as_kg.0);
+    println!("5000 g = {:.2}", as_kg);
     println!("5000 g = {:.2}", as_pounds);
     println!("5000 g = {:.0}", as_grams);
 
@@ -186,7 +186,6 @@ fn main() {
     println!("1 foot = {:.2}", Foot::new(1.0).convert::<Inch>());
 
     // Relative unit definitions
-    println!("MeterSeconds Quantity: {}", MeterSeconds::new(5.0).into_q());
     let distance = Meter::new(2000.0);
     let time = Minute::new(5.0);
     let speed = distance / time;

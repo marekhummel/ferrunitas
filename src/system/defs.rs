@@ -1,33 +1,35 @@
-// use crate::model::prefix::*;
 use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
-use crate::{prefix, prefixed_unit, unit};
+use crate::{prefix, unit};
 use typenum::*;
 
 // ============================================================================
 // Base SI Quantities as Type Aliases
 // ============================================================================
 
-pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>; // [1,0,0,0,0,0,0]
-pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>; // [0,1,0,0,0,0,0]
-pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>; // [0,0,1,0,0,0,0]
-pub type ElectricCurrent = Quantity<Z0, Z0, Z0, P1, Z0, Z0, Z0>; // [0,0,0,1,0,0,0]
-pub type Temperature = Quantity<Z0, Z0, Z0, Z0, P1, Z0, Z0>; // [0,0,0,0,1,0,0]
-pub type AmountOfSubstance = Quantity<Z0, Z0, Z0, Z0, Z0, P1, Z0>; // [0,0,0,0,0,1,0]
-pub type LuminousIntensity = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>; // [0,0,0,0,0,0,1]
+pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
+pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
+pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
+pub type ElectricCurrent = Quantity<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
+pub type Temperature = Quantity<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
+pub type AmountOfSubstance = Quantity<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
+pub type LuminousIntensity = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
 
 // Derived quantities
-pub type Velocity = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0>; // [0,1,-1,0,0,0,0] = L/T
-pub type Acceleration = Quantity<Z0, P1, N2, Z0, Z0, Z0, Z0>; // [0,1,-2,0,0,0,0] = L/T²
-pub type Force = Quantity<P1, P1, N2, Z0, Z0, Z0, Z0>; // [1,1,-2,0,0,0,0] = M⋅L/T²
-pub type Energy = Quantity<P1, P2, N2, Z0, Z0, Z0, Z0>; // [1,2,-2,0,0,0,0] = M⋅L²/T²
-pub type Power = Quantity<P1, P2, N3, Z0, Z0, Z0, Z0>; // [1,2,-3,0,0,0,0] = M⋅L²/T³
+pub type Velocity = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0>;
+pub type Acceleration = Quantity<Z0, P1, N2, Z0, Z0, Z0, Z0>;
+pub type Force = Quantity<P1, P1, N2, Z0, Z0, Z0, Z0>;
+pub type Energy = Quantity<P1, P2, N2, Z0, Z0, Z0, Z0>;
+pub type Power = Quantity<P1, P2, N3, Z0, Z0, Z0, Z0>;
+pub type Area = Quantity<Z0, P2, Z0, Z0, Z0, Z0, Z0>;
+pub type Volume = Quantity<Z0, P3, Z0, Z0, Z0, Z0, Z0>;
 
 // ============================================================================
 // SI Prefixes
 // ============================================================================
 
 prefix!(Kilo, 1000.0, "k", "kilo");
+prefix!(Deci, 0.1, "d", "deci");
 prefix!(Centi, 0.01, "c", "centi");
 prefix!(Milli, 0.001, "m", "milli");
 prefix!(Micro, 0.000001, "μ", "micro");
@@ -38,50 +40,57 @@ prefix!(Giga, 1_000_000_000.0, "G", "giga");
 // Base Units
 // ============================================================================
 
-unit!(Gram, Mass, "g", prefixable);
-unit!(Meter, Length, "m", prefixable);
-unit!(Second, Time, "s", prefixable);
+unit!(base: Gram, Mass, "g", prefixable);
+unit!(base: Meter, Length, "m", prefixable);
+unit!(base: Second, Time, "s", prefixable);
+unit!(base: Ampere, ElectricCurrent, "A", prefixable);
+unit!(base: Kelvin, Temperature, "K");
+unit!(base: Mole, AmountOfSubstance, "mol");
+unit!(base: Candela, LuminousIntensity, "cd", prefixable);
 
-unit!(Ampere, ElectricCurrent, "A", prefixable);
-unit!(Kelvin, Temperature, "K");
-unit!(Mole, AmountOfSubstance, "mol");
-unit!(Candela, LuminousIntensity, "cd", prefixable);
+// ============================================================================
+// Prefixed Units
+// ============================================================================
 
-// Derived
+// Mass units - prefixed
+unit!(prefix: Kilogram, Kilo, Gram);
 
-// unit!(MeterPerSecond, Velocity, "m/s");
-unit!(MeterPerSecondSquared, Acceleration, "m/s²");
-unit!(Newton, Force, "N", prefixable);
-unit!(Joule, Energy, "J", prefixable);
-unit!(Watt, Power, "W", prefixable);
-
-unit!(MeterSeconds, "ms", [(Kilometer, P1), (Second, N2)]); // m⋅s
-unit!(NauticalMile, Length, (1852, Meter), "nmi"); // 1 nmi = 1852 m
-unit!(Knots, "kn", [(NauticalMile, P1), (Hour, N1)]); // 1 kn = 1 nmi/h
-unit!(MeterPerSecond, "m/s", [(Meter, P1), (Second, N1)]);
+// Length units - prefixed
+unit!(prefix: Kilometer, Kilo, Meter);
+unit!(prefix: Decimeter, Deci, Meter);
+unit!(prefix: Centimeter, Centi, Meter);
+unit!(prefix: Millimeter, Milli, Meter);
 
 // ============================================================================
 // Derived Units (defined in terms of base units)
 // ============================================================================
 
-// Mass units - prefixed
-prefixed_unit!(Kilogram, Kilo, Gram);
-
 // Mass units - non-SI
-unit!(Pound, Mass, (453.592, Gram), "lb"); // 1 lb = 453.592 g
-unit!(Ounce, Mass, (28.3495, Gram), "oz"); // 1 oz = 28.3495 g
-
-// Length units - prefixed
-prefixed_unit!(Kilometer, Kilo, Meter);
-prefixed_unit!(Centimeter, Centi, Meter);
-prefixed_unit!(Millimeter, Milli, Meter);
+unit!(derived: Pound, (453.592, Gram), "lb");
+unit!(derived: Ounce, (28.3495, Gram), "oz");
 
 // Length units - non-SI
-unit!(Inch, Length, (0.0254, Meter), "in");
-unit!(Foot, Length, (12, Inch), "ft");
-unit!(Yard, Length, (3, Foot), "yd");
-unit!(Mile, Length, (1760, Yard), "mi");
+unit!(derived: Inch, (2.54, Centimeter), "in");
+unit!(derived: Foot, (12, Inch), "ft");
+unit!(derived: Yard, (3, Foot), "yd");
+unit!(derived: Mile, (1760, Yard), "mi");
+unit!(derived: NauticalMile, (1852, Meter), "nmi");
 
-// Time units - non-SI (no SI prefixes commonly used for time)
-unit!(Minute, Time, (60, Second), "min"); // 1 min = 60 s
-unit!(Hour, Time, (60, Minute), "hr"); // 1 hr = 3600 s
+// Time units - non-SI
+unit!(derived: Minute, (60, Second), "min");
+unit!(derived: Hour, (60, Minute), "hr");
+
+// ============================================================================
+// Compound Units (defined in terms of base units)
+// ============================================================================
+
+unit!(compound: MeterPerSecond, "m/s", [(Meter, P1), (Second, N1)]);
+unit!(compound: MeterPerSecondSquared, "m/s²", [(Meter, P1), (Second, N2)]);
+unit!(compound: Newton, "N", [(Kilogram, P1), (Meter, P1), (Second, N2)], prefixable);
+unit!(compound: Joule, "J", [(Newton, P1), (Meter, P1)], prefixable);
+unit!(compound: Watt, "W", [(Joule, P1), (Second, N1)], prefixable);
+unit!(compound: MeterSquared, "m²", [(Meter, P2)]);
+unit!(compound: MeterCubed, "m³", [(Meter, P3)]);
+
+unit!(compound: Liter, "L", [(Decimeter, P3)], prefixable);
+unit!(compound: Knots, "kn", [(NauticalMile, P1), (Hour, N1)]);

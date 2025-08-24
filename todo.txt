@@ -4,3 +4,4 @@
 - Cargo TOML
 - Deps
 - README
+- Kilogram as base, change Gram factor to 1e-3
