@@ -12,6 +12,14 @@ use typenum::{Diff, Integer, Negate, NonZero, Prod, Sum, ToInt};
 
 /// Marker trait for all quantity types, used in macros
 pub trait QuantityMarker {
+    type M;
+    type L;
+    type T;
+    type I;
+    type Theta;
+    type N;
+    type J;
+
     fn new(value: f64) -> Self; // This should not be public
     fn raw_value(&self) -> f64;
 }
@@ -37,6 +45,14 @@ pub struct Quantity<M, L, T, I, Theta, N, J> {
 
 /// Basic handlers for quantities
 impl<M, L, T, I, Theta, N, J> QuantityMarker for Quantity<M, L, T, I, Theta, N, J> {
+    type M = M;
+    type L = L;
+    type T = T;
+    type I = I;
+    type Theta = Theta;
+    type N = N;
+    type J = J;
+
     fn new(value: f64) -> Self {
         Self {
             value,
@@ -83,27 +99,7 @@ where
     J: typenum::Integer,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut dim_string = String::new();
-
-        // Format dimensions
-        for (d, exp) in [
-            ("M", M::to_i32()),
-            ("L", L::to_i32()),
-            ("T", T::to_i32()),
-            ("I", I::to_i32()),
-            ("Θ", Theta::to_i32()),
-            ("N", N::to_i32()),
-            ("J", J::to_i32()),
-        ] {
-            if exp == 0 {
-                continue; // Skip zero dimensions
-            }
-            dim_string.push_str(&format!("{}^{}·", d, exp));
-        }
-        if !dim_string.is_empty() {
-            dim_string.pop();
-        }
-
+        let dim_string = crate::format_quantity_dims!(Self);
         std::fmt::Display::fmt(&self.value, f)?;
         write!(f, " in [{}]", dim_string)?;
         Ok(())
@@ -284,4 +280,53 @@ where
     fn pow(self) -> Self::Output {
         Self::Output::new(self.value.powi(Exp::INT))
     }
+}
+
+#[macro_export]
+macro_rules! format_quantity_dims {
+    ($quantity:ty) => {{
+        let items: [(&str, i8); 7] =
+            [
+                (
+                    "M",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::M as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "L",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::L as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "T",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::T as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "I",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::I as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "Θ",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::Theta as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "N",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::N as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "J",
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::J as typenum::Integer>::to_i8(),
+                ),
+            ];
+        let mut dim_string = String::new();
+        for (dim, exp) in items {
+            if exp == 0 {
+                continue;
+            }
+            dim_string.push_str(&format!("{}^{}·", dim, exp));
+        }
+        if !dim_string.is_empty() {
+            dim_string.pop();
+        }
+
+        dim_string
+    }};
 }

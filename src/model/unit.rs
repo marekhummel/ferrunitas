@@ -141,6 +141,7 @@ macro_rules! unit {
 }
 
 pub(crate) mod __inner_macros {
+    /// Create a unit struct and impl Unit trait
     macro_rules! __unit {
         ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -165,6 +166,7 @@ pub(crate) mod __inner_macros {
         };
     }
 
+    // Implement arithmetic traits for unit
     macro_rules! __impl_arithmetics {
         ($unit:ty, $quantity:ty) => {
             $crate::model::unit::__inner_macros::__impl_ops_within_unit!($unit, $quantity, Add, add, +);
@@ -177,6 +179,7 @@ pub(crate) mod __inner_macros {
         };
     }
 
+    // Implement operations within the same unit (Add and Sub)
     macro_rules! __impl_ops_within_unit {
         ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
             impl<U> std::ops::$trait<U> for $unit
@@ -192,6 +195,7 @@ pub(crate) mod __inner_macros {
         };
     }
 
+    /// Implement operations to convert between unit and quantity (Mul and Div)
     macro_rules! __impl_ops_to_quantity {
         ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
             impl<U> std::ops::$trait<U> for $unit
@@ -208,6 +212,7 @@ pub(crate) mod __inner_macros {
         };
     }
 
+    /// Implement scalar operations (Mul / Div with f64)
     macro_rules! __impl_ops_scalar {
         ($unit:ty, $quantity:ty) => {
             impl std::ops::Mul<f64> for $unit {
@@ -245,6 +250,7 @@ pub(crate) mod __inner_macros {
         };
     }
 
+    /// Implement display trait for unit
     macro_rules! __impl_display {
         ($unit:ty) => {
             impl std::fmt::Display for $unit {
@@ -257,6 +263,7 @@ pub(crate) mod __inner_macros {
         };
     }
 
+    /// Create a compound unit
     macro_rules! __compound_unit {
         // Base case
         ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr;] ) => {
@@ -287,7 +294,7 @@ pub(crate) mod __inner_macros {
 
 
     }
-
+    /// Const fn for integer exponentiation
     pub(crate) const fn powi_const(mut base: f64, mut exp: i32) -> f64 {
         if exp == 0 {
             return 1.0;

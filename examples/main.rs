@@ -51,38 +51,6 @@ fn calculate_acceleration(
     velocity_change.into_q() / time.into_q() // a = Δv/t - type checked at compile time!
 }
 
-/// Demonstrate dimensional analysis prevents errors at compile time
-///
-/// This function shows how mixing incompatible dimensions results in
-/// compilation errors, making physics calculations safer.
-fn demonstrate_compile_time_safety() {
-    println!("=== Compile-Time Dimensional Analysis Demo ===");
-
-    // These work fine - dimensionally consistent
-    let mass = Gram::new(10.0); // 10 grams
-    let velocity = MeterPerSecond::new(5.0); // 5 m/s
-
-    let kinetic_energy = calculate_kinetic_energy(mass, velocity);
-    println!("KE = ½mv² = {:.1}", kinetic_energy.as_unit::<Joule>());
-
-    let force = Newton::new(15.0); // 15 N
-    let distance = Meter::new(3.0); // 3 m
-    let work = calculate_work(force, distance);
-    println!("W = F⋅d = {:.1}", work.as_unit::<Joule>());
-
-    let time = Second::new(2.0); // 2 s
-    let power = calculate_power_from_work_and_time(work.as_unit::<Joule>(), time);
-    println!("P = W/t = {:.1}", power.as_unit::<Watt>());
-
-    // These won't compile - dimensionally inconsistent!
-    // calculate_kinetic_energy(mass, distance);  // Error: velocity expected, not length
-    // calculate_work(mass, velocity);           // Error: force and length expected
-    // let invalid = mass + velocity;            // Error: can't add mass and velocity
-
-    println!("✅ All calculations are dimensionally correct!");
-    println!("💡 Try uncommenting the error lines to see compile-time protection!");
-}
-
 fn test_physics_functions() {
     // Test kinetic energy: KE = ½mv²
     let mass = Gram::new(4.0);
@@ -189,13 +157,16 @@ fn main() {
     let distance = Meter::new(2000.0);
     let time = Minute::new(5.0);
     let speed = distance / time;
-    println!("Speed: {}", speed);
-    println!("Speed in m/s: {:.5}", speed.as_unit::<MeterPerSecond>());
-    println!("Speed in knots: {:.5}", speed.as_unit::<Knots>());
+    println!("Speed: {:.4}", speed.as_unit::<MeterPerSecond>());
+    println!(
+        "Type of speed: {}",
+        ferrunitas::format_quantity_dims!(<MeterPerSecond as Unit>::Quantity)
+    );
+
+    // println!("Speed in m/s: {:.5}", speed.as_unit::<MeterPerSecond>());
+    // println!("Speed in knots: {:.5}", speed.as_unit::<Knots>());
 
     // Demonstrate compile-time safety
-    println!();
-    demonstrate_compile_time_safety();
     println!();
     test_physics_functions();
 }

@@ -5,3 +5,4 @@
 - Deps
 - README
 - Kilogram as base, change Gram factor to 1e-3
+- Compound unit with literals (1, 2, -1) instead of typenum types
