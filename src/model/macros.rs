@@ -100,8 +100,8 @@ macro_rules! unit {
     };
 
     // Derived units based on other unit
-    (derived: $unit_name:ident, ($factor:expr, $base_unit:ty), $abbrev:literal, prefixable) => {
-        unit!(derived: $unit_name, ($factor, $base_unit), $abbrev);
+    (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty),prefixable) => {
+        unit!(derived: $unit_name, $abbrev, ($factor, $base_unit));
 
         impl $crate::model::prefix::Prefixable for $unit_name {}
     };

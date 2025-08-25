@@ -1,7 +1,7 @@
 // Example usage of the Ferrunitas library
 // This serves as both documentation and demonstration of the library's capabilities
 
-use ferrunitas::{model::unit::Unit, system::defs::*};
+use ferrunitas::{model::unit::Unit, system::*};
 
 // ============================================================================
 // Physics Functions with Compile-Time Type Safety
@@ -54,13 +54,13 @@ fn calculate_acceleration(
 fn test_physics_functions() {
     // Test kinetic energy: KE = ½mv²
     let mass = Gram::new(4.0);
-    let velocity = MeterPerSecond::new(6.0);
+    let velocity = MetrePerSecond::new(6.0);
     let ke = calculate_kinetic_energy(mass, velocity);
     assert_eq!(ke.as_unit::<Joule>().raw_value(), 0.072);
 
     // Test work: W = F⋅d
     let force = Newton::new(12.0);
-    let distance = Meter::new(3.5);
+    let distance = Metre::new(3.5);
     let work = calculate_work(force, distance);
     assert_eq!(work.as_unit::<Joule>().raw_value(), 42.0);
     let area1 = distance * distance;
@@ -77,22 +77,22 @@ fn test_physics_functions() {
 
     // Test force: F = ma
     let mass = Gram::new(8.0);
-    let acceleration = MeterPerSecondSquared::new(2.5);
+    let acceleration = MetrePerSecondSquared::new(2.5);
     let force = calculate_force(mass, acceleration);
     assert_eq!(force.as_unit::<Newton>().raw_value(), 0.02);
 
     // Test velocity: v = d/t
-    let distance = Meter::new(200.0);
+    let distance = Metre::new(200.0);
     let time = Second::new(25.0);
     let velocity = calculate_velocity(distance, time);
-    assert_eq!(velocity.as_unit::<MeterPerSecond>().raw_value(), 8.0);
+    assert_eq!(velocity.as_unit::<MetrePerSecond>().raw_value(), 8.0);
 
     // Test acceleration: a = Δv/t
-    let velocity_change = MeterPerSecond::new(30.0);
+    let velocity_change = MetrePerSecond::new(30.0);
     let time = Second::new(6.0);
     let acceleration = calculate_acceleration(velocity_change, time);
     assert_eq!(
-        acceleration.as_unit::<MeterPerSecondSquared>().raw_value(),
+        acceleration.as_unit::<MetrePerSecondSquared>().raw_value(),
         5.0
     );
 }
@@ -154,17 +154,21 @@ fn main() {
     println!("1 foot = {:.2}", Foot::new(1.0).convert::<Inch>());
 
     // Relative unit definitions
-    let distance = Meter::new(2000.0);
+    let distance = Metre::new(2000.0);
     let time = Minute::new(5.0);
     let speed = distance / time;
-    println!("Speed: {:.4}", speed.as_unit::<MeterPerSecond>());
+    println!("Speed: {:.4}", speed.as_unit::<MetrePerSecond>());
     println!(
         "Type of speed: {}",
-        ferrunitas::format_quantity_dims!(<MeterPerSecond as Unit>::Quantity)
+        ferrunitas::format_quantity_dims!(<MetrePerSecond as Unit>::Quantity)
     );
 
-    println!("Speed in km/h: {:.5}", speed.as_unit::<KilometerPerHour>());
-    println!("Speed in knots: {:.5}", speed.as_unit::<Knots>());
+    // Testing
+    println!("{:.2}", HundredweightUS::new(1.0).convert::<Gram>());
+    println!("{:.2}", HundredweightUK::new(1.0).convert::<Gram>());
+
+    println!("Speed in km/h: {:.5}", speed.as_unit::<KilometrePerHour>());
+    println!("Speed in knots: {:.5}", speed.as_unit::<Knot>());
 
     // Demonstrate compile-time safety
     println!();
