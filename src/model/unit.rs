@@ -83,7 +83,7 @@ macro_rules! unit {
         impl $crate::model::prefix::Prefixable for $unit_name {}
     };
 
-    (derived: $unit_name:ident, ($factor:expr, $base_unit:ty), $abbrev:literal) => {
+    (derived: $unit_name:ident, $abbrev:literal, ($factor:expr, $base_unit:ty)) => {
         $crate::model::unit::__inner_macros::__unit!(
             $unit_name,
             <$base_unit as $crate::model::unit::Unit>::Quantity,

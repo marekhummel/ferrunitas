@@ -163,8 +163,8 @@ fn main() {
         ferrunitas::format_quantity_dims!(<MeterPerSecond as Unit>::Quantity)
     );
 
-    // println!("Speed in m/s: {:.5}", speed.as_unit::<MeterPerSecond>());
-    // println!("Speed in knots: {:.5}", speed.as_unit::<Knots>());
+    println!("Speed in km/h: {:.5}", speed.as_unit::<KilometerPerHour>());
+    println!("Speed in knots: {:.5}", speed.as_unit::<Knots>());
 
     // Demonstrate compile-time safety
     println!();

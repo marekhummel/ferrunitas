@@ -66,19 +66,19 @@ unit!(prefix: Millimeter, Milli, Meter);
 // ============================================================================
 
 // Mass units - non-SI
-unit!(derived: Pound, (453.592, Gram), "lb");
-unit!(derived: Ounce, (28.3495, Gram), "oz");
+unit!(derived: Pound, "lb", (453.592, Gram));
+unit!(derived: Ounce, "oz", (28.3495, Gram));
 
 // Length units - non-SI
-unit!(derived: Inch, (2.54, Centimeter), "in");
-unit!(derived: Foot, (12, Inch), "ft");
-unit!(derived: Yard, (3, Foot), "yd");
-unit!(derived: Mile, (1760, Yard), "mi");
-unit!(derived: NauticalMile, (1852, Meter), "nmi");
+unit!(derived: Inch, "in", (2.54, Centimeter));
+unit!(derived: Foot, "ft", (12, Inch));
+unit!(derived: Yard, "yd", (3, Foot));
+unit!(derived: Mile, "mi", (1760, Yard));
+unit!(derived: NauticalMile, "nmi", (1852, Meter));
 
 // Time units - non-SI
-unit!(derived: Minute, (60, Second), "min");
-unit!(derived: Hour, (60, Minute), "hr");
+unit!(derived: Minute, "min", (60, Second));
+unit!(derived: Hour, "hr", (60, Minute));
 
 // ============================================================================
 // Compound Units (defined in terms of base units)
@@ -94,3 +94,4 @@ unit!(compound: MeterCubed, "m³", [(Meter, P3)]);
 
 unit!(compound: Liter, "L", [(Decimeter, P3)], prefixable);
 unit!(compound: Knots, "kn", [(NauticalMile, P1), (Hour, N1)]);
+unit!(compound: KilometerPerHour, "km/h", [(Kilometer, P1), (Hour, N1)]);
