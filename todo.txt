@@ -1,9 +1,6 @@
 - Compund units with factor (avoids some derived ones)
 - Linear conversion for Temperature
-- Kilogram as base, change Gram factor to 1e-3
--> Minimize DERIVED, INCREASE BASE AND QUANTITY
-- Unit tests (all non derived compare to base unit)
-- Add all units and quants
+-> Minimize DERIVED, INCREASE COMPOUND
 
 - Information tech units (bytes and stuff) as well as those prefixes
 - VISIBILITY! (Pub Unit trait and inner Unit trait etc.?)

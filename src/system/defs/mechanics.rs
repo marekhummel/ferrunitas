@@ -2,6 +2,7 @@ use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
+use crate::system::defs::thermodynamics::JoulePerKilogramKelvin;
 use crate::system::prefixes::*;
 use crate::unit;
 use typenum::*;
@@ -102,8 +103,8 @@ unit!(prefix: Kilonewton, Kilo, Newton);
 unit!(prefix: Meganewton, Mega, Newton);
 
 unit!(compound: Dyne, "dyn", [(Gram, P1), (Centimetre, P1), (Second, N2)]);
-unit!(derived: Kilopond, "kp", (9.80665, Newton));
-unit!(derived: PoundForce, "lbf", (4.448_221_615_260_5, Newton));
+unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (9.80665, MetrePerSecondSquared, P1)]);
+unit!(compound: PoundForce, "lbf", [(Pound, P1), (9.80665, MetrePerSecondSquared, P1)]);
 
 // ===========================
 // PRESSURE
@@ -127,7 +128,7 @@ unit!(derived: InchOfWater, "inH2O", (249.0889, Pascal));
 
 unit!(compound: PoundPerSquareInch, "psi", [(PoundForce, P1), (Inch, N2)]);
 unit!(compound: PoundPerSquareFoot, "psf", [(PoundForce, P1), (Foot, N2)]);
-unit!(compound: KilogramForcePerSquareCentimetre, "kgf/cm²", [(Kilopond, P1), (Centimetre, N2)]);
+unit!(compound: KilogramForcePerSquareCentimetre, "kgf/cm²", [(KilogramForce, P1), (Centimetre, N2)]);
 
 // ===========================
 // ENERGY
@@ -148,7 +149,7 @@ unit!(derived: Calorie, "cal", (4.184, Joule); prefixable);
 unit!(prefix: Kilocalorie, Kilo, Calorie);
 
 unit!(derived: ElectronVolt, "eV", (1.602_176_634e-19, Joule));
-unit!(derived: BritishThermalUnit, "BTU", (1055.05585262, Joule); prefixable);
+unit!(compound: BritishThermalUnit, "BTU", [(4186.8, JoulePerKilogramKelvin, P1), (Pound, P1), (5.0 / 9.0, Kelvin, P1)]; prefixable);
 unit!(compound: Erg, "erg", [(Dyne, P1), (Centimetre, P1)]);
 unit!(compound: FootPoundForce, "ft⋅lbf", [(Foot, P1), (PoundForce, P1)]);
 unit!(derived: Therm, "thm", (1e5, BritishThermalUnit));
@@ -165,8 +166,8 @@ unit!(prefix: Megawatt, Mega, Watt);
 unit!(prefix: Gigawatt, Giga, Watt);
 unit!(prefix: Milliwatt, Milli, Watt);
 
-unit!(derived: Horsepower, "hp", (735.499, Watt)); // Try to use advanced compound unit?
-
+unit!(compound: Horsepower, "PS", [(75, KilogramForce, P1), (MetrePerSecond, P1)]);
+unit!(compound: ImperialHorsepower, "bhp", [(550, FootPoundForce, P1), (Second, N1)]);
 // ===========================
 // FREQUENCY
 // ===========================
@@ -299,7 +300,7 @@ mod tests {
     verify_unit!(Kilonewton, Force, 1e3);
     verify_unit!(Meganewton, Force, 1e6);
     verify_unit!(Dyne, Force, 1e-5);
-    verify_unit!(Kilopond, Force, 9.80665);
+    verify_unit!(KilogramForce, Force, 9.80665);
     verify_unit!(PoundForce, Force, 4.44822);
 
     // PRESSURE
@@ -343,7 +344,8 @@ mod tests {
     verify_unit!(Megawatt, Power, 1e6);
     verify_unit!(Gigawatt, Power, 1e9);
     verify_unit!(Milliwatt, Power, 1e-3);
-    verify_unit!(Horsepower, Power, 735.499);
+    verify_unit!(Horsepower, Power, 735.49875);
+    verify_unit!(ImperialHorsepower, Power, 745.699871);
 
     // FREQUENCY
     verify_unit!(Hertz, Frequency, 1.0);

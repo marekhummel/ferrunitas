@@ -51,10 +51,10 @@ pub const NEWTON: Unit = unit! {
     prefix: SIPrefix::None
 };
 
-// Horsepower: 1 hp = 745.7 newton-meter/second
-pub const HORSEPOWER: Unit = Unit {
+// ImperialHorsepower: 1 hp = 745.7 newton-meter/second
+pub const ImperialHorsepower: Unit = Unit {
     quantity: FORCE,
     factor: 745.7,
     prefix: SIPrefix::None,
-    name: "horsepower",
+    name: "ImperialHorsepower",
 };

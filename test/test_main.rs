@@ -6,7 +6,7 @@ mod gemini;
 // mod value;
 
 // use crate::quantity::QUANTITY_REGISTRY;
-// use crate::units::{HORSEPOWER, KILOGRAM, METER, NEWTON, SECOND};
+// use crate::units::{ImperialHorsepower, KILOGRAM, METER, NEWTON, SECOND};
 // use crate::value::Value;
 // use crate::quantity::{EncodedDimensionVector, Quantity};
 

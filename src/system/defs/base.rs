@@ -24,7 +24,6 @@ unit!(prefix: Gigatonne, Giga, Tonne);
 
 unit!(derived: Carat, "ct", (0.2, Gram));
 unit!(derived: Dalton, "Da", (1.660_539_066_60e-24, Gram));
-unit!(derived: UnifiedAtomicMassUnit, "u", (1.660_539_066_60e-24, Gram));
 
 unit!(derived: Ounce, "oz", (28.349_523_125, Gram));
 unit!(derived: Pound, "lb", (16, Ounce));
@@ -180,7 +179,6 @@ mod tests {
     verify_unit!(Gigatonne, Mass, 1e12);
     verify_unit!(Carat, Mass, 0.0002);
     verify_unit!(Dalton, Mass, 1.660_539_066_60e-27);
-    verify_unit!(UnifiedAtomicMassUnit, Mass, 1.660_539_066_60e-27);
     verify_unit!(Ounce, Mass, 0.028349523);
     verify_unit!(Pound, Mass, 0.45359237);
     verify_unit!(Stone, Mass, 6.3502931);

@@ -125,17 +125,17 @@ macro_rules! unit {
     };
 
     // Compound unit (not prefixable by default?)
-    (compound: $unit_name:ident, $abbrev:literal, [$(($units:ty, $exps:ty)),+]; prefixable) => {
-        unit!(compound: $unit_name, $abbrev, [$(($units, $exps)),+]);
+    (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+]; prefixable) => {
+        unit!(compound: $unit_name, $abbrev, [$($components),+]);
 
         impl $crate::model::prefix::Prefixable for $unit_name {}
     };
 
-    (compound: $unit_name:ident, $abbrev:literal, [$(($units:ty, $exps:ty)),+] ) => {
+    (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+] ) => {
         $crate::model::macros::__inner_unit_macros::__compound_unit!(
             $unit_name,
             $abbrev,
-            [Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>, 1.0; $(($units, $exps)),+]
+            [Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>, 1.0; $($components),+]
         );
     };
 
@@ -311,8 +311,17 @@ pub(crate) mod __inner_unit_macros {
             );
         };
 
-        // Recursive case
-        ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; ($unit:ty, $exp:ty) $(, ($units:ty, $exps:ty))*] ) => {
+        // Recursive cases
+        ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; ($unit:ty, $exp:ty) $(, $components:tt)*] ) => {
+            $crate::model::macros::__inner_unit_macros::__compound_unit!(
+                $unit_name,
+                $abbrev,
+                [$quantity_acc, $factor_acc; (1.0, $unit, $exp) $(, $components)*]
+            );
+        };
+
+
+        ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; ($scalar:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
             $crate::model::macros::__inner_unit_macros::__compound_unit!(
                 $unit_name,
                 $abbrev,
@@ -321,9 +330,9 @@ pub(crate) mod __inner_unit_macros {
                         <<$unit as $crate::model::unit::Unit>::Quantity as $crate::model::quantity::TypePow<$exp>>::Output
                     >>::Output,
                     $factor_acc * $crate::model::macros::__inner_unit_macros::powi_const(
-                        <$unit as $crate::model::unit::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
+                        ($scalar as f64) * <$unit as $crate::model::unit::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
                     );
-                    $(($units, $exps)),*
+                    $($components),*
                 ]
             );
         };
