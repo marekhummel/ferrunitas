@@ -1,5 +1,6 @@
 use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
+use crate::system::constants::STANDARD_GRAVITY;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
 use crate::system::defs::thermodynamics::JoulePerKilogramKelvin;
@@ -75,7 +76,7 @@ unit!(compound: Gal, "Gal", [(Centimetre, P1), (Second, N2)]; prefixable);
 // ===========================
 pub type WaveNumber = Quantity<Z0, N1, Z0, Z0, Z0, Z0, Z0>; // L⁻¹
 
-unit!(compound: ReciprocalMeter, "m⁻¹", [(Metre, N1)]);
+unit!(compound: ReciprocalMetre, "m⁻¹", [(Metre, N1)]);
 
 // ===========================
 // DENSITY
@@ -103,8 +104,8 @@ unit!(prefix: Kilonewton, Kilo, Newton);
 unit!(prefix: Meganewton, Mega, Newton);
 
 unit!(compound: Dyne, "dyn", [(Gram, P1), (Centimetre, P1), (Second, N2)]);
-unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (9.80665, MetrePerSecondSquared, P1)]);
-unit!(compound: PoundForce, "lbf", [(Pound, P1), (9.80665, MetrePerSecondSquared, P1)]);
+unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
+unit!(compound: PoundForce, "lbf", [(Pound, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
 
 // ===========================
 // PRESSURE
@@ -116,19 +117,19 @@ unit!(prefix: Kilopascal, Kilo, Pascal);
 unit!(prefix: Megapascal, Mega, Pascal);
 unit!(prefix: Gigapascal, Giga, Pascal);
 
-unit!(derived: Bar, "bar", (1e5, Pascal));
-unit!(derived: Atmosphere, "atm", (101_325, Pascal));
-unit!(derived: TechnicalAtmosphere, "at", (1, KilogramForcePerSquareCentimetre));
-
-unit!(derived: Torr, "Torr", (1.0 / 760.0, Atmosphere));
-unit!(derived: MillimetreOfMercury, "mmHg", (133.322_387_415, Pascal));
-unit!(derived: MillimetreOfWater, "mmH2O", (9.80665, Pascal));
-unit!(derived: InchOfMercury, "inHg", (3386.389, Pascal));
-unit!(derived: InchOfWater, "inH2O", (249.0889, Pascal));
-
 unit!(compound: PoundPerSquareInch, "psi", [(PoundForce, P1), (Inch, N2)]);
 unit!(compound: PoundPerSquareFoot, "psf", [(PoundForce, P1), (Foot, N2)]);
 unit!(compound: KilogramForcePerSquareCentimetre, "kgf/cm²", [(KilogramForce, P1), (Centimetre, N2)]);
+
+unit!(derived: Bar, "bar", (1e5, Pascal));
+unit!(derived: Atmosphere, "atm", (101_325, Pascal));
+unit!(derived: TechnicalAtmosphere, "at", (1, KilogramForcePerSquareCentimetre));
+unit!(derived: Torr, "Torr", (1.0 / 760.0, Atmosphere));
+
+unit!(compound: MillimetreOfMercury, "mmHg", [(13595.1, KilogramPerCubicMetre, P1), (Millimetre, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
+unit!(compound: InchOfMercury, "inHg", [(13595.1, KilogramPerCubicMetre, P1), (Inch, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
+unit!(compound: MillimetreOfWater, "mmH2O", [(999.9720, KilogramPerCubicMetre, P1), (Millimetre, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
+unit!(compound: InchOfWater, "inH2O", [(999.9720, KilogramPerCubicMetre, P1), (Inch, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
 
 // ===========================
 // ENERGY
@@ -148,7 +149,11 @@ unit!(prefix: GigawattHour, Giga, WattHour);
 unit!(derived: Calorie, "cal", (4.184, Joule); prefixable);
 unit!(prefix: Kilocalorie, Kilo, Calorie);
 
-unit!(derived: ElectronVolt, "eV", (1.602_176_634e-19, Joule));
+unit!(derived: ElectronVolt, "eV", (1.602_176_634e-19, Joule); prefixable);
+unit!(prefix: KiloElectronVolt, Kilo, ElectronVolt);
+unit!(prefix: MegaElectronVolt, Mega, ElectronVolt);
+unit!(prefix: GigaElectronVolt, Giga, ElectronVolt);
+
 unit!(compound: BritishThermalUnit, "BTU", [(4186.8, JoulePerKilogramKelvin, P1), (Pound, P1), (5.0 / 9.0, Kelvin, P1)]; prefixable);
 unit!(compound: Erg, "erg", [(Dyne, P1), (Centimetre, P1)]);
 unit!(compound: FootPoundForce, "ft⋅lbf", [(Foot, P1), (PoundForce, P1)]);
@@ -236,6 +241,13 @@ pub type SurfaceTension = Quantity<P1, Z0, N2, Z0, Z0, Z0, Z0>; // M T⁻²
 unit!(compound: NewtonPerMetre, "N/m", [(Newton, P1), (Metre, N1)]);
 unit!(compound: DynePerCentimetre, "dyn/cm", [(Dyne, P1), (Centimetre, N1)]);
 
+// ===========================
+// ACTION
+// ===========================
+pub type Action = Quantity<P1, P2, N1, Z0, Z0, Z0, Z0>; // M L² T⁻¹
+
+unit!(compound: JouleSecond, "J⋅s", [(Joule, P1), (Second, P1)]);
+
 // ==============================================================================
 
 #[cfg(test)]
@@ -285,7 +297,7 @@ mod tests {
     verify_unit!(Gal, Acceleration, 0.01);
 
     // WAVE NUMBER
-    verify_unit!(ReciprocalMeter, WaveNumber, 1.0);
+    verify_unit!(ReciprocalMetre, WaveNumber, 1.0);
 
     // DENSITY
     verify_unit!(KilogramPerCubicMetre, Density, 1.0);
@@ -312,7 +324,7 @@ mod tests {
     verify_unit!(Atmosphere, Pressure, 1.01325e5);
     verify_unit!(TechnicalAtmosphere, Pressure, 9.80665e4);
     verify_unit!(Torr, Pressure, 133.322368);
-    verify_unit!(MillimetreOfMercury, Pressure, 133.3224);
+    verify_unit!(MillimetreOfMercury, Pressure, 133.322_387_415);
     verify_unit!(MillimetreOfWater, Pressure, 9.80665);
     verify_unit!(InchOfMercury, Pressure, 3.386389e3);
     verify_unit!(InchOfWater, Pressure, 2.490889e2);
@@ -332,6 +344,9 @@ mod tests {
     verify_unit!(Calorie, Energy, 4.184);
     verify_unit!(Kilocalorie, Energy, 4.184e3);
     verify_unit!(ElectronVolt, Energy, 1.602176634e-19);
+    verify_unit!(KiloElectronVolt, Energy, 1.602176634e-16);
+    verify_unit!(MegaElectronVolt, Energy, 1.602176634e-13);
+    verify_unit!(GigaElectronVolt, Energy, 1.602176634e-10);
     verify_unit!(BritishThermalUnit, Energy, 1.05505585e3);
     verify_unit!(Erg, Energy, 1e-7);
     verify_unit!(FootPoundForce, Energy, 1.3558);
@@ -382,4 +397,7 @@ mod tests {
     // SURFACE TENSION
     verify_unit!(NewtonPerMetre, SurfaceTension, 1.0);
     verify_unit!(DynePerCentimetre, SurfaceTension, 1e-3);
+
+    // ACTION
+    verify_unit!(JouleSecond, Action, 1.0);
 }

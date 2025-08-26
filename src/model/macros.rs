@@ -178,7 +178,7 @@ pub(crate) mod __inner_unit_macros {
     macro_rules! __unit {
         ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-            pub struct $unit_name(f64);
+            pub struct $unit_name(pub(crate) f64);
 
             impl $crate::model::unit::Unit for $unit_name {
                 type Quantity = $quantity_type;

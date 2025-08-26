@@ -1,6 +1,4 @@
-- Compund units with factor (avoids some derived ones)
 - Linear conversion for Temperature
--> Minimize DERIVED, INCREASE COMPOUND
 
 - Information tech units (bytes and stuff) as well as those prefixes
 - VISIBILITY! (Pub Unit trait and inner Unit trait etc.?)

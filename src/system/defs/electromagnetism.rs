@@ -137,6 +137,14 @@ pub type ChargeDensity = Quantity<Z0, N3, P1, P1, Z0, Z0, Z0>; // L⁻³ T I
 
 unit!(compound: CoulombPerCubicMetre, "C/m³", [(Coulomb, P1), (CubicMetre, N1)]);
 
+// ===========================
+// MAGNETIC MOMENT
+// ===========================
+pub type MagneticMoment = Quantity<Z0, P2, Z0, P1, Z0, Z0, Z0>; // L² I
+
+unit!(compound: AmpereSquareMetre, "A⋅m²", [(Ampere, P1), (SquareMetre, P1)]);
+unit!(compound: JoulePerTesla, "J/T", [(Joule, P1), (Tesla, N1)]);
+
 // ==============================================================================
 
 #[cfg(test)]
@@ -210,4 +218,8 @@ mod tests {
 
     // CHARGE DENSITY
     verify_unit!(CoulombPerCubicMetre, ChargeDensity, 1.0);
+
+    // MAGNETIC MOMENT
+    verify_unit!(AmpereSquareMetre, MagneticMoment, 1.0);
+    verify_unit!(JoulePerTesla, MagneticMoment, 1.0);
 }

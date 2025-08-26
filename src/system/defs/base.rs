@@ -1,5 +1,6 @@
 use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
+use crate::system::defs::mechanics::PoundForce;
 use crate::system::prefixes::*;
 use crate::unit;
 use typenum::*;
@@ -38,7 +39,7 @@ unit!(derived: Grain, "gr", (64.79891, Milligram));
 unit!(derived: Pennyweight, "dwt", (24, Grain));
 unit!(derived: TroyOunce, "oz t", (20, Pennyweight));
 unit!(derived: TroyPound, "lb t", (12, TroyOunce));
-unit!(derived: Slug, "slug", (14.593903, Kilogram));
+unit!(compound: Slug, "slug", [(PoundForce, P1), (Second, P2), (Foot, N1)]);
 
 // ===========================
 // LENGTH

@@ -87,9 +87,9 @@ const fn powi_const(mut base: f64, mut exp: i32) -> f64 {
 
 fn main() {
     #[derive(Debug)]
-    struct MyUnit1;
+    struct MyUnit1(f64);
     #[derive(Debug)]
-    struct MyUnit2;
+    struct MyUnit2(f64);
 
     impl T for MyUnit1 {
         const F: f64 = 2.0;
@@ -99,11 +99,15 @@ fn main() {
         const F: f64 = 3.0;
     }
 
+    const MU: MyUnit1 = MyUnit1(342.0);
+
     unit!(compound: MyCompoundUnit, "MCU", [(MyUnit1, P1), (MyUnit2, P2)]);
     unit!(compound: MyCompoundUnit2, "MCU2", [(2.0, MyUnit1, P1), (MyUnit2, P2)]; prefixable);
+    // unit!(compound: MyCompoundUnit3, "MCU3", [(3.0, MyUnit1, P1), (MU)]);
 
     println!("a = {:?}", MyUnit1::F);
     println!("b = {:?}", MyUnit2::F);
     println!("x = {:?}", MyCompoundUnit::F);
     println!("y = {:?}", MyCompoundUnit2::F);
+    // println!("z = {:?}", MyCompoundUnit3::F);
 }
