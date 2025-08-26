@@ -1,9 +1,9 @@
 use std::fmt;
 use std::ops::{Add, Div, Mul, Sub};
 
-// ============================================================================
+// ===========================
 // Runtime Dimensional System
-// ============================================================================
+// ===========================
 
 // Dimensional vector stored at runtime: [M, L, T, I, Θ, N, J]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -107,9 +107,9 @@ impl fmt::Display for Dimensions {
     }
 }
 
-// ============================================================================
+// ===========================
 // Quantity - Holds value and dimensions at runtime
-// ============================================================================
+// ===========================
 
 #[derive(Debug, Clone, Copy)]
 pub struct Quantity {
@@ -190,9 +190,9 @@ impl fmt::Display for Quantity {
     }
 }
 
-// ============================================================================
+// ===========================
 // Generic Arithmetic - Works for ANY combination!
-// ============================================================================
+// ===========================
 
 impl Mul for Quantity {
     type Output = Quantity;
@@ -246,9 +246,9 @@ impl Sub for Quantity {
     }
 }
 
-// ============================================================================
+// ===========================
 // Macro for SI Prefixes
-// ============================================================================
+// ===========================
 
 macro_rules! define_prefix {
     ($name:ident, $factor:expr) => {
@@ -261,9 +261,9 @@ macro_rules! define_prefix {
     };
 }
 
-// ============================================================================
+// ===========================
 // Unit Functions - Return Quantity directly
-// ============================================================================
+// ===========================
 
 // Base units (using gram as mass base to avoid SI anomaly)
 pub fn gram(value: f64) -> Quantity {
@@ -354,9 +354,9 @@ pub fn to_watts(q: Quantity) -> Result<f64, String> {
     Ok(q.value / 1000.0)
 }
 
-// ============================================================================
+// ===========================
 // Physics Functions with Dimensional Validation
-// ============================================================================
+// ===========================
 
 // Function that expects specific dimensions
 pub fn calculate_kinetic_energy(mass: Quantity, velocity: Quantity) -> Result<Quantity, String> {
@@ -404,9 +404,9 @@ pub fn calculate_power_from_work_and_time(
     Ok(work / time)
 }
 
-// ============================================================================
+// ===========================
 // Main Function - Usage Examples
-// ============================================================================
+// ===========================
 
 fn main() -> Result<(), String> {
     println!("=== Runtime Dimensional Analysis Test ===\n");

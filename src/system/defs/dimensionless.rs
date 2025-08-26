@@ -3,9 +3,9 @@ use crate::model::unit::Unit;
 use crate::unit;
 use typenum::*;
 
-// ============================================================================
+// ===========================
 // DIMENSIONLESS QUANTITIES
-// ============================================================================
+// ===========================
 pub type Dimensionless = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
 unit!(base: One, Dimensionless, "1");
 
@@ -40,3 +40,46 @@ unit!(derived: Nibble, "nibble", (4, Bit));
 // Additional logarithmic units
 unit!(derived: Bel, "B", (std::f64::consts::LN_10, Neper));
 unit!(derived: Octave, "oct", (std::f64::consts::LN_2, Neper));
+
+// ==============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::verify_unit;
+
+    // BASE DIMENSIONLESS
+    verify_unit!(One, Dimensionless, 1.0);
+
+    // PLANE ANGLE
+    verify_unit!(Radian, Dimensionless, 1.0);
+    verify_unit!(Degree, Dimensionless, 0.017453292519943295);
+    verify_unit!(Gradian, Dimensionless, 0.015707963267948967);
+
+    // SOLID ANGLE
+    verify_unit!(Steradian, Dimensionless, 1.0);
+
+    // LOGARITHMIC RATIOS
+    verify_unit!(Neper, Dimensionless, 1.0);
+    verify_unit!(Decibel, Dimensionless, 0.23025850929940457);
+
+    // PERCENTAGE UNITS
+    verify_unit!(Percent, Dimensionless, 0.01);
+    verify_unit!(Permille, Dimensionless, 0.001);
+    verify_unit!(PartsPerMillion, Dimensionless, 1e-6);
+    verify_unit!(PartsPerBillion, Dimensionless, 1e-9);
+
+    // ADDITIONAL ANGULAR UNITS
+    verify_unit!(Turn, Dimensionless, std::f64::consts::TAU);
+    verify_unit!(Arcminute, Dimensionless, 0.0002908882086657216);
+    verify_unit!(Arcsecond, Dimensionless, 4.84813681109536e-6);
+
+    // INFORMATION UNITS
+    verify_unit!(Bit, Dimensionless, 1.0);
+    verify_unit!(Byte, Dimensionless, 8.0);
+    verify_unit!(Nibble, Dimensionless, 4.0);
+
+    // ADDITIONAL LOGARITHMIC UNITS
+    verify_unit!(Bel, Dimensionless, std::f64::consts::LN_10);
+    verify_unit!(Octave, Dimensionless, std::f64::consts::LN_2);
+}

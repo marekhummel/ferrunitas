@@ -6,9 +6,9 @@ use crate::model::unit::Unit;
 use num_traits::Inv;
 use typenum::{Diff, Integer, Negate, NonZero, Prod, Sum, ToInt};
 
-// ============================================================================
+// ===========================
 // Type-Level Dimensional System
-// ============================================================================
+// ===========================
 
 /// Marker trait for all quantity types, used in macros
 pub trait QuantityMarker {
@@ -106,9 +106,9 @@ where
     }
 }
 
-// ============================================================================
+// ===========================
 // Generic Arithmetic Operations
-// ============================================================================
+// ===========================
 
 // Addition - only works for same dimensions
 impl<M, L, T, I, Theta, N, J> Add for Quantity<M, L, T, I, Theta, N, J> {

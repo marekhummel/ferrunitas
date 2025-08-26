@@ -2,6 +2,7 @@
 - Linear conversion for Temperature
 - Kilogram as base, change Gram factor to 1e-3
 -> Minimize DERIVED, INCREASE BASE AND QUANTITY
+- Unit tests (all non derived compare to base unit)
 - Add all units and quants
 
 - Information tech units (bytes and stuff) as well as those prefixes
@@ -10,5 +11,4 @@
 - Deps
 - README
 - Compound unit with literals (1, 2, -1) instead of typenum types
-- Radians, bytes, steradians?
-- Unit tests (all non derived compare to base unit)
+- Radians, bytes, steradians not dimless?

@@ -3,9 +3,9 @@
 
 use ferrunitas::{model::unit::Unit, system::*};
 
-// ============================================================================
+// ===========================
 // Physics Functions with Compile-Time Type Safety
-// ============================================================================
+// ===========================
 
 fn calculate_kinetic_energy(
     mass: impl Unit<Quantity = Mass>,
