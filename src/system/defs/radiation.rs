@@ -12,12 +12,12 @@ use typenum::*;
 // ===========================
 pub type Radioactivity = Quantity<Z0, Z0, N1, Z0, Z0, Z0, Z0>; // T⁻¹
 
-unit!(compound: Becquerel, "Bq", [(Second, N1)], prefixable);
+unit!(compound: Becquerel, "Bq", [(Second, N1)]; prefixable);
 unit!(prefix: Kilobecquerel, Kilo, Becquerel);
 unit!(prefix: Megabecquerel, Mega, Becquerel);
 unit!(prefix: Gigabecquerel, Giga, Becquerel);
 
-unit!(derived: Curie, "Ci", (3.7e10, Becquerel), prefixable);
+unit!(derived: Curie, "Ci", (3.7e10, Becquerel); prefixable);
 unit!(prefix: Millicurie, Milli, Curie);
 unit!(prefix: Microcurie, Micro, Curie);
 unit!(prefix: Nanocurie, Nano, Curie);
@@ -28,7 +28,7 @@ unit!(prefix: Picocurie, Pico, Curie);
 // ===========================
 pub type AbsorbedDose = Quantity<Z0, P2, N2, Z0, Z0, Z0, Z0>; // L² T⁻²
 
-unit!(compound: Gray, "Gy", [(Joule, P1), (Kilogram, N1)], prefixable);
+unit!(compound: Gray, "Gy", [(Joule, P1), (Kilogram, N1)]; prefixable);
 unit!(prefix: Milligray, Milli, Gray);
 unit!(prefix: Microgray, Micro, Gray);
 
@@ -39,11 +39,11 @@ unit!(derived: Rad, "rad", (0.01, Gray));
 // ===========================
 pub type EquivalentDose = Quantity<Z0, P2, N2, Z0, Z0, Z0, Z0>; // L² T⁻²
 
-unit!(compound: Sievert, "Sv", [(Joule, P1), (Kilogram, N1)], prefixable);
+unit!(compound: Sievert, "Sv", [(Joule, P1), (Kilogram, N1)]; prefixable);
 unit!(prefix: Millisievert, Milli, Sievert);
 unit!(prefix: Microsievert, Micro, Sievert);
 
-unit!(derived: Rem, "rem", (0.01, Sievert), prefixable);
+unit!(derived: Rem, "rem", (0.01, Sievert); prefixable);
 unit!(prefix: Millirem, Milli, Rem);
 
 // ===========================
@@ -68,7 +68,7 @@ unit!(compound: RadPerSecond, "rad/s", [(Rad, P1), (Second, N1)]);
 // ===========================
 pub type CrossSection = Quantity<Z0, P2, Z0, Z0, Z0, Z0, Z0>; // L²
 
-unit!(derived: Barn, "b", (1e-28, SquareMetre), prefixable);
+unit!(derived: Barn, "b", (1e-28, SquareMetre); prefixable);
 unit!(prefix: Millibarn, Milli, Barn);
 unit!(prefix: Microbarn, Micro, Barn);
 unit!(prefix: Nanobarn, Nano, Barn);

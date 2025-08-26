@@ -89,27 +89,27 @@ macro_rules! format_quantity_dims {
 #[macro_export]
 macro_rules! unit {
     // Base units (prefixable or not)
-    (base: $unit_name:ident, $quantity_type:ty, $abbrev:literal; $($optionals:tt)* ) => {
-        unit!(base_internal: $unit_name, $quantity_type, $abbrev, 1.0; $($optionals)*);
+    (base: $unit_name:ident, $abbrev:literal, $quantity_type:ty; $($optionals:tt)* ) => {
+        unit!(base_internal: $unit_name, $abbrev, $quantity_type, 1.0; $($optionals)*);
     };
 
 
-    (base_internal: $unit_name:ident, $quantity_type:ty, $abbrev:literal, $factor:expr; prefixable, $($optionals:tt)*) => {
-        unit!(base_internal: $unit_name, $quantity_type, $abbrev, $factor; $($optionals)*);
+    (base_internal: $unit_name:ident, $abbrev:literal, $quantity_type:ty, $factor:expr; prefixable, $($optionals:tt)*) => {
+        unit!(base_internal: $unit_name, $abbrev, $quantity_type, $factor; $($optionals)*);
 
         impl $crate::model::prefix::Prefixable for $unit_name {}
     };
 
-    (base_internal: $unit_name:ident, $quantity_type:ty, $abbrev:literal, $factor:expr; factor = $new_factor:expr, $($optionals:tt)*) => {
-        unit!(base_internal: $unit_name, $quantity_type, $abbrev, $new_factor; $($optionals)*);
+    (base_internal: $unit_name:ident, $abbrev:literal, $quantity_type:ty, $factor:expr; factor = $new_factor:expr, $($optionals:tt)*) => {
+        unit!(base_internal: $unit_name, $abbrev, $quantity_type, $new_factor; $($optionals)*);
     };
 
-    (base_internal: $unit_name:ident, $quantity_type:ty, $abbrev:literal, $factor:expr;) => {
+    (base_internal: $unit_name:ident, $abbrev:literal, $quantity_type:ty, $factor:expr;) => {
         $crate::model::macros::__inner_unit_macros::__unit!($unit_name, $quantity_type, $factor, $abbrev);
     };
 
     // Derived units based on other unit
-    (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty),prefixable) => {
+    (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty); prefixable) => {
         unit!(derived: $unit_name, $abbrev, ($factor, $base_unit));
 
         impl $crate::model::prefix::Prefixable for $unit_name {}
@@ -125,7 +125,7 @@ macro_rules! unit {
     };
 
     // Compound unit (not prefixable by default?)
-    (compound: $unit_name:ident, $abbrev:literal, [$(($units:ty, $exps:ty)),+], prefixable) => {
+    (compound: $unit_name:ident, $abbrev:literal, [$(($units:ty, $exps:ty)),+]; prefixable) => {
         unit!(compound: $unit_name, $abbrev, [$(($units, $exps)),+]);
 
         impl $crate::model::prefix::Prefixable for $unit_name {}

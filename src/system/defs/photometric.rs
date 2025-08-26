@@ -19,14 +19,14 @@ unit!(compound: Lumen, "lm", [(Candela, P1), (Steradian, P1)]);
 // ===========================
 pub type Luminance = Quantity<Z0, N2, Z0, Z0, Z0, Z0, P1>; // L⁻² J
 
-unit!(compound: Nit, "nt", [(Candela, P1), (Metre, N2)], prefixable);
+unit!(compound: Nit, "nt", [(Candela, P1), (Metre, N2)]; prefixable);
 
 // ===========================
 // ILLUMINANCE
 // ===========================
 pub type Illuminance = Quantity<Z0, N2, Z0, Z0, Z0, Z0, P1>; // L⁻² J
 
-unit!(compound: Lux, "lx", [(Lumen, P1), (SquareMetre, N1)], prefixable);
+unit!(compound: Lux, "lx", [(Lumen, P1), (SquareMetre, N1)]; prefixable);
 unit!(prefix: Kilolux, Kilo, Lux);
 
 // ===========================
@@ -34,8 +34,7 @@ unit!(prefix: Kilolux, Kilo, Lux);
 // ===========================
 pub type OpticalPower = Quantity<Z0, N1, Z0, Z0, Z0, Z0, Z0>; // L⁻¹
 
-// Note: Dioptre is already defined in mechanics as wave number, but it's the same dimension
-unit!(compound: DioptreOptical, "D", [(Metre, N1)]);
+unit!(compound: Dioptre, "D", [(Metre, N1)]);
 
 // ===========================
 // LUMINOUS ENERGY
@@ -106,7 +105,7 @@ mod tests {
     verify_unit!(Kilolux, Illuminance, 1000.0);
 
     // OPTICAL POWER
-    verify_unit!(DioptreOptical, OpticalPower, 1.0);
+    verify_unit!(Dioptre, OpticalPower, 1.0);
 
     // LUMINOUS ENERGY
     verify_unit!(LumenSecond, LuminousEnergy, 1.0);

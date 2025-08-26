@@ -9,7 +9,7 @@ use typenum::*;
 // ===========================
 pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
 
-unit!(base: Gram, Mass, "g"; prefixable, factor = 0.001,); // To counteract mass anomaly, that kilogram is base for mass
+unit!(base: Gram, "g", Mass; prefixable, factor = 0.001,); // To counteract mass anomaly, that kilogram is base for mass
 
 unit!(prefix: Kilogram, Kilo, Gram);
 unit!(prefix: Milligram, Milli, Gram);
@@ -17,7 +17,7 @@ unit!(prefix: Microgram, Micro, Gram);
 unit!(prefix: Nanogram, Nano, Gram);
 unit!(prefix: Picogram, Pico, Gram);
 
-unit!(derived: Tonne, "t", (1000, Kilogram), prefixable);
+unit!(derived: Tonne, "t", (1000, Kilogram); prefixable);
 unit!(prefix: Kilotonne, Kilo, Tonne);
 unit!(prefix: Megatonne, Mega, Tonne);
 unit!(prefix: Gigatonne, Giga, Tonne);
@@ -46,7 +46,7 @@ unit!(derived: Slug, "slug", (14.593903, Kilogram));
 // ===========================
 pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
 
-unit!(base: Metre, Length, "m"; prefixable,);
+unit!(base: Metre, "m", Length; prefixable,);
 
 unit!(prefix: Kilometre, Kilo, Metre);
 unit!(prefix: Decimetre, Deci, Metre);
@@ -65,14 +65,14 @@ unit!(derived: Chain, "ch", (4, Rod));
 unit!(derived: Furlong, "fur", (10, Chain));
 unit!(derived: League, "lea", (3, Mile));
 
-unit!(derived: NauticalMile, "NM", (1852, Metre), prefixable);
+unit!(derived: NauticalMile, "NM", (1852, Metre); prefixable);
 unit!(prefix: KilonauticalMile, Kilo, NauticalMile);
 
 // Astronomical and very small length units
 unit!(derived: Angstrom, "Å", (1e-10, Metre));
 unit!(derived: AstronomicalUnit, "AU", (149_597_870_700i64, Metre));
 unit!(derived: LightYear, "ly", (9_460_730_472_580_800i64, Metre));
-unit!(derived: Parsec, "pc", (30_856_775_814_914_400i64, Metre), prefixable);
+unit!(derived: Parsec, "pc", (30_856_775_814_914_400i64, Metre); prefixable);
 unit!(prefix: Kiloparsec, Kilo, Parsec);
 unit!(prefix: Megaparsec, Mega, Parsec);
 
@@ -81,7 +81,7 @@ unit!(prefix: Megaparsec, Mega, Parsec);
 // ===========================
 pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
 
-unit!(base: Second, Time, "s"; prefixable,);
+unit!(base: Second, "s", Time; prefixable,);
 
 unit!(prefix: Millisecond, Milli, Second);
 unit!(prefix: Microsecond, Micro, Second);
@@ -118,7 +118,7 @@ unit!(derived: BesselianYear, "Besselian year", (365.242198781, Day)); // Astron
 // ===========================
 pub type ElectricCurrent = Quantity<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
 
-unit!(base: Ampere, ElectricCurrent, "A"; prefixable,);
+unit!(base: Ampere, "A", ElectricCurrent; prefixable,);
 
 unit!(prefix: Milliampere, Milli, Ampere);
 unit!(prefix: Microampere, Micro, Ampere);
@@ -129,7 +129,7 @@ unit!(prefix: Kiloampere, Kilo, Ampere);
 // ===========================
 pub type Temperature = Quantity<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
 
-unit!(base: Kelvin, Temperature, "K"; prefixable,);
+unit!(base: Kelvin, "K", Temperature; prefixable,);
 
 unit!(prefix: Millikelvin, Milli, Kelvin);
 unit!(prefix: Microkelvin, Micro, Kelvin);
@@ -143,7 +143,7 @@ unit!(prefix: Microkelvin, Micro, Kelvin);
 // ===========================
 pub type AmountOfSubstance = Quantity<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
 
-unit!(base: Mole, AmountOfSubstance, "mol"; prefixable,);
+unit!(base: Mole, "mol", AmountOfSubstance; prefixable,);
 
 unit!(prefix: Millimole, Milli, Mole);
 unit!(prefix: Micromole, Micro, Mole);
@@ -154,7 +154,7 @@ unit!(prefix: Nanomole, Nano, Mole);
 // ===========================
 pub type LuminousIntensity = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
 
-unit!(base: Candela, LuminousIntensity, "cd"; prefixable,);
+unit!(base: Candela, "cd", LuminousIntensity; prefixable,);
 
 unit!(prefix: Millicandela, Milli, Candela);
 unit!(prefix: Microcandela, Micro, Candela);

@@ -32,7 +32,7 @@ unit!(compound: MicromolePerLitre, "μmol/L", [(Micromole, P1), (Litre, N1)]);
 // ===========================
 pub type CatalyticActivity = Quantity<Z0, Z0, N1, Z0, Z0, P1, Z0>; // N T⁻1
 
-unit!(compound: Katal, "kat", [(Mole, P1), (Second, N1)], prefixable);
+unit!(compound: Katal, "kat", [(Mole, P1), (Second, N1)]; prefixable);
 unit!(prefix: Microkatal, Micro, Katal);
 unit!(prefix: Nanokatal, Nano, Katal);
 

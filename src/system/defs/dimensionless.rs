@@ -7,7 +7,7 @@ use typenum::*;
 // DIMENSIONLESS QUANTITIES
 // ===========================
 pub type Dimensionless = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
-unit!(base: One, Dimensionless, "1";);
+unit!(base: One, "1", Dimensionless;);
 
 // Plane angle
 unit!(derived: Radian, "rad", (1, One));
@@ -34,7 +34,7 @@ unit!(derived: Arcsecond, "arcsec", (std::f64::consts::PI / 648000.0, Radian));
 
 // Information units (TODO)
 unit!(derived: Bit, "bit", (1, One));
-unit!(derived: Byte, "B", (8, Bit), prefixable);
+unit!(derived: Byte, "B", (8, Bit); prefixable);
 unit!(derived: Nibble, "nibble", (4, Bit));
 
 // Additional logarithmic units

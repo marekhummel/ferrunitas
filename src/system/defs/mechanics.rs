@@ -11,12 +11,12 @@ use typenum::*;
 // ===========================
 pub type Area = Quantity<Z0, P2, Z0, Z0, Z0, Z0, Z0>; // L²
 
-unit!(compound: SquareMetre, "m²", [(Metre, P2)], prefixable);
+unit!(compound: SquareMetre, "m²", [(Metre, P2)]; prefixable);
 unit!(compound: SquareKilometre, "km²", [(Kilometre, P2)]);
 unit!(compound: SquareCentimetre, "cm²", [(Centimetre, P2)]);
 unit!(compound: SquareMillimetre, "mm²", [(Millimetre, P2)]);
 
-unit!(derived: Are, "a", (100, SquareMetre), prefixable);
+unit!(derived: Are, "a", (100, SquareMetre); prefixable);
 unit!(prefix: Hectare, Hecto, Are);
 
 // ===========================
@@ -25,7 +25,7 @@ unit!(prefix: Hectare, Hecto, Are);
 pub type Volume = Quantity<Z0, P3, Z0, Z0, Z0, Z0, Z0>; // L³
 
 unit!(compound: CubicMetre, "m³", [(Metre, P3)]);
-unit!(compound: Litre, "L", [(Decimetre, P3)], prefixable);
+unit!(compound: Litre, "L", [(Decimetre, P3)]; prefixable);
 unit!(prefix: Millilitre, Milli, Litre);
 unit!(prefix: Centilitre, Centi, Litre);
 unit!(prefix: Decilitre, Deci, Litre);
@@ -67,14 +67,14 @@ unit!(compound: Knot, "kn", [(NauticalMile, P1), (Hour, N1)]);
 pub type Acceleration = Quantity<Z0, P1, N2, Z0, Z0, Z0, Z0>; // L T⁻²
 
 unit!(compound: MetrePerSecondSquared, "m/s²", [(Metre, P1), (Second, N2)]);
-unit!(compound: Gal, "Gal", [(Centimetre, P1), (Second, N2)], prefixable);
+unit!(compound: Gal, "Gal", [(Centimetre, P1), (Second, N2)]; prefixable);
 
 // ===========================
 // WAVE NUMBER
 // ===========================
 pub type WaveNumber = Quantity<Z0, N1, Z0, Z0, Z0, Z0, Z0>; // L⁻¹
 
-unit!(compound: Dioptre, "dpt", [(Metre, N1)], prefixable);
+unit!(compound: ReciprocalMeter, "m⁻¹", [(Metre, N1)]);
 
 // ===========================
 // DENSITY
@@ -97,7 +97,7 @@ unit!(compound: CubicCentimetrePerGram, "cm³/g", [(CubicCentimetre, P1), (Gram,
 // ===========================
 pub type Force = Quantity<P1, P1, N2, Z0, Z0, Z0, Z0>; // M L T⁻²
 
-unit!(compound: Newton, "N", [(Kilogram, P1), (Metre, P1), (Second, N2)], prefixable);
+unit!(compound: Newton, "N", [(Kilogram, P1), (Metre, P1), (Second, N2)]; prefixable);
 unit!(prefix: Kilonewton, Kilo, Newton);
 unit!(prefix: Meganewton, Mega, Newton);
 
@@ -110,7 +110,7 @@ unit!(derived: PoundForce, "lbf", (4.448_221_615_260_5, Newton));
 // ===========================
 pub type Pressure = Quantity<P1, N1, N2, Z0, Z0, Z0, Z0>; // M L⁻¹ T⁻²
 
-unit!(compound: Pascal, "Pa", [(Newton, P1), (Metre, N2)], prefixable);
+unit!(compound: Pascal, "Pa", [(Newton, P1), (Metre, N2)]; prefixable);
 unit!(prefix: Kilopascal, Kilo, Pascal);
 unit!(prefix: Megapascal, Mega, Pascal);
 unit!(prefix: Gigapascal, Giga, Pascal);
@@ -134,21 +134,21 @@ unit!(compound: KilogramForcePerSquareCentimetre, "kgf/cm²", [(Kilopond, P1), (
 // ===========================
 pub type Energy = Quantity<P1, P2, N2, Z0, Z0, Z0, Z0>; // M L² T⁻²
 
-unit!(compound: Joule, "J", [(Newton, P1), (Metre, P1)], prefixable);
+unit!(compound: Joule, "J", [(Newton, P1), (Metre, P1)]; prefixable);
 unit!(prefix: Kilojoule, Kilo, Joule);
 unit!(prefix: Megajoule, Mega, Joule);
 unit!(prefix: Gigajoule, Giga, Joule);
 
-unit!(compound: WattHour, "Wh", [(Watt, P1), (Hour, P1)], prefixable);
+unit!(compound: WattHour, "Wh", [(Watt, P1), (Hour, P1)]; prefixable);
 unit!(prefix: KilowattHour, Kilo, WattHour);
 unit!(prefix: MegawattHour, Mega, WattHour);
 unit!(prefix: GigawattHour, Giga, WattHour);
 
-unit!(derived: Calorie, "cal", (4.184, Joule), prefixable);
+unit!(derived: Calorie, "cal", (4.184, Joule); prefixable);
 unit!(prefix: Kilocalorie, Kilo, Calorie);
 
 unit!(derived: ElectronVolt, "eV", (1.602_176_634e-19, Joule));
-unit!(derived: BritishThermalUnit, "BTU", (1055.05585262, Joule), prefixable);
+unit!(derived: BritishThermalUnit, "BTU", (1055.05585262, Joule); prefixable);
 unit!(compound: Erg, "erg", [(Dyne, P1), (Centimetre, P1)]);
 unit!(compound: FootPoundForce, "ft⋅lbf", [(Foot, P1), (PoundForce, P1)]);
 unit!(derived: Therm, "thm", (1e5, BritishThermalUnit));
@@ -159,7 +159,7 @@ unit!(derived: Quad, "quad", (1e15, BritishThermalUnit));
 // ===========================
 pub type Power = Quantity<P1, P2, N3, Z0, Z0, Z0, Z0>; // M L² T⁻³
 
-unit!(compound: Watt, "W", [(Joule, P1), (Second, N1)], prefixable);
+unit!(compound: Watt, "W", [(Joule, P1), (Second, N1)]; prefixable);
 unit!(prefix: Kilowatt, Kilo, Watt);
 unit!(prefix: Megawatt, Mega, Watt);
 unit!(prefix: Gigawatt, Giga, Watt);
@@ -172,7 +172,7 @@ unit!(derived: Horsepower, "hp", (735.499, Watt)); // Try to use advanced compou
 // ===========================
 pub type Frequency = Quantity<Z0, Z0, N1, Z0, Z0, Z0, Z0>; // T⁻¹
 
-unit!(compound: Hertz, "Hz", [(Second, N1)], prefixable);
+unit!(compound: Hertz, "Hz", [(Second, N1)]; prefixable);
 unit!(prefix: Kilohertz, Kilo, Hertz);
 unit!(prefix: Megahertz, Mega, Hertz);
 unit!(prefix: Gigahertz, Giga, Hertz);
@@ -215,7 +215,7 @@ unit!(compound: KilogramSquareMetre, "kg·m²", [(Kilogram, P1), (SquareMetre, P
 pub type DynamicViscosity = Quantity<P1, N1, N1, Z0, Z0, Z0, Z0>; // M L⁻¹ T⁻¹
 
 unit!(compound: PascalSecond, "Pa·s", [(Pascal, P1), (Second, P1)]);
-unit!(compound: Poise, "P", [(Dyne, P1), (Second, P1), (Centimetre, N2)], prefixable);
+unit!(compound: Poise, "P", [(Dyne, P1), (Second, P1), (Centimetre, N2)]; prefixable);
 unit!(prefix: Centipoise, Centi, Poise);
 
 // ===========================
@@ -224,7 +224,7 @@ unit!(prefix: Centipoise, Centi, Poise);
 pub type KinematicViscosity = Quantity<Z0, P2, N1, Z0, Z0, Z0, Z0>; // L² T⁻¹
 
 unit!(compound: SquareMetrePerSecond, "m²/s", [(SquareMetre, P1), (Second, N1)]);
-unit!(compound: Stokes, "St", [(SquareCentimetre, P1), (Second, N1)], prefixable);
+unit!(compound: Stokes, "St", [(SquareCentimetre, P1), (Second, N1)]; prefixable);
 unit!(prefix: Centistokes, Centi, Stokes);
 
 // ===========================
@@ -284,7 +284,7 @@ mod tests {
     verify_unit!(Gal, Acceleration, 0.01);
 
     // WAVE NUMBER
-    verify_unit!(Dioptre, WaveNumber, 1.0);
+    verify_unit!(ReciprocalMeter, WaveNumber, 1.0);
 
     // DENSITY
     verify_unit!(KilogramPerCubicMetre, Density, 1.0);

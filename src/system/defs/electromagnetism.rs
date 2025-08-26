@@ -10,7 +10,7 @@ use typenum::*;
 // ===========================
 pub type Charge = Quantity<Z0, Z0, P1, P1, Z0, Z0, Z0>; // T I
 
-unit!(compound: Coulomb, "C", [(Second, P1), (Ampere, P1)], prefixable);
+unit!(compound: Coulomb, "C", [(Second, P1), (Ampere, P1)]; prefixable);
 unit!(prefix: Millicoulomb, Milli, Coulomb);
 unit!(prefix: Microcoulomb, Micro, Coulomb);
 unit!(prefix: Nanocoulomb, Nano, Coulomb);
@@ -20,7 +20,7 @@ unit!(prefix: Nanocoulomb, Nano, Coulomb);
 // ===========================
 pub type Potential = Quantity<P1, P2, N3, N1, Z0, Z0, Z0>; // M L² T⁻³ I⁻¹
 
-unit!(compound: Volt, "V", [(Watt, P1), (Ampere, N1)], prefixable);
+unit!(compound: Volt, "V", [(Watt, P1), (Ampere, N1)]; prefixable);
 unit!(prefix: Millivolt, Milli, Volt);
 unit!(prefix: Microvolt, Micro, Volt);
 unit!(prefix: Kilovolt, Kilo, Volt);
@@ -31,7 +31,7 @@ unit!(prefix: Megavolt, Mega, Volt);
 // ===========================
 pub type Capacitance = Quantity<N1, N2, P4, P2, Z0, Z0, Z0>; // M⁻¹ L⁻² T⁴ I²
 
-unit!(compound: Farad, "F", [(Coulomb, P1), (Volt, N1)], prefixable);
+unit!(compound: Farad, "F", [(Coulomb, P1), (Volt, N1)]; prefixable);
 unit!(prefix: Millifarad, Milli, Farad);
 unit!(prefix: Microfarad, Micro, Farad);
 unit!(prefix: Nanofarad, Nano, Farad);
@@ -42,7 +42,7 @@ unit!(prefix: Picofarad, Pico, Farad);
 // ===========================
 pub type Resistance = Quantity<P1, P2, N3, N2, Z0, Z0, Z0>; // M L² T⁻³ I⁻²
 
-unit!(compound: Ohm, "Ω", [(Volt, P1), (Ampere, N1)], prefixable);
+unit!(compound: Ohm, "Ω", [(Volt, P1), (Ampere, N1)]; prefixable);
 unit!(prefix: Milliohm, Milli, Ohm);
 unit!(prefix: Kiloohm, Kilo, Ohm);
 unit!(prefix: Megaohm, Mega, Ohm);
@@ -52,7 +52,7 @@ unit!(prefix: Megaohm, Mega, Ohm);
 // ===========================
 pub type Conductance = Quantity<N1, N2, P3, P2, Z0, Z0, Z0>; // M⁻¹ L⁻² T³ I²
 
-unit!(compound: Siemens, "S", [(Ohm, N1)], prefixable);
+unit!(compound: Siemens, "S", [(Ohm, N1)]; prefixable);
 unit!(prefix: Millisiemens, Milli, Siemens);
 unit!(prefix: Microsiemens, Micro, Siemens);
 
@@ -61,14 +61,14 @@ unit!(prefix: Microsiemens, Micro, Siemens);
 // ===========================
 pub type MagneticFlux = Quantity<P1, P2, N2, N1, Z0, Z0, Z0>; // M L² T⁻² I⁻¹
 
-unit!(compound: Weber, "Wb", [(Volt, P1), (Second, P1)], prefixable);
+unit!(compound: Weber, "Wb", [(Volt, P1), (Second, P1)]; prefixable);
 
 // ===========================
 // MAGNETIC FLUX DENSITY
 // ===========================
 pub type MagneticFluxDensity = Quantity<P1, Z0, N2, N1, Z0, Z0, Z0>; // M T⁻² I⁻¹
 
-unit!(compound: Tesla, "T", [(Weber, P1), (Metre, N2)], prefixable);
+unit!(compound: Tesla, "T", [(Weber, P1), (Metre, N2)]; prefixable);
 
 unit!(derived: Gauss, "G", (1e-4, Tesla));
 
@@ -77,7 +77,7 @@ unit!(derived: Gauss, "G", (1e-4, Tesla));
 // ===========================
 pub type Inductance = Quantity<P1, P2, N2, N2, Z0, Z0, Z0>; // M L² T⁻² I⁻²
 
-unit!(compound: Henry, "H", [(Weber, P1), (Ampere, N1)], prefixable);
+unit!(compound: Henry, "H", [(Weber, P1), (Ampere, N1)]; prefixable);
 unit!(prefix: Millihenry, Milli, Henry);
 unit!(prefix: Microhenry, Micro, Henry);
 
