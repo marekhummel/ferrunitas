@@ -74,25 +74,25 @@ mod tests {
     use crate::verify_unit;
 
     // HEAT CAPACITY / ENTROPY
-    verify_unit!(JoulePerKelvin, HeatCapacity, 1000.0);
-    verify_unit!(JoulePerKelvin, Entropy, 1000.0);
+    verify_unit!(JoulePerKelvin, HeatCapacity, 1.0);
+    verify_unit!(JoulePerKelvin, Entropy, 1.0);
 
     // SPECIFIC HEAT CAPACITY
     verify_unit!(JoulePerKilogramKelvin, SpecificHeat, 1.0);
-    verify_unit!(KilojoulePerKilogramKelvin, SpecificHeat, 1000.0);
+    verify_unit!(KilojoulePerKilogramKelvin, SpecificHeat, 1e3);
 
     // THERMAL CONDUCTIVITY
-    verify_unit!(WattPerMetreKelvin, ThermalConductivity, 1000.0);
-    verify_unit!(MilliwattPerMetreKelvin, ThermalConductivity, 1.0);
+    verify_unit!(WattPerMetreKelvin, ThermalConductivity, 1.0);
+    verify_unit!(MilliwattPerMetreKelvin, ThermalConductivity, 1e-3);
 
     // THERMAL RESISTANCE
-    verify_unit!(KelvinPerWatt, ThermalResistance, 0.001);
+    verify_unit!(KelvinPerWatt, ThermalResistance, 1.0);
 
     // THERMAL RESISTIVITY
-    verify_unit!(MetreKelvinPerWatt, ThermalResistivity, 0.001);
+    verify_unit!(MetreKelvinPerWatt, ThermalResistivity, 1.0);
 
     // HEAT TRANSFER COEFFICIENT
-    verify_unit!(WattPerSquareMetreKelvin, HeatTransferCoefficient, 1000.0);
+    verify_unit!(WattPerSquareMetreKelvin, HeatTransferCoefficient, 1.0);
 
     // THERMAL EXPANSION COEFFICIENT
     verify_unit!(PerKelvin, ThermalExpansionCoefficient, 1.0);

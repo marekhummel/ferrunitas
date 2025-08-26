@@ -151,59 +151,59 @@ mod tests {
     verify_unit!(Nanocoulomb, Charge, 1e-9);
 
     // ELECTRIC POTENTIAL
-    verify_unit!(Volt, Potential, 1000.0);
-    verify_unit!(Millivolt, Potential, 1.0);
-    verify_unit!(Microvolt, Potential, 1e-3);
-    verify_unit!(Kilovolt, Potential, 1e6);
-    verify_unit!(Megavolt, Potential, 1e9);
+    verify_unit!(Volt, Potential, 1.0);
+    verify_unit!(Millivolt, Potential, 1e-3);
+    verify_unit!(Microvolt, Potential, 1e-6);
+    verify_unit!(Kilovolt, Potential, 1e3);
+    verify_unit!(Megavolt, Potential, 1e6);
 
     // CAPACITANCE
-    verify_unit!(Farad, Capacitance, 1e-3);
-    verify_unit!(Millifarad, Capacitance, 1e-6);
-    verify_unit!(Microfarad, Capacitance, 1e-9);
-    verify_unit!(Nanofarad, Capacitance, 1e-12);
-    verify_unit!(Picofarad, Capacitance, 1e-15);
+    verify_unit!(Farad, Capacitance, 1.0);
+    verify_unit!(Millifarad, Capacitance, 1e-3);
+    verify_unit!(Microfarad, Capacitance, 1e-6);
+    verify_unit!(Nanofarad, Capacitance, 1e-9);
+    verify_unit!(Picofarad, Capacitance, 1e-12);
 
     // RESISTANCE
-    verify_unit!(Ohm, Resistance, 1000.0);
-    verify_unit!(Milliohm, Resistance, 1.0);
-    verify_unit!(Kiloohm, Resistance, 1e6);
-    verify_unit!(Megaohm, Resistance, 1e9);
+    verify_unit!(Ohm, Resistance, 1.0);
+    verify_unit!(Milliohm, Resistance, 1e-3);
+    verify_unit!(Kiloohm, Resistance, 1e3);
+    verify_unit!(Megaohm, Resistance, 1e6);
 
     // CONDUCTANCE
-    verify_unit!(Siemens, Conductance, 0.001);
-    verify_unit!(Millisiemens, Conductance, 1e-6);
-    verify_unit!(Microsiemens, Conductance, 1e-9);
+    verify_unit!(Siemens, Conductance, 1.0);
+    verify_unit!(Millisiemens, Conductance, 1e-3);
+    verify_unit!(Microsiemens, Conductance, 1e-6);
 
     // MAGNETIC FLUX
-    verify_unit!(Weber, MagneticFlux, 1000.0);
+    verify_unit!(Weber, MagneticFlux, 1.0);
 
     // MAGNETIC FLUX DENSITY
-    verify_unit!(Tesla, MagneticFluxDensity, 1000.0);
-    verify_unit!(Gauss, MagneticFluxDensity, 1e-1);
+    verify_unit!(Tesla, MagneticFluxDensity, 1.0);
+    verify_unit!(Gauss, MagneticFluxDensity, 1e-4);
 
     // INDUCTANCE
-    verify_unit!(Henry, Inductance, 1000.0);
-    verify_unit!(Millihenry, Inductance, 1.0);
-    verify_unit!(Microhenry, Inductance, 1e-3);
+    verify_unit!(Henry, Inductance, 1.0);
+    verify_unit!(Millihenry, Inductance, 1e-3);
+    verify_unit!(Microhenry, Inductance, 1e-6);
 
     // ELECTRIC FIELD STRENGTH
-    verify_unit!(VoltPerMetre, ElectricField, 1000.0);
+    verify_unit!(VoltPerMetre, ElectricField, 1.0);
 
     // MAGNETIC FIELD STRENGTH
     verify_unit!(AmperePerMetre, MagneticFieldStrength, 1.0);
 
     // ELECTRIC CONDUCTIVITY
-    verify_unit!(SiemensPerMetre, ElectricConductivity, 0.001);
+    verify_unit!(SiemensPerMetre, ElectricConductivity, 1.0);
 
     // ELECTRIC DISPLACEMENT FIELD
     verify_unit!(CoulombPerSquareMetre, ElectricDisplacement, 1.0);
 
     // PERMITTIVITY
-    verify_unit!(FaradPerMetre, Permittivity, 0.001);
+    verify_unit!(FaradPerMetre, Permittivity, 1.0);
 
     // PERMEABILITY
-    verify_unit!(HenryPerMetre, Permeability, 1000.0);
+    verify_unit!(HenryPerMetre, Permeability, 1.0);
 
     // CURRENT DENSITY
     verify_unit!(AmperePerSquareMetre, CurrentDensity, 1.0);

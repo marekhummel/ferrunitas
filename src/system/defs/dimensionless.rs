@@ -7,7 +7,7 @@ use typenum::*;
 // DIMENSIONLESS QUANTITIES
 // ===========================
 pub type Dimensionless = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
-unit!(base: One, Dimensionless, "1");
+unit!(base: One, Dimensionless, "1";);
 
 // Plane angle
 unit!(derived: Radian, "rad", (1, One));

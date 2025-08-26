@@ -9,7 +9,7 @@ use typenum::*;
 // ===========================
 pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
 
-unit!(base: Gram, Mass, "g", prefixable);
+unit!(base: Gram, Mass, "g"; prefixable, factor = 0.001,); // To counteract mass anomaly, that kilogram is base for mass
 
 unit!(prefix: Kilogram, Kilo, Gram);
 unit!(prefix: Milligram, Milli, Gram);
@@ -46,7 +46,7 @@ unit!(derived: Slug, "slug", (14.593903, Kilogram));
 // ===========================
 pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
 
-unit!(base: Metre, Length, "m", prefixable);
+unit!(base: Metre, Length, "m"; prefixable,);
 
 unit!(prefix: Kilometre, Kilo, Metre);
 unit!(prefix: Decimetre, Deci, Metre);
@@ -81,7 +81,7 @@ unit!(prefix: Megaparsec, Mega, Parsec);
 // ===========================
 pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
 
-unit!(base: Second, Time, "s", prefixable);
+unit!(base: Second, Time, "s"; prefixable,);
 
 unit!(prefix: Millisecond, Milli, Second);
 unit!(prefix: Microsecond, Micro, Second);
@@ -118,7 +118,7 @@ unit!(derived: BesselianYear, "Besselian year", (365.242198781, Day)); // Astron
 // ===========================
 pub type ElectricCurrent = Quantity<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
 
-unit!(base: Ampere, ElectricCurrent, "A", prefixable);
+unit!(base: Ampere, ElectricCurrent, "A"; prefixable,);
 
 unit!(prefix: Milliampere, Milli, Ampere);
 unit!(prefix: Microampere, Micro, Ampere);
@@ -129,7 +129,7 @@ unit!(prefix: Kiloampere, Kilo, Ampere);
 // ===========================
 pub type Temperature = Quantity<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
 
-unit!(base: Kelvin, Temperature, "K", prefixable);
+unit!(base: Kelvin, Temperature, "K"; prefixable,);
 
 unit!(prefix: Millikelvin, Milli, Kelvin);
 unit!(prefix: Microkelvin, Micro, Kelvin);
@@ -143,7 +143,7 @@ unit!(prefix: Microkelvin, Micro, Kelvin);
 // ===========================
 pub type AmountOfSubstance = Quantity<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
 
-unit!(base: Mole, AmountOfSubstance, "mol", prefixable);
+unit!(base: Mole, AmountOfSubstance, "mol"; prefixable,);
 
 unit!(prefix: Millimole, Milli, Mole);
 unit!(prefix: Micromole, Micro, Mole);
@@ -154,7 +154,7 @@ unit!(prefix: Nanomole, Nano, Mole);
 // ===========================
 pub type LuminousIntensity = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
 
-unit!(base: Candela, LuminousIntensity, "cd", prefixable);
+unit!(base: Candela, LuminousIntensity, "cd"; prefixable,);
 
 unit!(prefix: Millicandela, Milli, Candela);
 unit!(prefix: Microcandela, Micro, Candela);
@@ -168,31 +168,31 @@ mod tests {
     use crate::verify_unit;
 
     // MASS
-    verify_unit!(Gram, Mass, 1.0);
-    verify_unit!(Kilogram, Mass, 1000.0);
-    verify_unit!(Milligram, Mass, 0.001);
-    verify_unit!(Microgram, Mass, 0.000001);
-    verify_unit!(Nanogram, Mass, 1e-9);
-    verify_unit!(Picogram, Mass, 1e-12);
-    verify_unit!(Tonne, Mass, 1000000.0);
-    verify_unit!(Kilotonne, Mass, 1e9);
-    verify_unit!(Megatonne, Mass, 1e12);
-    verify_unit!(Gigatonne, Mass, 1e15);
-    verify_unit!(Carat, Mass, 0.2);
-    verify_unit!(Dalton, Mass, 1.660_539_066_60e-24);
-    verify_unit!(UnifiedAtomicMassUnit, Mass, 1.660_539_066_60e-24);
-    verify_unit!(Ounce, Mass, 28.349523);
-    verify_unit!(Pound, Mass, 453.59237);
-    verify_unit!(Stone, Mass, 6350.2931);
-    verify_unit!(HundredweightUK, Mass, 50802.34544);
-    verify_unit!(HundredweightUS, Mass, 45359.237);
-    verify_unit!(TonUK, Mass, 1.0160469088e6);
-    verify_unit!(TonUS, Mass, 907184.74);
-    verify_unit!(Grain, Mass, 0.06479891);
-    verify_unit!(Pennyweight, Mass, 1.55517384);
-    verify_unit!(TroyOunce, Mass, 31.10347680);
-    verify_unit!(TroyPound, Mass, 373.24172);
-    verify_unit!(Slug, Mass, 14593.903);
+    verify_unit!(Gram, Mass, 1e-3);
+    verify_unit!(Kilogram, Mass, 1.0);
+    verify_unit!(Milligram, Mass, 1e-6);
+    verify_unit!(Microgram, Mass, 1e-9);
+    verify_unit!(Nanogram, Mass, 1e-12);
+    verify_unit!(Picogram, Mass, 1e-15);
+    verify_unit!(Tonne, Mass, 1e3);
+    verify_unit!(Kilotonne, Mass, 1e6);
+    verify_unit!(Megatonne, Mass, 1e9);
+    verify_unit!(Gigatonne, Mass, 1e12);
+    verify_unit!(Carat, Mass, 0.0002);
+    verify_unit!(Dalton, Mass, 1.660_539_066_60e-27);
+    verify_unit!(UnifiedAtomicMassUnit, Mass, 1.660_539_066_60e-27);
+    verify_unit!(Ounce, Mass, 0.028349523);
+    verify_unit!(Pound, Mass, 0.45359237);
+    verify_unit!(Stone, Mass, 6.3502931);
+    verify_unit!(HundredweightUK, Mass, 50.80234544);
+    verify_unit!(HundredweightUS, Mass, 45.359237);
+    verify_unit!(TonUK, Mass, 1.0160469088e3);
+    verify_unit!(TonUS, Mass, 907.18474);
+    verify_unit!(Grain, Mass, 0.00006479891);
+    verify_unit!(Pennyweight, Mass, 0.00155517384);
+    verify_unit!(TroyOunce, Mass, 0.03110347680);
+    verify_unit!(TroyPound, Mass, 0.37324172);
+    verify_unit!(Slug, Mass, 14.593903);
 
     // LENGTH
     verify_unit!(Metre, Length, 1.0);

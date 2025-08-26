@@ -121,8 +121,8 @@ mod tests {
     verify_unit!(Millirem, EquivalentDose, 1e-5);
 
     // EXPOSURE
-    verify_unit!(CoulombPerKilogram, Exposure, 0.001);
-    verify_unit!(Roentgen, Exposure, 2.58e-7);
+    verify_unit!(CoulombPerKilogram, Exposure, 1.0);
+    verify_unit!(Roentgen, Exposure, 2.58e-4);
 
     // DOSE RATE
     verify_unit!(GrayPerSecond, DoseRate, 1.0);

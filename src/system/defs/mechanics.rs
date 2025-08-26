@@ -287,63 +287,63 @@ mod tests {
     verify_unit!(Dioptre, WaveNumber, 1.0);
 
     // DENSITY
-    verify_unit!(KilogramPerCubicMetre, Density, 1000.0);
-    verify_unit!(GramPerCubicCentimetre, Density, 1000000.0);
+    verify_unit!(KilogramPerCubicMetre, Density, 1.0);
+    verify_unit!(GramPerCubicCentimetre, Density, 1e3);
 
     // SPECIFIC VOLUME
-    verify_unit!(CubicMetrePerKilogram, SpecificVolume, 0.001);
-    verify_unit!(CubicCentimetrePerGram, SpecificVolume, 1e-6);
+    verify_unit!(CubicMetrePerKilogram, SpecificVolume, 1.0);
+    verify_unit!(CubicCentimetrePerGram, SpecificVolume, 1e-3);
 
     // FORCE
-    verify_unit!(Newton, Force, 1000.0);
-    verify_unit!(Kilonewton, Force, 1e6);
-    verify_unit!(Meganewton, Force, 1e9);
-    verify_unit!(Dyne, Force, 1e-2);
-    verify_unit!(Kilopond, Force, 9806.65);
-    verify_unit!(PoundForce, Force, 4448.22);
+    verify_unit!(Newton, Force, 1.0);
+    verify_unit!(Kilonewton, Force, 1e3);
+    verify_unit!(Meganewton, Force, 1e6);
+    verify_unit!(Dyne, Force, 1e-5);
+    verify_unit!(Kilopond, Force, 9.80665);
+    verify_unit!(PoundForce, Force, 4.44822);
 
     // PRESSURE
-    verify_unit!(Pascal, Pressure, 1000.0);
-    verify_unit!(Kilopascal, Pressure, 1e6);
-    verify_unit!(Megapascal, Pressure, 1e9);
-    verify_unit!(Gigapascal, Pressure, 1e12);
-    verify_unit!(Bar, Pressure, 1e8);
-    verify_unit!(Atmosphere, Pressure, 1.01325e8);
-    verify_unit!(TechnicalAtmosphere, Pressure, 9.80665e7);
-    verify_unit!(Torr, Pressure, 133322.368);
-    verify_unit!(MillimetreOfMercury, Pressure, 133322.4);
-    verify_unit!(MillimetreOfWater, Pressure, 9806.65);
-    verify_unit!(InchOfMercury, Pressure, 3.386389e6);
-    verify_unit!(InchOfWater, Pressure, 249088.9);
-    verify_unit!(PoundPerSquareInch, Pressure, 6.8947573e6);
-    verify_unit!(PoundPerSquareFoot, Pressure, 4.788025899e4);
-    verify_unit!(KilogramForcePerSquareCentimetre, Pressure, 9.80665e7);
+    verify_unit!(Pascal, Pressure, 1.0);
+    verify_unit!(Kilopascal, Pressure, 1e3);
+    verify_unit!(Megapascal, Pressure, 1e6);
+    verify_unit!(Gigapascal, Pressure, 1e9);
+    verify_unit!(Bar, Pressure, 1e5);
+    verify_unit!(Atmosphere, Pressure, 1.01325e5);
+    verify_unit!(TechnicalAtmosphere, Pressure, 9.80665e4);
+    verify_unit!(Torr, Pressure, 133.322368);
+    verify_unit!(MillimetreOfMercury, Pressure, 133.3224);
+    verify_unit!(MillimetreOfWater, Pressure, 9.80665);
+    verify_unit!(InchOfMercury, Pressure, 3.386389e3);
+    verify_unit!(InchOfWater, Pressure, 2.490889e2);
+    verify_unit!(PoundPerSquareInch, Pressure, 6.8947573e3);
+    verify_unit!(PoundPerSquareFoot, Pressure, 4.788025899e1);
+    verify_unit!(KilogramForcePerSquareCentimetre, Pressure, 9.80665e4);
 
     // ENERGY
-    verify_unit!(Joule, Energy, 1000.0);
-    verify_unit!(Kilojoule, Energy, 1e6);
-    verify_unit!(Megajoule, Energy, 1e9);
-    verify_unit!(Gigajoule, Energy, 1e12);
-    verify_unit!(WattHour, Energy, 3.6e6);
-    verify_unit!(KilowattHour, Energy, 3.6e9);
-    verify_unit!(MegawattHour, Energy, 3.6e12);
-    verify_unit!(GigawattHour, Energy, 3.6e15);
-    verify_unit!(Calorie, Energy, 4184.0);
-    verify_unit!(Kilocalorie, Energy, 4.184e6);
-    verify_unit!(ElectronVolt, Energy, 1.602176634e-16);
-    verify_unit!(BritishThermalUnit, Energy, 1.05505585e6);
-    verify_unit!(Erg, Energy, 1e-4);
-    verify_unit!(FootPoundForce, Energy, 1355.8);
-    verify_unit!(Therm, Energy, 1.05505585262e11);
-    verify_unit!(Quad, Energy, 1.05505585262e21);
+    verify_unit!(Joule, Energy, 1.0);
+    verify_unit!(Kilojoule, Energy, 1e3);
+    verify_unit!(Megajoule, Energy, 1e6);
+    verify_unit!(Gigajoule, Energy, 1e9);
+    verify_unit!(WattHour, Energy, 3.6e3);
+    verify_unit!(KilowattHour, Energy, 3.6e6);
+    verify_unit!(MegawattHour, Energy, 3.6e9);
+    verify_unit!(GigawattHour, Energy, 3.6e12);
+    verify_unit!(Calorie, Energy, 4.184);
+    verify_unit!(Kilocalorie, Energy, 4.184e3);
+    verify_unit!(ElectronVolt, Energy, 1.602176634e-19);
+    verify_unit!(BritishThermalUnit, Energy, 1.05505585e3);
+    verify_unit!(Erg, Energy, 1e-7);
+    verify_unit!(FootPoundForce, Energy, 1.3558);
+    verify_unit!(Therm, Energy, 1.05505585262e8);
+    verify_unit!(Quad, Energy, 1.05505585262e18);
 
     // POWER
-    verify_unit!(Watt, Power, 1000.0);
-    verify_unit!(Kilowatt, Power, 1e6);
-    verify_unit!(Megawatt, Power, 1e9);
-    verify_unit!(Gigawatt, Power, 1e12);
-    verify_unit!(Milliwatt, Power, 1.0);
-    verify_unit!(Horsepower, Power, 735499.0);
+    verify_unit!(Watt, Power, 1.0);
+    verify_unit!(Kilowatt, Power, 1e3);
+    verify_unit!(Megawatt, Power, 1e6);
+    verify_unit!(Gigawatt, Power, 1e9);
+    verify_unit!(Milliwatt, Power, 1e-3);
+    verify_unit!(Horsepower, Power, 735.499);
 
     // FREQUENCY
     verify_unit!(Hertz, Frequency, 1.0);
@@ -361,16 +361,16 @@ mod tests {
     verify_unit!(RadianPerSecondSquared, AngularAcceleration, 1.0);
 
     // TORQUE
-    verify_unit!(NewtonMetre, Torque, 1000.0);
-    verify_unit!(FootPound, Torque, 1355.8);
+    verify_unit!(NewtonMetre, Torque, 1.0);
+    verify_unit!(FootPound, Torque, 1.3558);
 
     // MOMENT OF INERTIA
-    verify_unit!(KilogramSquareMetre, MomentOfInertia, 1000.0);
+    verify_unit!(KilogramSquareMetre, MomentOfInertia, 1.0);
 
     // DYNAMIC VISCOSITY
-    verify_unit!(PascalSecond, DynamicViscosity, 1000.0);
-    verify_unit!(Poise, DynamicViscosity, 100.0);
-    verify_unit!(Centipoise, DynamicViscosity, 1.0);
+    verify_unit!(PascalSecond, DynamicViscosity, 1.0);
+    verify_unit!(Poise, DynamicViscosity, 1e-1);
+    verify_unit!(Centipoise, DynamicViscosity, 1e-3);
 
     // KINEMATIC VISCOSITY
     verify_unit!(SquareMetrePerSecond, KinematicViscosity, 1.0);
@@ -378,6 +378,6 @@ mod tests {
     verify_unit!(Centistokes, KinematicViscosity, 1e-6);
 
     // SURFACE TENSION
-    verify_unit!(NewtonPerMetre, SurfaceTension, 1000.0);
-    verify_unit!(DynePerCentimetre, SurfaceTension, 1.0);
+    verify_unit!(NewtonPerMetre, SurfaceTension, 1.0);
+    verify_unit!(DynePerCentimetre, SurfaceTension, 1e-3);
 }

@@ -116,18 +116,18 @@ mod tests {
     verify_unit!(LuxSecond, LuminousExposure, 1.0);
 
     // LUMINOUS EFFICACY
-    verify_unit!(LumenPerWatt, LuminousEfficacy, 0.001);
+    verify_unit!(LumenPerWatt, LuminousEfficacy, 1.0);
 
     // RADIANCE
-    verify_unit!(WattPerSquareMetreSteradian, Radiance, 1000.0);
+    verify_unit!(WattPerSquareMetreSteradian, Radiance, 1.0);
 
     // RADIANT INTENSITY
-    verify_unit!(WattPerSteradian, RadiantIntensity, 1000.0);
+    verify_unit!(WattPerSteradian, RadiantIntensity, 1.0);
 
     // IRRADIANCE
-    verify_unit!(WattPerSquareMetre, Irradiance, 1000.0);
+    verify_unit!(WattPerSquareMetre, Irradiance, 1.0);
 
     // SPECTRAL RADIANCE
-    verify_unit!(WattPerSquareMetreMetreSteradian, SpectralRadiance, 1000.0);
-    verify_unit!(WattPerSquareMetreNanometreSteradian, SpectralRadiance, 1e12);
+    verify_unit!(WattPerSquareMetreMetreSteradian, SpectralRadiance, 1.0);
+    verify_unit!(WattPerSquareMetreNanometreSteradian, SpectralRadiance, 1e9);
 }

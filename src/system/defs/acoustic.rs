@@ -35,8 +35,8 @@ mod tests {
     use crate::verify_unit;
 
     // ACOUSTIC IMPEDANCE
-    verify_unit!(Rayl, AcousticImpedance, 1000.0);
+    verify_unit!(Rayl, AcousticImpedance, 1.0);
 
     // SOUND EXPOSURE
-    verify_unit!(PascalSquaredSecond, SoundExposure, 1000000.0);
+    verify_unit!(PascalSquaredSecond, SoundExposure, 1.0);
 }
