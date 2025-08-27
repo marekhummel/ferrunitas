@@ -1,5 +1,5 @@
-// Example usage of the Ferrunitas library
-// This serves as both documentation and demonstration of the library's capabilities
+//! Example usage of the Ferrunitas library regarding functions.
+//! Generally its recommended to stick to quantities within functions, see below
 
 use ferrunitas::{model::unit::Unit, system::*};
 
@@ -33,18 +33,19 @@ fn calculate_force(
     (mass.into_q() * acceleration.into_q()).as_unit()
 }
 
-fn calculate_velocity(
-    distance: impl Unit<Quantity = Length>,
-    time: impl Unit<Quantity = Time>,
-) -> Velocity {
-    distance.into_q() / time.into_q()
+// Accepting any unit but computing with units requires more guards, as they can not be
+// attached to the generic Unit trait yet.
+fn calculate_velocity<L, T>(distance: L, time: T) -> Velocity
+where
+    L: Unit<Quantity = Length> + std::ops::Div<T, Output = Velocity>,
+    T: Unit<Quantity = Time>,
+{
+    distance / time
 }
 
-fn calculate_acceleration(
-    velocity_change: impl Unit<Quantity = Velocity>,
-    time: impl Unit<Quantity = Time>,
-) -> Acceleration {
-    velocity_change.into_q() / time.into_q()
+// Working directly with quantities
+fn calculate_acceleration(velocity_change: Velocity, time: Time) -> Acceleration {
+    velocity_change / time
 }
 
 fn main() {
@@ -100,13 +101,15 @@ fn main() {
         velocity.as_unit::<MetrePerSecond>()
     );
 
-    // Test acceleration: a = Δv/t
-    let velocity_change = MetrePerSecond::new(30.0);
+    // Test acceleration: a = v/t
+    let velocity_start = MetrePerSecond::new(0.0);
+    let velocity_end = MetrePerSecond::new(30.0);
     let time = Second::new(6.0);
-    let acceleration = calculate_acceleration(velocity_change, time);
+    let acceleration = calculate_acceleration((velocity_end - velocity_start).to_q(), time.to_q());
     println!(
-        "Acceleration of velocity change {} over time {}: {:.3}",
-        velocity_change,
+        "Acceleration from {} to {} over time {}: {:.2}",
+        velocity_start,
+        velocity_end,
         time,
         acceleration.as_unit::<MetrePerSecondSquared>()
     );
