@@ -1,6 +1,6 @@
 use ferrunitas::format_quantity_dims;
 use ferrunitas::model::quantity::QuantityMarker;
-use ferrunitas::model::unit::Unit;
+use ferrunitas::model::Unit;
 use ferrunitas::system::*;
 
 fn units_and_quantities() {

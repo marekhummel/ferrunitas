@@ -1,5 +1,4 @@
 - Comments design choices (macro vs generic impl etc.)
-- Example for macros
 
 - Linear conversion for Temperature
 
