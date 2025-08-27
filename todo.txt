@@ -3,6 +3,7 @@
 - Check if "use Unit" needed or just missing in macro
 - Check why unit * unit not possible in functionw
 - Comments design choices (macro vs generic impl etc.)
+- Example for macros
 
 - Linear conversion for Temperature
 
