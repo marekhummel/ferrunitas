@@ -1,6 +1,6 @@
 use std::fmt::{self, Debug};
 use std::marker::PhantomData;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 use crate::model::unit::Unit;
 use num_traits::Inv;
@@ -36,7 +36,7 @@ pub trait IntoUnit: Sized + Clone {
 
 /// Quantity with type-level dimensional signature
 /// Dimensions: [Mass, Length, Time, Current, Temperature, Amount, Luminosity]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Quantity<M, L, T, I, Theta, N, J> {
     /// This value holds the raw f64 value of the quantity, only meant for internal use
     value: f64,
@@ -101,7 +101,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let dim_string = crate::format_quantity_dims!(Self);
         std::fmt::Display::fmt(&self.value, f)?;
-        write!(f, " in [{}]", dim_string)?;
+        write!(f, " [{}]", dim_string)?;
         Ok(())
     }
 }
@@ -119,12 +119,64 @@ impl<M, L, T, I, Theta, N, J> Add for Quantity<M, L, T, I, Theta, N, J> {
     }
 }
 
+impl<M, L, T, I, Theta, N, J> AddAssign for Quantity<M, L, T, I, Theta, N, J> {
+    fn add_assign(&mut self, rhs: Self) {
+        self.value += rhs.value;
+    }
+}
+
+impl<M, L, T, I, Th, N, J, U> Add<U> for Quantity<M, L, T, I, Th, N, J>
+where
+    U: Unit<Quantity = Self>,
+{
+    type Output = Self;
+
+    fn add(self, rhs: U) -> Self::Output {
+        self + rhs.into_q()
+    }
+}
+
+impl<M, L, T, I, Th, N, J, U> AddAssign<U> for Quantity<M, L, T, I, Th, N, J>
+where
+    U: Unit<Quantity = Self>,
+{
+    fn add_assign(&mut self, rhs: U) {
+        *self += rhs.into_q();
+    }
+}
+
 // Subtraction - only works for same dimensions
 impl<M, L, T, I, Theta, N, J> Sub for Quantity<M, L, T, I, Theta, N, J> {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Self::new(self.value - rhs.value)
+    }
+}
+
+impl<M, L, T, I, Theta, N, J> SubAssign for Quantity<M, L, T, I, Theta, N, J> {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.value -= rhs.value;
+    }
+}
+
+impl<M, L, T, I, Th, N, J, U> Sub<U> for Quantity<M, L, T, I, Th, N, J>
+where
+    U: Unit<Quantity = Self>,
+{
+    type Output = Self;
+
+    fn sub(self, rhs: U) -> Self::Output {
+        self - rhs.into_q()
+    }
+}
+
+impl<M, L, T, I, Th, N, J, U> SubAssign<U> for Quantity<M, L, T, I, Th, N, J>
+where
+    U: Unit<Quantity = Self>,
+{
+    fn sub_assign(&mut self, rhs: U) {
+        *self -= rhs.into_q();
     }
 }
 
@@ -155,6 +207,18 @@ where
     }
 }
 
+impl<M, L, T, I, Th, N, J, U> Mul<U> for Quantity<M, L, T, I, Th, N, J>
+where
+    U: Unit,
+    Self: Mul<<U as Unit>::Quantity>,
+{
+    type Output = <Self as Mul<<U as Unit>::Quantity>>::Output;
+
+    fn mul(self, rhs: U) -> Self::Output {
+        self * rhs.into_q()
+    }
+}
+
 // Division - subtracts dimensions at type level
 impl<M1, L1, T1, I1, Theta1, N1, J1, M2, L2, T2, I2, Theta2, N2, J2>
     Div<Quantity<M2, L2, T2, I2, Theta2, N2, J2>> for Quantity<M1, L1, T1, I1, Theta1, N1, J1>
@@ -182,6 +246,18 @@ where
     }
 }
 
+impl<M, L, T, I, Th, N, J, U> Div<U> for Quantity<M, L, T, I, Th, N, J>
+where
+    U: Unit,
+    Self: Div<<U as Unit>::Quantity>,
+{
+    type Output = <Self as Div<<U as Unit>::Quantity>>::Output;
+
+    fn div(self, rhs: U) -> Self::Output {
+        self / rhs.into_q()
+    }
+}
+
 // Scalar multiplication - scales the value but keeps dimensions
 impl<M, L, T, I, Theta, N, J> Mul<f64> for Quantity<M, L, T, I, Theta, N, J> {
     type Output = Self;
@@ -199,12 +275,24 @@ impl<M, L, T, I, Theta, N, J> Mul<Quantity<M, L, T, I, Theta, N, J>> for f64 {
     }
 }
 
+impl<M, L, T, I, Theta, N, J> MulAssign<f64> for Quantity<M, L, T, I, Theta, N, J> {
+    fn mul_assign(&mut self, scalar: f64) {
+        self.value *= scalar;
+    }
+}
+
 // Scalar division - scales the value but keeps dimensions
 impl<M, L, T, I, Theta, N, J> Div<f64> for Quantity<M, L, T, I, Theta, N, J> {
     type Output = Self;
 
     fn div(self, scalar: f64) -> Self::Output {
         Self::new(self.value / scalar)
+    }
+}
+
+impl<M, L, T, I, Theta, N, J> DivAssign<f64> for Quantity<M, L, T, I, Theta, N, J> {
+    fn div_assign(&mut self, scalar: f64) {
+        self.value /= scalar;
     }
 }
 

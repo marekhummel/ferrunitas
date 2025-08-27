@@ -152,9 +152,9 @@ macro_rules! unit {
                 <$base_unit as $crate::model::unit::Unit>::ABBREV
             );
 
-            fn new(value: f64) -> Self {
+            fn new(value: impl Into<f64>) -> Self {
                 $alias {
-                    0: value,
+                    0: value.into(),
                     1: std::marker::PhantomData,
                 }
             }
@@ -185,8 +185,8 @@ pub(crate) mod __inner_unit_macros {
                 const FACTOR: f64 = $factor;
                 const ABBREV: &'static str = $abbrev;
 
-                fn new(value: f64) -> Self {
-                    $unit_name(value)
+                fn new(value: impl Into<f64>) -> Self {
+                    $unit_name(value.into())
                 }
 
                 fn raw_value(&self) -> f64 {
@@ -215,7 +215,7 @@ pub(crate) mod __inner_unit_macros {
         };
     }
 
-    // Implement operations within the same unit (Add and Sub)
+    // Implement operations within the same unit (Add, AddAssign and Sub, SubAssign)
     macro_rules! __impl_ops_within_unit {
         ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
             impl<U> std::ops::$trait<U> for $unit
@@ -226,6 +226,41 @@ pub(crate) mod __inner_unit_macros {
 
                 fn $method(self, rhs: U) -> Self::Output {
                     Self::from_q(self.into_q() $op rhs.into_q())
+                }
+            }
+
+            paste::paste! {
+                impl<U> std::ops::[<$trait Assign>]<U> for $unit
+                where
+                    U: $crate::model::unit::Unit<Quantity = $quantity>,
+                {
+                    fn [<$method _assign>](&mut self, rhs: U) {
+                        // self.0 $assign_op rhs.convert::<Self>().0;
+                        *self = *self $op rhs;
+                    }
+                }
+            }
+
+            impl std::ops::$trait<$quantity> for $unit
+            where
+                <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$quantity>,
+            {
+                type Output = Self;
+
+                fn $method(self, rhs: $quantity) -> Self::Output {
+                    Self::from_q(self.into_q() $op rhs)
+                }
+            }
+
+            paste::paste! {
+                impl std::ops::[<$trait Assign>]<$quantity> for $unit
+                where
+                    <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$quantity>,
+                {
+                    fn [<$method _assign>](&mut self, rhs: $quantity) {
+                        // self.0 $assign_op rhs.convert::<Self>().0;
+                        *self = *self $op rhs;
+                    }
                 }
             }
         };
@@ -243,6 +278,17 @@ pub(crate) mod __inner_unit_macros {
 
                 fn $method(self, rhs: U) -> Self::Output {
                     self.into_q() $op rhs.into_q()
+                }
+            }
+
+            impl<M, L, T, I, Th, N, J> std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>> for $unit
+            where
+                <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>,
+            {
+                type Output = <<$unit as $crate::model::unit::Unit>::Quantity as std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>>::Output;
+
+                fn $method(self, rhs: $crate::model::quantity::Quantity<M, L, T, I, Th, N, J>) -> Self::Output {
+                    self.into_q() $op rhs
                 }
             }
         };
@@ -267,6 +313,12 @@ pub(crate) mod __inner_unit_macros {
                 }
             }
 
+            impl std::ops::MulAssign<f64> for $unit {
+                fn mul_assign(&mut self, scalar: f64) {
+                    self.0 *= scalar;
+                }
+            }
+
             impl std::ops::Div<f64> for $unit {
                 type Output = $unit;
 
@@ -281,6 +333,12 @@ pub(crate) mod __inner_unit_macros {
                 fn div(self, rhs: $unit) -> Self::Output {
                     let rhs_quantity: $quantity = rhs.into_q();
                     self / rhs_quantity
+                }
+            }
+
+            impl std::ops::DivAssign<f64> for $unit {
+                fn div_assign(&mut self, scalar: f64) {
+                    self.0 /= scalar;
                 }
             }
         };

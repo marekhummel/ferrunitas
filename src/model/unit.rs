@@ -29,7 +29,7 @@ pub trait Unit:
     const ABBREV: &'static str;
 
     /// Create a new unit from a raw value
-    fn new(value: f64) -> Self;
+    fn new(value: impl Into<f64>) -> Self;
 
     /// Return internal value
     fn raw_value(&self) -> f64;
