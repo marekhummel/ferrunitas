@@ -29,6 +29,7 @@ mod comparison_traits_tests {
         let mass1 = Kilogram::new(2.0);
         let mass2 = Gram::new(2000.0); // 2 kg in grams
         assert_eq!(mass1.into_q(), mass2.into_q());
+        assert!(mass1.is_equal_to(&mass2))
     }
 
     #[test]

@@ -59,7 +59,7 @@ macro_rules! format_quantity_dims {
                 ),
                 (
                     "Θ",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::Theta as typenum::Integer>::to_i8(),
+                    <<$quantity as $crate::model::quantity::QuantityMarker>::Th as typenum::Integer>::to_i8(),
                 ),
                 (
                     "N",

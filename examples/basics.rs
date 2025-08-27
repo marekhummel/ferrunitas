@@ -22,6 +22,7 @@ fn units_and_quantities() {
         "Quantities can be converted into any unit of the same quantity: {}",
         q.as_unit::<Megavolt>()
     );
+    println!();
 }
 
 fn conversion() {
@@ -48,6 +49,7 @@ fn conversion() {
     println!("Litres to Cubic Centimetres (direct 1): {:.2}", cm3_direct1);
     println!("Litres to Cubic Centimetres (direct 2): {:.2}", cm3_direct2);
     println!("Final Result: {:.2} == {:.2}", l, cm3_direct2);
+    println!();
 }
 
 fn interop_unit_quantity() {
@@ -73,6 +75,22 @@ fn interop_unit_quantity() {
     let f_q3: Force = t * a_q;
     let f_q4: Force = t_q * a_q;
     println!("{} == {} == {} == {}", f_q1, f_q2, f_q3, f_q4);
+    println!();
+}
+
+fn comparison() {
+    let f = Newton::new(10.0);
+    let d = Metre::new(2.0);
+    let p = Watt::new(20.0);
+    let t = Second::new(1.0);
+
+    let e1: FootPoundForce = (f * d).as_unit();
+    let e2: Kilojoule = (p * t).as_unit();
+    let are_equal = e1.is_equal_to(&e2);
+
+    println!("--- Comparison Example ---");
+    println!("Results: {} and {}, Equal?: {}", e1, e2, are_equal);
+    println!();
 }
 
 fn computation_quantities() {
@@ -108,6 +126,7 @@ fn computation_quantities() {
         power,
         power.as_unit::<Kilowatt>()
     );
+    println!();
 }
 
 fn computation_units() {
@@ -134,16 +153,19 @@ fn computation_units() {
     println!("Seconds: {:.3}", second);
     println!("Kilojoules: {:.3}", work.as_unit::<Kilojoule>());
     println!("Kilowatts: {:.6}", power.as_unit::<Kilowatt>());
+    println!();
 }
 
 fn main() {
     units_and_quantities();
-    println!();
-    interop_unit_quantity();
-    println!();
+
     conversion();
-    println!();
+
+    interop_unit_quantity();
+
+    comparison();
+
     computation_quantities();
-    println!();
+
     computation_units();
 }

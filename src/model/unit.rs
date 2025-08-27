@@ -53,6 +53,12 @@ pub trait Unit:
     fn convert<U: Unit<Quantity = Self::Quantity>>(self) -> U {
         self.to_q().to_unit::<U>()
     }
+
+    /// Checks for numerical equality within the quantity, contrary to the default equality check which also requires
+    /// type equality.
+    fn is_equal_to<U: Unit<Quantity = Self::Quantity>>(&self, other: &U) -> bool {
+        self.to_q() == other.to_q()
+    }
 }
 
 /// A compound struct for units with prefixes.
