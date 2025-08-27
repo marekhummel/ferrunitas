@@ -1,0 +1,113 @@
+// Example usage of the Ferrunitas library
+// This serves as both documentation and demonstration of the library's capabilities
+
+use ferrunitas::{model::unit::Unit, system::*};
+
+// Requiring specific units in function signatures
+fn calculate_kinetic_energy(mass: Gram, velocity: MetrePerSecond) -> Joule {
+    (0.5 * mass * velocity * velocity).as_unit()
+}
+
+// Working with quantities and where clause
+fn calculate_work<F, L>(force: F, distance: L) -> Energy
+where
+    F: Unit<Quantity = Force>,
+    L: Unit<Quantity = Length>,
+{
+    force.into_q() * distance.into_q()
+}
+
+// Working with quantities and impl
+fn calculate_power_from_work_and_time(
+    work: impl Unit<Quantity = Energy>,
+    time: impl Unit<Quantity = Time>,
+) -> Power {
+    work.into_q() / time.into_q()
+}
+
+// Accepting any unit of that quantity but returning a specific unit
+fn calculate_force(
+    mass: impl Unit<Quantity = Mass>,
+    acceleration: impl Unit<Quantity = Acceleration>,
+) -> Newton {
+    (mass.into_q() * acceleration.into_q()).as_unit()
+}
+
+fn calculate_velocity(
+    distance: impl Unit<Quantity = Length>,
+    time: impl Unit<Quantity = Time>,
+) -> Velocity {
+    distance.into_q() / time.into_q()
+}
+
+fn calculate_acceleration(
+    velocity_change: impl Unit<Quantity = Velocity>,
+    time: impl Unit<Quantity = Time>,
+) -> Acceleration {
+    velocity_change.into_q() / time.into_q()
+}
+
+fn main() {
+    println!("=== Ferrunitas Library Demo ===\n");
+    // Test kinetic energy: KE = ½mv²
+    let mass = Gram::new(4.0);
+    let velocity = MetrePerSecond::new(6.0);
+    let ke = calculate_kinetic_energy(mass, velocity);
+    println!(
+        "Kinetic Energy of mass {} with velocity {}: {:.4}",
+        mass, velocity, ke
+    );
+
+    // Test work: W = F⋅d
+    let force = Newton::new(12.0);
+    let distance = Metre::new(3.5);
+    let work = calculate_work(force, distance);
+    println!(
+        "Work done by force {} over distance {}: {:.2}",
+        force,
+        distance,
+        work.as_unit::<Joule>()
+    );
+
+    // Test power: P = W/t
+    let work = Joule::new(150.0);
+    let time = Second::new(10.0);
+    let power = calculate_power_from_work_and_time(work, time);
+    println!(
+        "Power of work {} over time {}: {:.2}",
+        work,
+        time,
+        power.as_unit::<Watt>()
+    );
+
+    // Test force: F = ma
+    let mass = Gram::new(8.0);
+    let acceleration = MetrePerSecondSquared::new(2.5);
+    let force = calculate_force(mass, acceleration);
+    println!(
+        "Force of mass {} with acceleration {}: {:.3}",
+        mass, acceleration, force
+    );
+
+    // Test velocity: v = d/t
+    let distance = Metre::new(200.0);
+    let time = Second::new(25.0);
+    let velocity = calculate_velocity(distance, time);
+    println!(
+        "Velocity of distance {} over time {}: {:.3}",
+        distance,
+        time,
+        velocity.as_unit::<MetrePerSecond>()
+    );
+
+    // Test acceleration: a = Δv/t
+    let velocity_change = MetrePerSecond::new(30.0);
+    let time = Second::new(6.0);
+    let acceleration = calculate_acceleration(velocity_change, time);
+    println!(
+        "Acceleration of velocity change {} over time {}: {:.3}",
+        velocity_change,
+        time,
+        acceleration.as_unit::<MetrePerSecondSquared>()
+    );
+}

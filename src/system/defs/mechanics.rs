@@ -27,7 +27,7 @@ unit!(prefix: Hectare, Hecto, Are);
 pub type Volume = Quantity<Z0, P3, Z0, Z0, Z0, Z0, Z0>; // L³
 
 unit!(compound: CubicMetre, "m³", [(Metre, P3)]);
-unit!(compound: Litre, "L", [(Decimetre, P3)]; prefixable);
+unit!(compound: Litre, "l", [(Decimetre, P3)]; prefixable);
 unit!(prefix: Millilitre, Milli, Litre);
 unit!(prefix: Centilitre, Centi, Litre);
 unit!(prefix: Decilitre, Deci, Litre);

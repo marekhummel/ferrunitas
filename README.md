@@ -32,7 +32,7 @@ let time = Time::new(2.0);
 
 // Convert between units
 let kg = Kilogram::from(mass);
-let meters = Meter::from(length);
+let meters = Metre::from(length);
 
 // Physics calculations with compile-time checking
 let velocity = calculate_velocity(length, time);  // v = d/t

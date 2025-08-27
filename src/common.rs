@@ -45,11 +45,11 @@ macro_rules! assert_almost_equal {
 ///
 /// # Examples
 /// ```
-/// ferrunitas::verify_unit!(Meter, Length, 5.0);
+/// ferrunitas::verify_unit!(Metre, Length, 5.0);
 /// ```
 /// This generates:
-/// - `test_meter_quantity()` - validates Meter has Length quantity
-/// - `test_meter_value()` - validates Meter(5.0).into() == Length(5.0)
+/// - `test_meter_quantity()` - validates Metre has Length quantity
+/// - `test_meter_value()` - validates Metre(5.0).into() == Length(5.0)
 #[macro_export]
 macro_rules! verify_unit {
     ($unit:ty, $quantity:ty, $value:expr) => {
