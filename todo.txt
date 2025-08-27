@@ -1,5 +1,3 @@
-- Tests for all ops, both unit to unit, unit with quantity and quantity with qunatity.
-- Check if all units are unit tested
 - Check if "use Unit" needed or just missing in macro
 - Comments design choices (macro vs generic impl etc.)
 - Example for macros
@@ -13,3 +11,4 @@
 - README
 - Compound unit with literals (1, 2, -1) instead of typenum types
 - Radians, bytes, steradians not dimless?
+- Docs with Doctests?
