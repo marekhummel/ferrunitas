@@ -1,5 +1,4 @@
 use crate::model::quantity::Quantity;
-use crate::model::unit::Unit;
 use crate::system::constants::STANDARD_GRAVITY;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;

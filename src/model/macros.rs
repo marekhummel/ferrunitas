@@ -221,11 +221,14 @@ pub(crate) mod __inner_unit_macros {
             impl<U> std::ops::$trait<U> for $unit
             where
                 U: $crate::model::unit::Unit<Quantity = $quantity>,
+                Self: $crate::model::unit::Unit<Quantity = $quantity>,
             {
                 type Output = $unit;
 
                 fn $method(self, rhs: U) -> Self::Output {
-                    Self::from_q(self.into_q() $op rhs.into_q())
+                    $crate::model::unit::Unit::from_q(
+                        $crate::model::unit::Unit::into_q(self) $op $crate::model::unit::Unit::into_q(rhs)
+                    )
                 }
             }
 
@@ -248,7 +251,9 @@ pub(crate) mod __inner_unit_macros {
                 type Output = Self;
 
                 fn $method(self, rhs: $quantity) -> Self::Output {
-                    Self::from_q(self.into_q() $op rhs)
+                    $crate::model::unit::Unit::from_q(
+                        $crate::model::unit::Unit::into_q(self) $op rhs
+                    )
                 }
             }
 
@@ -277,7 +282,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = <$quantity as std::ops::$trait<U::Quantity>>::Output;
 
                 fn $method(self, rhs: U) -> Self::Output {
-                    self.into_q() $op rhs.into_q()
+                    $crate::model::unit::Unit::into_q(self) $op $crate::model::unit::Unit::into_q(rhs)
                 }
             }
 
@@ -288,7 +293,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = <<$unit as $crate::model::unit::Unit>::Quantity as std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>>::Output;
 
                 fn $method(self, rhs: $crate::model::quantity::Quantity<M, L, T, I, Th, N, J>) -> Self::Output {
-                    self.into_q() $op rhs
+                    $crate::model::unit::Unit::into_q(self) $op rhs
                 }
             }
         };
@@ -301,7 +306,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = $unit;
 
                 fn mul(self, rhs: f64) -> Self::Output {
-                    <$unit>::new(self.0 * rhs)
+                    <$unit as $crate::model::unit::Unit>::new(self.0 * rhs)
                 }
             }
 
@@ -309,7 +314,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = $unit;
 
                 fn mul(self, rhs: $unit) -> Self::Output {
-                    <$unit>::new(self * rhs.0)
+                    <$unit as $crate::model::unit::Unit>::new(self * rhs.0)
                 }
             }
 
@@ -323,7 +328,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = $unit;
 
                 fn div(self, rhs: f64) -> Self::Output {
-                    <$unit>::new(self.0 / rhs)
+                    <$unit as $crate::model::unit::Unit>::new(self.0 / rhs)
                 }
             }
 
@@ -331,7 +336,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = <$quantity as num_traits::Inv>::Output;
 
                 fn div(self, rhs: $unit) -> Self::Output {
-                    let rhs_quantity: $quantity = rhs.into_q();
+                    let rhs_quantity: $quantity = <$unit as $crate::model::unit::Unit>::into_q(rhs);
                     self / rhs_quantity
                 }
             }
@@ -350,7 +355,7 @@ pub(crate) mod __inner_unit_macros {
             impl std::fmt::Display for $unit {
                 fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
                     self.0.fmt(f)?;
-                    write!(f, " {}", <$unit>::ABBREV)?;
+                    write!(f, " {}", <$unit as $crate::model::unit::Unit>::ABBREV)?;
                     Ok(())
                 }
             }

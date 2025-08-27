@@ -1,4 +1,3 @@
-- Check if "use Unit" needed or just missing in macro
 - Comments design choices (macro vs generic impl etc.)
 - Example for macros
 

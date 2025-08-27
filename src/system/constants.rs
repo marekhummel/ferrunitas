@@ -2,7 +2,6 @@
 // Note that we cant fully leverage the operators for units due to the const.
 
 use crate::model::quantity::Quantity;
-use crate::model::unit::Unit;
 use crate::system::*;
 use crate::unit;
 use typenum::*;
