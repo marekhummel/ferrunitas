@@ -6,3 +6,6 @@
 mod common;
 pub mod model;
 pub mod system;
+
+// Export Unit on crate level for easy access
+pub use crate::model::unit::Unit;

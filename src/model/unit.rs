@@ -3,9 +3,12 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
-use crate::model::{
-    prefix::{Prefix, Prefixable},
-    quantity::{IntoUnit, QuantityMarker},
+use crate::{
+    common,
+    model::{
+        prefix::{Prefix, Prefixable},
+        quantity::{Dimensioned, QuantityMarker},
+    },
 };
 
 /// Top-Level definition of a Unit. Note that the arithmetic traits are incomplete,
@@ -18,13 +21,14 @@ pub trait Unit:
     + Copy
     + PartialEq
     + PartialOrd
+    + common::Sealed
     + Sized
     + Add<Self, Output = Self>
     + Sub<Self, Output = Self>
     + Mul<f64, Output = Self>
     + Div<f64, Output = Self>
 {
-    type Quantity: QuantityMarker + IntoUnit;
+    type Quantity: Dimensioned + QuantityMarker;
     const FACTOR: f64;
     const ABBREV: &'static str;
 
@@ -51,7 +55,7 @@ pub trait Unit:
 
     /// Directly convert into another unit of same quantity
     fn convert<U: Unit<Quantity = Self::Quantity>>(self) -> U {
-        self.to_q().to_unit::<U>()
+        self.to_q().as_unit::<U>()
     }
 
     /// Checks for numerical equality within the quantity, contrary to the default equality check which also requires
@@ -67,3 +71,5 @@ pub struct PrefixedUnit<P: Prefix, U: Unit + Prefixable>(
     pub(crate) f64,
     pub(crate) std::marker::PhantomData<(P, U)>,
 );
+
+impl<P: Prefix, U: Unit + Prefixable> common::Sealed for PrefixedUnit<P, U> {}

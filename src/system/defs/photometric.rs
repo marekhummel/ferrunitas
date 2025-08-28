@@ -1,9 +1,9 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
 use crate::system::defs::mechanics::*;
 use crate::system::prefixes::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -91,7 +91,7 @@ unit!(compound: WattPerSquareMetreNanometreSteradian, "W/(m²⋅nm⋅sr)", [(Wat
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // LUMINOUS FLUX
     verify_unit!(Lumen, LuminousFlux, 1.0);

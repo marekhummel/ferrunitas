@@ -2,6 +2,7 @@ use std::fmt::{self, Debug};
 use std::marker::PhantomData;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
+use crate::common;
 use crate::model::unit::Unit;
 use num_traits::Inv;
 use typenum::{Diff, Integer, Negate, NonZero, Prod, Sum, ToInt};
@@ -10,27 +11,29 @@ use typenum::{Diff, Integer, Negate, NonZero, Prod, Sum, ToInt};
 // Type-Level Dimensional System
 // ===========================
 
-/// Marker trait for all quantity types, used in macros
-pub trait QuantityMarker: Debug + Clone + Copy + PartialOrd + PartialEq {
-    type M: Debug + Clone + Copy + PartialOrd + PartialEq;
-    type L: Debug + Clone + Copy + PartialOrd + PartialEq;
-    type T: Debug + Clone + Copy + PartialOrd + PartialEq;
-    type I: Debug + Clone + Copy + PartialOrd + PartialEq;
-    type Th: Debug + Clone + Copy + PartialOrd + PartialEq;
-    type N: Debug + Clone + Copy + PartialOrd + PartialEq;
-    type J: Debug + Clone + Copy + PartialOrd + PartialEq;
+/// Dimension marker trait
+pub trait Dimension: Debug + Clone + Copy + PartialOrd + PartialEq {}
+impl<T: typenum::Integer + Debug + PartialOrd> Dimension for T {}
 
-    fn new(value: f64) -> Self; // This should not be public
-    fn raw_value(&self) -> f64;
+/// Marker trait for all quantity types to extract dimensional components
+pub trait Dimensioned: Dimension {
+    type M: Dimension;
+    type L: Dimension;
+    type T: Dimension;
+    type I: Dimension;
+    type Th: Dimension;
+    type N: Dimension;
+    type J: Dimension;
 }
 
-/// Marker trait for types that can be converted into a unit
-pub trait IntoUnit: Sized + Clone {
-    fn into_unit<U: Unit<Quantity = Self>>(self) -> U {
-        U::from_q(self)
-    }
-    fn to_unit<U: Unit<Quantity = Self>>(&self) -> U {
-        self.clone().into_unit()
+/// Marker trait for types to be used in macros, not meant for outside usage
+#[doc(hidden)]
+pub trait QuantityMarker: Sized + Clone + Copy + common::Sealed {
+    fn new(value: f64) -> Self;
+    fn raw_value(&self) -> f64;
+
+    fn as_unit<U: Unit<Quantity = Self>>(&self) -> U {
+        U::from_q(*self)
     }
 }
 
@@ -43,16 +46,61 @@ pub struct Quantity<M, L, T, I, Th, N, J> {
     _phantom: PhantomData<(M, L, T, I, Th, N, J)>,
 }
 
-/// Basic handlers for quantities
-impl<M, L, T, I, Th, N, J> QuantityMarker for Quantity<M, L, T, I, Th, N, J>
+/// Default impl
+impl<M, L, T, I, Th, N, J> Quantity<M, L, T, I, Th, N, J>
 where
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
+{
+    /// Create a new Quantity. Note that this is not intended for public use, use concrete units and convert to quantity.
+    #[doc(hidden)]
+    pub fn new(value: f64) -> Self {
+        Self {
+            value,
+            _phantom: PhantomData,
+        }
+    }
+
+    pub fn raw_value(&self) -> f64 {
+        self.value
+    }
+
+    pub fn as_unit<U: Unit<Quantity = Self>>(self) -> U {
+        U::from_q(self)
+    }
+}
+
+/// Make sure quantity is sealed for QuantityMarker trait
+impl<M, L, T, I, Th, N, J> common::Sealed for Quantity<M, L, T, I, Th, N, J> {}
+
+/// Marker trait
+impl<M, L, T, I, Th, N, J> Dimension for Quantity<M, L, T, I, Th, N, J>
+where
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
+{
+}
+
+/// Basic handlers for quantities
+impl<M, L, T, I, Th, N, J> Dimensioned for Quantity<M, L, T, I, Th, N, J>
+where
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type M = M;
     type L = L;
@@ -61,38 +109,24 @@ where
     type Th = Th;
     type N = N;
     type J = J;
-
-    fn new(value: f64) -> Self {
-        Self {
-            value,
-            _phantom: PhantomData,
-        }
-    }
-    fn raw_value(&self) -> f64 {
-        self.value
-    }
 }
 
 /// Conversion for quantities
-impl<M, L, T, I, Th, N, J> IntoUnit for Quantity<M, L, T, I, Th, N, J>
+impl<M, L, T, I, Th, N, J> QuantityMarker for Quantity<M, L, T, I, Th, N, J>
 where
-    M: Sized + Clone,
-    L: Sized + Clone,
-    T: Sized + Clone,
-    I: Sized + Clone,
-    Th: Sized + Clone,
-    N: Sized + Clone,
-    J: Sized + Clone,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
-    fn into_unit<U: Unit<Quantity = Self>>(self) -> U {
-        U::from_q(self)
+    fn new(value: f64) -> Self {
+        Self::new(value)
     }
-}
-
-/// Quick conversion without trait
-impl<M, L, T, I, Th, N, J> Quantity<M, L, T, I, Th, N, J> {
-    pub fn as_unit<U: Unit<Quantity = Self>>(self) -> U {
-        U::from_q(self)
+    fn raw_value(&self) -> f64 {
+        self.raw_value()
     }
 }
 
@@ -122,13 +156,13 @@ where
 // Addition - only works for same dimensions
 impl<M, L, T, I, Th, N, J> Add for Quantity<M, L, T, I, Th, N, J>
 where
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Self;
 
@@ -146,13 +180,13 @@ impl<M, L, T, I, Th, N, J> AddAssign for Quantity<M, L, T, I, Th, N, J> {
 impl<M, L, T, I, Th, N, J, U> Add<U> for Quantity<M, L, T, I, Th, N, J>
 where
     U: Unit<Quantity = Self>,
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Self;
 
@@ -164,6 +198,13 @@ where
 impl<M, L, T, I, Th, N, J, U> AddAssign<U> for Quantity<M, L, T, I, Th, N, J>
 where
     U: Unit<Quantity = Self>,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     fn add_assign(&mut self, rhs: U) {
         *self += rhs.into_q();
@@ -173,13 +214,13 @@ where
 // Subtraction - only works for same dimensions
 impl<M, L, T, I, Th, N, J> Sub for Quantity<M, L, T, I, Th, N, J>
 where
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Self;
 
@@ -197,13 +238,13 @@ impl<M, L, T, I, Th, N, J> SubAssign for Quantity<M, L, T, I, Th, N, J> {
 impl<M, L, T, I, Th, N, J, U> Sub<U> for Quantity<M, L, T, I, Th, N, J>
 where
     U: Unit<Quantity = Self>,
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Self;
 
@@ -215,6 +256,13 @@ where
 impl<M, L, T, I, Th, N, J, U> SubAssign<U> for Quantity<M, L, T, I, Th, N, J>
 where
     U: Unit<Quantity = Self>,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     fn sub_assign(&mut self, rhs: U) {
         *self -= rhs.into_q();
@@ -232,13 +280,13 @@ where
     Th1: Add<Th2>,
     N1: Add<N2>,
     J1: Add<J2>,
-    Sum<M1, M2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Sum<L1, L2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Sum<T1, T2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Sum<I1, I2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Sum<Th1, Th2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Sum<N1, N2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Sum<J1, J2>: Debug + Clone + Copy + PartialOrd + PartialEq,
+    Sum<M1, M2>: Dimension,
+    Sum<L1, L2>: Dimension,
+    Sum<T1, T2>: Dimension,
+    Sum<I1, I2>: Dimension,
+    Sum<Th1, Th2>: Dimension,
+    Sum<N1, N2>: Dimension,
+    Sum<J1, J2>: Dimension,
 {
     type Output = Quantity<
         Sum<M1, M2>,
@@ -258,7 +306,15 @@ where
 impl<M, L, T, I, Th, N, J, U> Mul<U> for Quantity<M, L, T, I, Th, N, J>
 where
     U: Unit,
+    U::Quantity: QuantityMarker,
     Self: Mul<<U as Unit>::Quantity>,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = <Self as Mul<<U as Unit>::Quantity>>::Output;
 
@@ -278,13 +334,13 @@ where
     Th1: Sub<Th2>,
     N1: Sub<N2>,
     J1: Sub<J2>,
-    Diff<M1, M2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Diff<L1, L2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Diff<T1, T2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Diff<I1, I2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Diff<Th1, Th2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Diff<N1, N2>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Diff<J1, J2>: Debug + Clone + Copy + PartialOrd + PartialEq,
+    Diff<M1, M2>: Dimension,
+    Diff<L1, L2>: Dimension,
+    Diff<T1, T2>: Dimension,
+    Diff<I1, I2>: Dimension,
+    Diff<Th1, Th2>: Dimension,
+    Diff<N1, N2>: Dimension,
+    Diff<J1, J2>: Dimension,
 {
     type Output = Quantity<
         Diff<M1, M2>,
@@ -304,7 +360,15 @@ where
 impl<M, L, T, I, Th, N, J, U> Div<U> for Quantity<M, L, T, I, Th, N, J>
 where
     U: Unit,
+    U::Quantity: QuantityMarker,
     Self: Div<<U as Unit>::Quantity>,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = <Self as Div<<U as Unit>::Quantity>>::Output;
 
@@ -316,13 +380,13 @@ where
 // Scalar multiplication - scales the value but keeps dimensions
 impl<M, L, T, I, Th, N, J> Mul<f64> for Quantity<M, L, T, I, Th, N, J>
 where
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Self;
 
@@ -333,13 +397,13 @@ where
 
 impl<M, L, T, I, Th, N, J> Mul<Quantity<M, L, T, I, Th, N, J>> for f64
 where
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Quantity<M, L, T, I, Th, N, J>;
 
@@ -357,13 +421,13 @@ impl<M, L, T, I, Th, N, J> MulAssign<f64> for Quantity<M, L, T, I, Th, N, J> {
 // Scalar division - scales the value but keeps dimensions
 impl<M, L, T, I, Th, N, J> Div<f64> for Quantity<M, L, T, I, Th, N, J>
 where
-    M: Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
 {
     type Output = Self;
 
@@ -381,20 +445,20 @@ impl<M, L, T, I, Th, N, J> DivAssign<f64> for Quantity<M, L, T, I, Th, N, J> {
 // Division with inverse - Scale and inverse at the same time
 impl<M, L, T, I, Th, N, J> Div<Quantity<M, L, T, I, Th, N, J>> for f64
 where
-    M: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<M>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<L>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<T>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<I>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<Th>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<N>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<J>: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Neg + Dimension,
+    L: Neg + Dimension,
+    T: Neg + Dimension,
+    I: Neg + Dimension,
+    Th: Neg + Dimension,
+    N: Neg + Dimension,
+    J: Neg + Dimension,
+    Negate<M>: Dimension,
+    Negate<L>: Dimension,
+    Negate<T>: Dimension,
+    Negate<I>: Dimension,
+    Negate<Th>: Dimension,
+    Negate<N>: Dimension,
+    Negate<J>: Dimension,
 {
     type Output =
         Quantity<Negate<M>, Negate<L>, Negate<T>, Negate<I>, Negate<Th>, Negate<N>, Negate<J>>;
@@ -407,20 +471,20 @@ where
 // Inverse quantity
 impl<M, L, T, I, Th, N, J> Inv for Quantity<M, L, T, I, Th, N, J>
 where
-    M: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    L: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    T: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    I: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    Th: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    N: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    J: Neg + Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<M>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<L>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<T>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<I>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<Th>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<N>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Negate<J>: Debug + Clone + Copy + PartialOrd + PartialEq,
+    M: Neg + Dimension,
+    L: Neg + Dimension,
+    T: Neg + Dimension,
+    I: Neg + Dimension,
+    Th: Neg + Dimension,
+    N: Neg + Dimension,
+    J: Neg + Dimension,
+    Negate<M>: Dimension,
+    Negate<L>: Dimension,
+    Negate<T>: Dimension,
+    Negate<I>: Dimension,
+    Negate<Th>: Dimension,
+    Negate<N>: Dimension,
+    Negate<J>: Dimension,
 {
     type Output =
         Quantity<Negate<M>, Negate<L>, Negate<T>, Negate<I>, Negate<Th>, Negate<N>, Negate<J>>;
@@ -431,7 +495,7 @@ where
 }
 
 /// Exponentiation of quantity - multiplies dimensions by exponent
-/// (new trait cause exponent is completely given by type)
+/// (New trait cause exponent is completely given by type, no need for runtime argument)
 pub trait TypePow<Exp>
 where
     Exp: Integer + NonZero + ToInt<i32>,
@@ -450,13 +514,13 @@ where
     N: Mul<Exp>,
     J: Mul<Exp>,
     Exp: Integer + NonZero + ToInt<i32>,
-    Prod<M, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Prod<L, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Prod<T, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Prod<I, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Prod<Th, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Prod<N, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
-    Prod<J, Exp>: Debug + Clone + Copy + PartialOrd + PartialEq,
+    Prod<M, Exp>: Dimension,
+    Prod<L, Exp>: Dimension,
+    Prod<T, Exp>: Dimension,
+    Prod<I, Exp>: Dimension,
+    Prod<Th, Exp>: Dimension,
+    Prod<N, Exp>: Dimension,
+    Prod<J, Exp>: Dimension,
 {
     type Output = Quantity<
         Prod<M, Exp>,

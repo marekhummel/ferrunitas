@@ -1,7 +1,7 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::mechanics::PoundForce;
 use crate::system::prefixes::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -164,7 +164,7 @@ unit!(prefix: Kilocandela, Kilo, Candela);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // MASS
     verify_unit!(Gram, Mass, 1e-3);

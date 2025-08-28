@@ -1,56 +1,58 @@
-/// Assert that two floating point values are almost equal within an epsilon
-///
-/// # Arguments
-/// * `left` - The left value to compare
-/// * `right` - The right value to compare
-/// * `epsilon` - Optional epsilon for comparison (defaults to 1e-10)
-///
-/// # Examples
-/// ```
-/// ferrunitas::assert_almost_equal!(1.0, 1.0000000001);
-/// ferrunitas::assert_almost_equal!(1.0, 1.1, 0.2, 0.1);
-/// ```
+/// Public trait in private module to prevent external implementations
+pub trait Sealed {}
+
+/// Public macro to display quantity type if needed
 #[macro_export]
-macro_rules! assert_almost_equal {
-    ($left:expr, $right:expr) => {
-        $crate::assert_almost_equal!($left, $right, 0.1, 1e-4);
-    };
-    ($left:expr, $right:expr, $epsilon_abs:expr, $epsilon_rel:expr) => {
-        let left_val: f64 = $left;
-        let right_val: f64 = $right;
-        let diff = (left_val - right_val).abs();
+macro_rules! format_quantity_dims {
+    ($quantity:ty) => {{
+        let items: [(&str, i8); 7] =
+            [
+                (
+                    "M",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::M as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "L",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::L as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "T",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::T as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "I",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::I as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "Θ",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::Th as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "N",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::N as typenum::Integer>::to_i8(),
+                ),
+                (
+                    "J",
+                    <<$quantity as $crate::model::quantity::Dimensioned>::J as typenum::Integer>::to_i8(),
+                ),
+            ];
+        let mut dim_string = String::new();
+        for (dim, exp) in items {
+            if exp == 0 {
+                continue;
+            }
+            dim_string.push_str(&format!("{}^{}·", dim, exp));
+        }
+        if !dim_string.is_empty() {
+            dim_string.pop();
+        }
 
-        assert!(
-            diff < $epsilon_abs,
-            "abs assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (epsilon: `{}`)",
-            left_val, right_val, diff, $epsilon_abs
-        );
-
-        let max_val = left_val.abs().max(right_val.abs());
-        let relative_epsilon = ($epsilon_rel as f64) * max_val;
-        assert!(
-            diff <= relative_epsilon,
-            "rel assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (relative epsilon: `{}`, max value: `{}`)",
-            left_val, right_val, diff, relative_epsilon, max_val
-        );
-    };
+        dim_string
+    }};
 }
 
 /// Generate two unit tests for a unit: quantity validation and value conversion
-///
-/// # Arguments
-/// * `unit` - The unit type to test
-/// * `quantity` - The expected quantity type
-/// * `value` - The raw value to test conversion with
-///
-/// # Examples
-/// ```
-/// ferrunitas::verify_unit!(Metre, Length, 5.0);
-/// ```
-/// This generates:
-/// - `test_meter_quantity()` - validates Metre has Length quantity
-/// - `test_meter_value()` - validates Metre(5.0).into() == Length(5.0)
-#[macro_export]
+#[cfg(test)]
 macro_rules! verify_unit {
     ($unit:ty, $quantity:ty, $value:expr) => {
         paste::paste! {
@@ -78,16 +80,48 @@ macro_rules! verify_unit {
             #[test]
             fn [<test_ $unit:lower _ $quantity:lower _value>]() {
                 use $crate::model::unit::Unit;
-                use $crate::model::quantity::QuantityMarker;
 
                 let unit = $unit::new(1.0);
                 let quantity = unit.into_q();
 
-                $crate::assert_almost_equal!(quantity.raw_value(), $value);
+                $crate::common::assert_almost_equal!(quantity.raw_value(), $value);
             }
         }
     };
 }
+
+/// Assert that two floating point values are almost equal within an epsilon
+#[cfg(test)]
+macro_rules! assert_almost_equal {
+    ($left:expr, $right:expr) => {
+        $crate::common::assert_almost_equal!($left, $right, 0.1, 1e-4);
+    };
+    ($left:expr, $right:expr, $epsilon_abs:expr, $epsilon_rel:expr) => {
+        let left_val: f64 = $left;
+        let right_val: f64 = $right;
+        let diff = (left_val - right_val).abs();
+
+        assert!(
+            diff < $epsilon_abs,
+            "abs assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (epsilon: `{}`)",
+            left_val, right_val, diff, $epsilon_abs
+        );
+
+        let max_val = left_val.abs().max(right_val.abs());
+        let relative_epsilon = ($epsilon_rel as f64) * max_val;
+        assert!(
+            diff <= relative_epsilon,
+            "rel assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (relative epsilon: `{}`, max value: `{}`)",
+            left_val, right_val, diff, relative_epsilon, max_val
+        );
+    };
+}
+
+#[cfg(test)]
+pub(crate) use assert_almost_equal;
+
+#[cfg(test)]
+pub(crate) use verify_unit;
 
 #[cfg(test)]
 mod tests {

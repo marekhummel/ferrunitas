@@ -1,7 +1,5 @@
-use ferrunitas::format_quantity_dims;
-use ferrunitas::model::quantity::QuantityMarker;
-use ferrunitas::model::Unit;
 use ferrunitas::system::*;
+use ferrunitas::{format_quantity_dims, Unit};
 
 fn units_and_quantities() {
     let v = Kilovolt::new(400);
@@ -26,7 +24,6 @@ fn units_and_quantities() {
 }
 
 fn conversion() {
-    let q = Volume::new(0.03064); // SHOULD NOT WORK
     let l = Litre::new(30.64);
     let l_to_q = l.into_q();
     let cm3_via_q1 = l_to_q.as_unit::<CubicCentimetre>();
@@ -35,7 +32,6 @@ fn conversion() {
     let cm3_direct2: CubicCentimetre = l.convert();
 
     println!("--- Conversion Example ---");
-    println!("Quantity: {}", q);
     println!("Litres: {}", l);
     println!("Litres to Quantity: {}", l_to_q);
     println!(

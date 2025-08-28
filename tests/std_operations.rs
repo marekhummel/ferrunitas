@@ -1,4 +1,4 @@
-use ferrunitas::model::quantity::{Quantity, QuantityMarker};
+use ferrunitas::model::quantity::Quantity;
 use ferrunitas::model::unit::Unit;
 use ferrunitas::system::*;
 use typenum::*;

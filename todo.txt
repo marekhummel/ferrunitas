@@ -10,3 +10,4 @@
 - Compound unit with literals (1, 2, -1) instead of typenum types
 - Radians, bytes, steradians not dimless?
 - Docs with Doctests?
+- Check ownership and borrowing impls

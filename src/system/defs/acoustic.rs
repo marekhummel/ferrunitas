@@ -1,7 +1,7 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -31,7 +31,7 @@ unit!(compound: PascalSquaredSecond, "Pa²⋅s", [(Pascal, P2), (Second, P1)]);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // ACOUSTIC IMPEDANCE
     verify_unit!(Rayl, AcousticImpedance, 1.0);

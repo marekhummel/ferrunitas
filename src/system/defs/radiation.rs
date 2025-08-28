@@ -1,9 +1,9 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::electromagnetism::*;
 use crate::system::defs::mechanics::*;
 use crate::system::prefixes::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -93,11 +93,11 @@ unit!(compound: ParticlePerSquareCentimetreSecond, "cm⁻²⋅s⁻¹", [(Centime
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // RADIOACTIVITY
     verify_unit!(Becquerel, Radioactivity, 1.0);
-    verify_unit!(Kilobecquerel, Radioactivity, 1000.0);
+    verify_unit!(Kilobecquerel, Radioactivity, 1e3);
     verify_unit!(Megabecquerel, Radioactivity, 1e6);
     verify_unit!(Gigabecquerel, Radioactivity, 1e9);
     verify_unit!(Curie, Radioactivity, 3.7e10);

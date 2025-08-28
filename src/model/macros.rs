@@ -1,92 +1,43 @@
 /// Macro to define a prefix with its factor, symbol, and name
-#[macro_export]
 macro_rules! prefix {
-    ($prefix_name:ident, $factor:expr, $symbol:expr, $name:expr) => {
+    ($prefix_name:ident, $factor:expr, $symbol:expr) => {
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $prefix_name;
+
+        impl $crate::common::Sealed for $prefix_name {}
 
         impl $crate::model::prefix::Prefix for $prefix_name {
             const FACTOR: f64 = $factor;
             const SYMBOL: &'static str = $symbol;
-            const NAME: &'static str = $name;
         }
     };
 }
 
-#[macro_export]
-macro_rules! quantity {
-    // External case
-    ([$(($quantities:ty, $exps:ty)),+]) => {
-        $crate::quantity!(Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>; $(($quantities, $exps)),+)
-    };
+// Note: Currently irrelevant
+// /// Macro to get quantity type by combining others
+// macro_rules! quantity {
+//     // External case
+//     ([$(($quantities:ty, $exps:ty)),+]) => {
+//         $crate::quantity!(Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>; $(($quantities, $exps)),+)
+//     };
 
-    // Recursive case
-    ($quantity_acc:ty; ($quantity:ty, $exp:ty) $(, ($quantities:ty, $exps:ty))*) => {
-        $crate::quantity!(
-            <$quantity_acc as std::ops::Mul<
-                <$quantity as $crate::model::quantity::TypePow<$exp>>::Output
-            >>::Output;
-            $(($quantities, $exps)),*
-        )
-    };
+//     // Recursive case
+//     ($quantity_acc:ty; ($quantity:ty, $exp:ty) $(, ($quantities:ty, $exps:ty))*) => {
+//         $crate::quantity!(
+//             <$quantity_acc as std::ops::Mul<
+//                 <$quantity as $crate::model::quantity::TypePow<$exp>>::Output
+//             >>::Output;
+//             $(($quantities, $exps)),*
+//         )
+//     };
 
-    // Base case
-    ($quantity_acc:ty;) => {
-        $quantity_acc
-    };
-}
-
-#[macro_export]
-macro_rules! format_quantity_dims {
-    ($quantity:ty) => {{
-        let items: [(&str, i8); 7] =
-            [
-                (
-                    "M",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::M as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "L",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::L as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "T",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::T as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "I",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::I as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "Θ",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::Th as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "N",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::N as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "J",
-                    <<$quantity as $crate::model::quantity::QuantityMarker>::J as typenum::Integer>::to_i8(),
-                ),
-            ];
-        let mut dim_string = String::new();
-        for (dim, exp) in items {
-            if exp == 0 {
-                continue;
-            }
-            dim_string.push_str(&format!("{}^{}·", dim, exp));
-        }
-        if !dim_string.is_empty() {
-            dim_string.pop();
-        }
-
-        dim_string
-    }};
-}
+//     // Base case
+//     ($quantity_acc:ty;) => {
+//         $quantity_acc
+//     };
+// }
 
 /// Macro to define a new unit
-#[macro_export]
 macro_rules! unit {
     // Base units (prefixable or not)
     (base: $unit_name:ident, $abbrev:literal, $quantity_type:ty; $($optionals:tt)* ) => {
@@ -172,6 +123,10 @@ macro_rules! unit {
     };
 }
 
+pub(crate) use prefix;
+// pub(crate) use quantity;
+pub(crate) use unit;
+
 /// Inner macros
 pub(crate) mod __inner_unit_macros {
     /// Create a unit struct and impl Unit trait
@@ -179,6 +134,8 @@ pub(crate) mod __inner_unit_macros {
         ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
             pub struct $unit_name(pub(crate) f64);
+
+            impl $crate::common::Sealed for $unit_name {}
 
             impl $crate::model::unit::Unit for $unit_name {
                 type Quantity = $quantity_type;
@@ -202,7 +159,7 @@ pub(crate) mod __inner_unit_macros {
         };
     }
 
-    // Implement arithmetic traits for unit
+    /// Implement arithmetic traits for unit
     macro_rules! __impl_arithmetics {
         ($unit:ty, $quantity:ty) => {
             $crate::model::macros::__inner_unit_macros::__impl_ops_within_unit!($unit, $quantity, Add, add, +);
@@ -215,7 +172,7 @@ pub(crate) mod __inner_unit_macros {
         };
     }
 
-    // Implement operations within the same unit (Add, AddAssign and Sub, SubAssign)
+    /// Implement operations within the same unit (Add, AddAssign and Sub, SubAssign)
     macro_rules! __impl_ops_within_unit {
         ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
             impl<U> std::ops::$trait<U> for $unit
@@ -277,6 +234,7 @@ pub(crate) mod __inner_unit_macros {
             impl<U> std::ops::$trait<U> for $unit
             where
                 U: $crate::model::unit::Unit,
+                U::Quantity: $crate::model::quantity::QuantityMarker,
                 $quantity: std::ops::$trait<U::Quantity>,
             {
                 type Output = <$quantity as std::ops::$trait<U::Quantity>>::Output;

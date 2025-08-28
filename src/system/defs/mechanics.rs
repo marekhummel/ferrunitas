@@ -1,10 +1,10 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::constants::STANDARD_GRAVITY;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
 use crate::system::defs::thermodynamics::JoulePerKilogramKelvin;
 use crate::system::prefixes::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -252,7 +252,7 @@ unit!(compound: JouleSecond, "J⋅s", [(Joule, P1), (Second, P1)]);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // AREA
     verify_unit!(SquareMetre, Area, 1.0);

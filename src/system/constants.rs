@@ -1,9 +1,10 @@
 //! Physical constants expressed with strongly typed units.
 // Note that we cant fully leverage the operators for units due to the const.
+// Hence the manual entry of all values
 
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::*;
-use crate::unit;
 use typenum::*;
 
 // Constant related units

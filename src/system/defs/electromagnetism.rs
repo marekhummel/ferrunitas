@@ -1,8 +1,8 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
 use crate::system::prefixes::*;
-use crate::unit;
 use typenum::*;
 // ===========================
 // ELECTRIC CHARGE
@@ -149,7 +149,7 @@ unit!(compound: JoulePerTesla, "J/T", [(Joule, P1), (Tesla, N1)]);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // ELECTRIC CHARGE
     verify_unit!(Coulomb, Charge, 1.0);

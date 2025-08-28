@@ -1,5 +1,5 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -45,7 +45,7 @@ unit!(derived: Octave, "oct", (std::f64::consts::LN_2, Neper));
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // BASE DIMENSIONLESS
     verify_unit!(One, Dimensionless, 1.0);

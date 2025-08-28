@@ -1,7 +1,7 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -69,7 +69,7 @@ unit!(compound: PerKelvin, "K⁻¹", [(Kelvin, N1)]);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // HEAT CAPACITY / ENTROPY
     verify_unit!(JoulePerKelvin, HeatCapacity, 1.0);

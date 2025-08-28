@@ -1,8 +1,8 @@
+use crate::model::macros::unit;
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
 use crate::system::prefixes::*;
-use crate::unit;
 use typenum::*;
 
 // ===========================
@@ -29,7 +29,7 @@ unit!(compound: MicromolePerLitre, "μmol/L", [(Micromole, P1), (Litre, N1)]);
 // ===========================
 // CATALYTIC ACTIVITY
 // ===========================
-pub type CatalyticActivity = Quantity<Z0, Z0, N1, Z0, Z0, P1, Z0>; // N T⁻1
+pub type CatalyticActivity = Quantity<Z0, Z0, N1, Z0, Z0, P1, Z0>; // N T⁻¹
 
 unit!(compound: Katal, "kat", [(Mole, P1), (Second, N1)]; prefixable);
 unit!(prefix: Microkatal, Micro, Katal);
@@ -57,7 +57,7 @@ unit!(compound: KatalPerLitre, "kat/L", [(Katal, P1), (Litre, N1)]);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::verify_unit;
+    use crate::common::verify_unit;
 
     // MOLAR MASS
     verify_unit!(KilogramPerMole, MolarMass, 1.0);
