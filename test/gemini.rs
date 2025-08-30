@@ -18,7 +18,7 @@ impl<const EDV: EncodedDimensionVector> EncodedDimensions for Quantity<EDV> {
 }
 
 pub trait Quantitiable {
-    type BaseUnit: Unit<Quantity = Self>;
+    type UnitBase: Unit<Quantity = Self>;
 }
 
 pub trait Unit: Copy + Clone + Default + Display {
@@ -204,7 +204,7 @@ macro_rules! quantity {
 
         // Implement the Quantity trait for the quantity.
         impl $crate::gemini::Quantitiable for $qty_name {
-            type BaseUnit = $base_unit;
+            type UnitBase = $base_unit;
         }
 
         // Implement the Unit trait for the raw base unit.
@@ -252,7 +252,7 @@ macro_rules! unit {
 
         impl $crate::gemini::Unit for $name {
             type Quantity = $quantity;
-            type Base = <Self::Quantity as $crate::gemini::Quantitiable>::BaseUnit;
+            type Base = <Self::Quantity as $crate::gemini::Quantitiable>::UnitBase;
             const FACTOR_TO_QUANTITY_BASE: f64 = $conversion_factor
                 * <$conversion_unit as $crate::gemini::Unit>::FACTOR_TO_QUANTITY_BASE;
             const OFFSET_TO_QUANTITY_BASE: f64 = $conversion_offset
@@ -294,7 +294,7 @@ macro_rules! unit {
             $quantity,
             (
                 $conversion_factor,
-                <$quantity as $crate::gemini::Quantitiable>::BaseUnit
+                <$quantity as $crate::gemini::Quantitiable>::UnitBase
             ),
             $symbol
         );

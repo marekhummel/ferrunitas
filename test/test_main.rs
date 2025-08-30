@@ -32,7 +32,7 @@ fn mass() {
     type Millistone = PrefixedUnit<Milli, Stone>;
     type Kilogram = PrefixedUnit<Kilo, Gram>;
 
-    // Mass::BaseUnit = Kilogram
+    // Mass::UnitBase = Kilogram
     // Kilogram::Base = Gram
     // Gram::Base = Gram
     // Pound::Base = Kilogram
@@ -53,7 +53,7 @@ fn mass() {
 
     println!(
         "Quantity  Base: {}\n",
-        std::any::type_name::<<Mass as Quantitiable>::BaseUnit>()
+        std::any::type_name::<<Mass as Quantitiable>::UnitBase>()
     );
     print_unit_details::<Millistone>();
     print_unit_details::<Stone>();

@@ -128,8 +128,8 @@ fn computation_quantities() {
 fn computation_units() {
     // Define base variable
     let mut newton = Newton::new(10.0);
-    let mut metre = Metre::new(5.0);
-    let mut second = Second::new(2.0);
+    let mut metre = Metre::new(5.0) - Millimetre::new(30.0);
+    let mut second = Second::new(2.0) + Minute::new(0.1);
 
     // Modify variables a bit (directly as units)
     newton += Kilonewton::new(2.0);

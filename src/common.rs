@@ -79,10 +79,11 @@ macro_rules! verify_unit {
 
             #[test]
             fn [<test_ $unit:lower _ $quantity:lower _value>]() {
-                use $crate::model::unit::Unit;
+                use $crate::model::unit::UnitBase;
+                use $crate::model::quantity::ToQuantity;
 
                 let unit = $unit::new(1.0);
-                let quantity = unit.into_q();
+                let quantity = unit.internal_into_q();
 
                 $crate::common::assert_almost_equal!(quantity.raw_value(), $value);
             }

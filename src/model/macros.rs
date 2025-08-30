@@ -38,6 +38,7 @@ macro_rules! prefix {
 // }
 
 /// Macro to define a new unit
+#[macro_export]
 macro_rules! unit {
     // Base units (prefixable or not)
     (base: $unit_name:ident, $abbrev:literal, $quantity_type:ty; $($optionals:tt)* ) => {
@@ -56,7 +57,7 @@ macro_rules! unit {
     };
 
     (base_internal: $unit_name:ident, $abbrev:literal, $quantity_type:ty, $factor:expr;) => {
-        $crate::model::macros::__inner_unit_macros::__unit!($unit_name, $quantity_type, $factor, $abbrev);
+        $crate::__unit!($unit_name, $quantity_type, $factor, $abbrev);
     };
 
     // Derived units based on other unit
@@ -67,10 +68,10 @@ macro_rules! unit {
     };
 
     (derived: $unit_name:ident, $abbrev:literal, ($factor:expr, $base_unit:ty)) => {
-        $crate::model::macros::__inner_unit_macros::__unit!(
+        $crate::__unit!(
             $unit_name,
             <$base_unit as $crate::model::unit::Unit>::Quantity,
-            ($factor as f64) * <$base_unit as $crate::model::unit::Unit>::FACTOR,
+            ($factor as f64) * <$base_unit as $crate::model::unit::UnitBase>::FACTOR,
             $abbrev
         );
     };
@@ -83,7 +84,7 @@ macro_rules! unit {
     };
 
     (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+] ) => {
-        $crate::model::macros::__inner_unit_macros::__compound_unit!(
+        $crate::__compound_unit!(
             $unit_name,
             $abbrev,
             [Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>, 1.0; $($components),+]
@@ -94,32 +95,33 @@ macro_rules! unit {
     (prefix: $alias:ident, $prefix:ty, $base_unit:ty) => {
         pub type $alias = $crate::model::unit::PrefixedUnit<$prefix, $base_unit>;
 
-        impl $crate::model::unit::Unit for $alias {
-            type Quantity = <$base_unit as $crate::model::unit::Unit>::Quantity;
+        impl $crate::model::unit::UnitBase for $alias {
+            type InternalQuantity = <$base_unit as $crate::model::unit::Unit>::Quantity;
             const FACTOR: f64 = <$prefix as $crate::model::prefix::Prefix>::FACTOR
-                * <$base_unit as $crate::model::unit::Unit>::FACTOR;
+                * <$base_unit as $crate::model::unit::UnitBase>::FACTOR;
             const ABBREV: &'static str = const_format::concatcp!(
                 <$prefix as $crate::model::prefix::Prefix>::SYMBOL,
-                <$base_unit as $crate::model::unit::Unit>::ABBREV
+                <$base_unit as $crate::model::unit::UnitBase>::ABBREV
             );
 
             fn new(value: impl Into<f64>) -> Self {
-                $alias {
-                    0: value.into(),
-                    1: std::marker::PhantomData,
-                }
+                Self::new(value)
             }
 
             fn raw_value(&self) -> f64 {
-                self.0
+                self.raw_value()
             }
         }
 
-        $crate::model::macros::__inner_unit_macros::__impl_arithmetics!(
+        impl $crate::model::unit::Unit for $alias {
+            type Quantity = <$base_unit as $crate::model::unit::Unit>::Quantity;
+        }
+
+        $crate::__impl_arithmetics!(
             $alias,
             <$base_unit as $crate::model::unit::Unit>::Quantity
         );
-        $crate::model::macros::__inner_unit_macros::__impl_display!($alias);
+        $crate::__impl_display!($alias);
     };
 }
 
@@ -130,6 +132,8 @@ pub(crate) use unit;
 /// Inner macros
 pub(crate) mod __inner_unit_macros {
     /// Create a unit struct and impl Unit trait
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __unit {
         ($unit_name:ident, $quantity_type:ty, $factor:expr, $abbrev:literal) => {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -137,8 +141,8 @@ pub(crate) mod __inner_unit_macros {
 
             impl $crate::common::Sealed for $unit_name {}
 
-            impl $crate::model::unit::Unit for $unit_name {
-                type Quantity = $quantity_type;
+            impl $crate::model::unit::UnitBase for $unit_name {
+                type InternalQuantity = $quantity_type;
                 const FACTOR: f64 = $factor;
                 const ABBREV: &'static str = $abbrev;
 
@@ -151,40 +155,55 @@ pub(crate) mod __inner_unit_macros {
                 }
             }
 
-            $crate::model::macros::__inner_unit_macros::__impl_arithmetics!(
-                $unit_name,
-                $quantity_type
-            );
-            $crate::model::macros::__inner_unit_macros::__impl_display!($unit_name);
+            impl $crate::model::unit::Unit for $unit_name {
+                type Quantity = $quantity_type;
+            }
+
+            // impl $crate::model::quantity::ToQuantity for $unit_name {
+            //     type BaseQuantity = $quantity_type;
+
+            //     fn to_base(&self) -> f64 {
+            //         $crate::model::unit::Unit::into_q(*self).raw_value()
+            //     }
+            // }
+
+            $crate::__impl_arithmetics!($unit_name, $quantity_type);
+            $crate::__impl_display!($unit_name);
         };
     }
 
     /// Implement arithmetic traits for unit
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __impl_arithmetics {
         ($unit:ty, $quantity:ty) => {
-            $crate::model::macros::__inner_unit_macros::__impl_ops_within_unit!($unit, $quantity, Add, add, +);
-            $crate::model::macros::__inner_unit_macros::__impl_ops_within_unit!($unit, $quantity, Sub, sub, -);
+            $crate::__impl_ops_within_unit!($unit, $quantity, Add, add, +);
+            $crate::__impl_ops_within_unit!($unit, $quantity, Sub, sub, -);
 
-            $crate::model::macros::__inner_unit_macros::__impl_ops_to_quantity!($unit, $quantity, Mul, mul, *);
-            $crate::model::macros::__inner_unit_macros::__impl_ops_to_quantity!($unit, $quantity, Div, div, /);
+            $crate::__impl_ops_to_quantity!($unit, $quantity, Mul, mul, *);
+            $crate::__impl_ops_to_quantity!($unit, $quantity, Div, div, /);
 
-            $crate::model::macros::__inner_unit_macros::__impl_ops_scalar!($unit, $quantity);
+            $crate::__impl_ops_scalar!($unit, $quantity);
         };
     }
 
     /// Implement operations within the same unit (Add, AddAssign and Sub, SubAssign)
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __impl_ops_within_unit {
         ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
             impl<U> std::ops::$trait<U> for $unit
             where
-                U: $crate::model::unit::Unit<Quantity = $quantity>,
-                Self: $crate::model::unit::Unit<Quantity = $quantity>,
+                U: $crate::model::quantity::ToQuantity<BaseQuantity = $quantity>,
+                Self: $crate::model::quantity::ToQuantity<BaseQuantity = $quantity>,
             {
                 type Output = $unit;
 
                 fn $method(self, rhs: U) -> Self::Output {
-                    $crate::model::unit::Unit::from_q(
-                        $crate::model::unit::Unit::into_q(self) $op $crate::model::unit::Unit::into_q(rhs)
+                    <$unit as $crate::model::quantity::ToQuantity>::internal_from_q(
+                        $crate::model::quantity::ToQuantity::internal_into_q(self)
+                        $op
+                        $crate::model::quantity::ToQuantity::internal_into_q(rhs)
                     )
                 }
             }
@@ -192,79 +211,87 @@ pub(crate) mod __inner_unit_macros {
             paste::paste! {
                 impl<U> std::ops::[<$trait Assign>]<U> for $unit
                 where
-                    U: $crate::model::unit::Unit<Quantity = $quantity>,
+                    U: $crate::model::quantity::ToQuantity<BaseQuantity = $quantity>,
+                    Self: $crate::model::quantity::ToQuantity<BaseQuantity = $quantity>,
                 {
                     fn [<$method _assign>](&mut self, rhs: U) {
                         // self.0 $assign_op rhs.convert::<Self>().0;
-                        *self = *self $op rhs;
+                        *self = *self $op
+                            <Self as $crate::model::quantity::ToQuantity>::internal_from_q(
+                                $crate::model::quantity::ToQuantity::internal_into_q(rhs)
+                            );
                     }
                 }
             }
 
-            impl std::ops::$trait<$quantity> for $unit
-            where
-                <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$quantity>,
-            {
-                type Output = Self;
+            // impl<D> std::ops::$trait<D> for $unit
+            // where
+            //     <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$quantity>,
+            //     D: $crate::model::quantity::Dimensioned<M = <$quantity as $crate::model::quantity::Dimensioned>::M>,
+            // {
+            //     type Output = Self;
 
-                fn $method(self, rhs: $quantity) -> Self::Output {
-                    $crate::model::unit::Unit::from_q(
-                        $crate::model::unit::Unit::into_q(self) $op rhs
-                    )
-                }
-            }
+            //     fn $method(self, rhs: $quantity) -> Self::Output {
+            //         $crate::model::unit::Unit::from_q(
+            //             $crate::model::unit::Unit::into_q(self) $op rhs
+            //         )
+            //     }
+            // }
 
-            paste::paste! {
-                impl std::ops::[<$trait Assign>]<$quantity> for $unit
-                where
-                    <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$quantity>,
-                {
-                    fn [<$method _assign>](&mut self, rhs: $quantity) {
-                        // self.0 $assign_op rhs.convert::<Self>().0;
-                        *self = *self $op rhs;
-                    }
-                }
-            }
+            // paste::paste! {
+            //     impl std::ops::[<$trait Assign>]<$quantity> for $unit
+            //     where
+            //         <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$quantity>,
+            //     {
+            //         fn [<$method _assign>](&mut self, rhs: $quantity) {
+            //             // self.0 $assign_op rhs.convert::<Self>().0;
+            //             *self = *self $op rhs;
+            //         }
+            //     }
+            // }
         };
     }
 
     /// Implement operations to convert between unit and quantity (Mul and Div)
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __impl_ops_to_quantity {
         ($unit:ty, $quantity:ty, $trait:ident, $method:ident, $op:tt) => {
             impl<U> std::ops::$trait<U> for $unit
             where
-                U: $crate::model::unit::Unit,
-                U::Quantity: $crate::model::quantity::QuantityMarker,
-                $quantity: std::ops::$trait<U::Quantity>,
+                U: $crate::model::quantity::ToQuantity,
+                $quantity: std::ops::$trait<U::BaseQuantity>,
             {
-                type Output = <$quantity as std::ops::$trait<U::Quantity>>::Output;
+                type Output = <$quantity as std::ops::$trait<U::BaseQuantity>>::Output;
 
                 fn $method(self, rhs: U) -> Self::Output {
-                    $crate::model::unit::Unit::into_q(self) $op $crate::model::unit::Unit::into_q(rhs)
+                    $crate::model::quantity::ToQuantity::internal_into_q(self) $op $crate::model::quantity::ToQuantity::internal_into_q(rhs)
                 }
             }
 
-            impl<M, L, T, I, Th, N, J> std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>> for $unit
-            where
-                <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>,
-            {
-                type Output = <<$unit as $crate::model::unit::Unit>::Quantity as std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>>::Output;
+            // impl<M, L, T, I, Th, N, J> std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>> for $unit
+            // where
+            //     <$unit as $crate::model::unit::Unit>::Quantity: std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>,
+            // {
+            //     type Output = <<$unit as $crate::model::unit::Unit>::Quantity as std::ops::$trait<$crate::model::quantity::Quantity<M, L, T, I, Th, N, J>>>::Output;
 
-                fn $method(self, rhs: $crate::model::quantity::Quantity<M, L, T, I, Th, N, J>) -> Self::Output {
-                    $crate::model::unit::Unit::into_q(self) $op rhs
-                }
-            }
+            //     fn $method(self, rhs: $crate::model::quantity::Quantity<M, L, T, I, Th, N, J>) -> Self::Output {
+            //         $crate::model::unit::Unit::into_q(self) $op rhs
+            //     }
+            // }
         };
     }
 
     /// Implement scalar operations (Mul / Div with f64)
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __impl_ops_scalar {
         ($unit:ty, $quantity:ty) => {
             impl std::ops::Mul<f64> for $unit {
                 type Output = $unit;
 
                 fn mul(self, rhs: f64) -> Self::Output {
-                    <$unit as $crate::model::unit::Unit>::new(self.0 * rhs)
+                    <$unit as $crate::model::unit::UnitBase>::new(self.0 * rhs)
                 }
             }
 
@@ -272,7 +299,7 @@ pub(crate) mod __inner_unit_macros {
                 type Output = $unit;
 
                 fn mul(self, rhs: $unit) -> Self::Output {
-                    <$unit as $crate::model::unit::Unit>::new(self * rhs.0)
+                    <$unit as $crate::model::unit::UnitBase>::new(self * rhs.0)
                 }
             }
 
@@ -286,15 +313,17 @@ pub(crate) mod __inner_unit_macros {
                 type Output = $unit;
 
                 fn div(self, rhs: f64) -> Self::Output {
-                    <$unit as $crate::model::unit::Unit>::new(self.0 / rhs)
+                    <$unit as $crate::model::unit::UnitBase>::new(self.0 / rhs)
                 }
             }
 
             impl std::ops::Div<$unit> for f64 {
-                type Output = <$quantity as num_traits::Inv>::Output;
+                type Output =
+                    <Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0> as std::ops::Div<$quantity>>::Output;
 
                 fn div(self, rhs: $unit) -> Self::Output {
-                    let rhs_quantity: $quantity = <$unit as $crate::model::unit::Unit>::into_q(rhs);
+                    let rhs_quantity: $quantity =
+                        <$unit as $crate::model::quantity::ToQuantity>::internal_into_q(rhs);
                     self / rhs_quantity
                 }
             }
@@ -308,12 +337,14 @@ pub(crate) mod __inner_unit_macros {
     }
 
     /// Implement display trait for unit
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __impl_display {
         ($unit:ty) => {
             impl std::fmt::Display for $unit {
                 fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
                     self.0.fmt(f)?;
-                    write!(f, " {}", <$unit as $crate::model::unit::Unit>::ABBREV)?;
+                    write!(f, " {}", <$unit as $crate::model::unit::UnitBase>::ABBREV)?;
                     Ok(())
                 }
             }
@@ -321,10 +352,12 @@ pub(crate) mod __inner_unit_macros {
     }
 
     /// Create a compound unit
+    #[macro_export]
+    #[doc(hidden)]
     macro_rules! __compound_unit {
         // Base case
         ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr;] ) => {
-            $crate::model::macros::__inner_unit_macros::__unit!(
+            $crate::__unit!(
                 $unit_name,
                 $quantity_acc,
                 $factor_acc,
@@ -334,7 +367,7 @@ pub(crate) mod __inner_unit_macros {
 
         // Recursive cases
         ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; ($unit:ty, $exp:ty) $(, $components:tt)*] ) => {
-            $crate::model::macros::__inner_unit_macros::__compound_unit!(
+            $crate::__compound_unit!(
                 $unit_name,
                 $abbrev,
                 [$quantity_acc, $factor_acc; (1.0, $unit, $exp) $(, $components)*]
@@ -343,15 +376,15 @@ pub(crate) mod __inner_unit_macros {
 
 
         ($unit_name:ident, $abbrev:literal, [$quantity_acc:ty, $factor_acc:expr; ($scalar:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
-            $crate::model::macros::__inner_unit_macros::__compound_unit!(
+            $crate::__compound_unit!(
                 $unit_name,
                 $abbrev,
                 [
                     <$quantity_acc as std::ops::Mul<
                         <<$unit as $crate::model::unit::Unit>::Quantity as $crate::model::quantity::TypePow<$exp>>::Output
                     >>::Output,
-                    $factor_acc * $crate::model::macros::__inner_unit_macros::powi_const(
-                        ($scalar as f64) * <$unit as $crate::model::unit::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
+                    $factor_acc * $crate::model::macros::__inner_unit_macros::__powi_const(
+                        ($scalar as f64) * <$unit as $crate::model::unit::UnitBase>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
                     );
                     $($components),*
                 ]
@@ -360,7 +393,8 @@ pub(crate) mod __inner_unit_macros {
     }
 
     /// Const fn for integer exponentiation
-    pub(crate) const fn powi_const(mut base: f64, mut exp: i32) -> f64 {
+    #[doc(hidden)]
+    pub const fn __powi_const(mut base: f64, mut exp: i32) -> f64 {
         if exp == 0 {
             return 1.0;
         }
@@ -384,12 +418,14 @@ pub(crate) mod __inner_unit_macros {
         }
     }
 
-    pub(crate) use __impl_arithmetics;
-    pub(crate) use __impl_display;
-    pub(crate) use __impl_ops_scalar;
-    pub(crate) use __impl_ops_to_quantity;
-    pub(crate) use __impl_ops_within_unit;
+    // -----------------------------------
 
-    pub(crate) use __compound_unit;
-    pub(crate) use __unit;
+    // pub(crate) use __compound_unit;
+    // pub(crate) use __unit;
+
+    // pub(crate) use __impl_arithmetics;
+    // pub(crate) use __impl_display;
+    // pub(crate) use __impl_ops_scalar;
+    // pub(crate) use __impl_ops_to_quantity;
+    // pub(crate) use __impl_ops_within_unit;
 }
