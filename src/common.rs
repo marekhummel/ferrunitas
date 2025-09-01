@@ -1,7 +1,11 @@
-use crate::model::{dimension::Dimension, quantity::QuantityMarker, unit::UnitBase};
+use crate::model::{
+    dimension::Dimension,
+    quantity::{Quantity, QuantityMarker},
+    unit::Unit,
+};
 
-pub fn unit_dim_vector<U: UnitBase>() -> String {
-    format_dims::<<U as UnitBase>::DimensionVector>()
+pub fn unit_dim_vector<U: Unit>() -> String {
+    format_quantity::<<U as Unit>::Quantity>()
 }
 
 pub fn format_quantity<Q: QuantityMarker>() -> String {

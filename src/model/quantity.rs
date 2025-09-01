@@ -4,7 +4,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::model::dimension::{Dimensioned, TypePow};
 use crate::model::measure::Measure;
-use crate::model::unit::{Unit, UnitBase};
+use crate::model::unit::Unit;
 use num_traits::Inv;
 use typenum::{Integer, NonZero, ToInt};
 
@@ -74,10 +74,6 @@ pub trait QuantityMarker: Sized + Debug + Clone + Copy + PartialEq + crate::seal
 
     fn new(value: f64) -> Self;
     fn raw_value(&self) -> f64;
-
-    // fn as_unit<U: ToQuantity<BaseQuantity = Self>>(&self) -> U {
-    //     U::internal_from_q(*self)
-    // }
 }
 
 /// Conversion for quantities
@@ -101,6 +97,47 @@ impl<D: Dimensioned> fmt::Display for Quantity<D> {
         write!(f, " [{}]", dim_string)?;
         Ok(())
     }
+}
+
+// ===========================
+// MACRO
+// ===========================
+
+/// Macro to get quantity type by combining others
+#[macro_export]
+macro_rules! quantity {
+    // Literal case
+    ($quantity:ident: M $mass:ty, L $length:ty, T $time:ty, I $current:ty, Th $temperature:ty, N $amount:ty, J $luminosity:ty) => {
+        quantity!(
+            $quantity:
+            $crate::model::dimension::DimensionVector<$mass, $length, $time, $current, $temperature, $amount, $luminosity>;
+        );
+    };
+
+    // Compound case
+    ($quantity:ident: [$(($dims:ty, $exps:ty)),+]) => {
+        quantity!(
+            $quantity:
+            $crate::model::dimension::DimensionZero; $(($dims, $exps)),+
+        );
+    };
+
+    // Recursive case
+    ($quantity:ident: $dim_acc:ty; ($dim_vec:ty, $exp:ty) $(, ($dims:ty, $exps:ty))*) => {
+        quantity!(
+            $quantity:
+            <$dim_acc as std::ops::Mul<
+                <$dim_vec as $crate::model::dimension::TypePow<$exp>>::Output
+            >>::Output;
+            $(($dims, $exps)),*
+        );
+    };
+
+    // Base case
+    ($quantity:ident: $dim_acc:ty;) => {
+        pub type $quantity =
+            $crate::model::quantity::Quantity<$dim_acc>;
+    };
 }
 
 // ===========================

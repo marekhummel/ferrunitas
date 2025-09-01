@@ -1,4 +1,4 @@
-use crate::model::macros::prefix;
+use crate::prefix;
 
 prefix!(Quecto, 1e-30, "q");
 prefix!(Ronto, 1e-27, "r");

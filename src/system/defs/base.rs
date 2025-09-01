@@ -1,4 +1,4 @@
-use crate::model::macros::{quantity, unit};
+use crate::{quantity, unit};
 use crate::system::defs::mechanics::PoundForce;
 use crate::system::prefixes::*;
 use typenum::*;

@@ -67,8 +67,8 @@ unit!(compound: Knot, "kn", [(NauticalMile, P1), (Hour, N1)]);
 
 fn computation_units() {
     // Define base variable
-    let mut metre: Length = Metre::new(5.0) - Millimetre::new(30.0);
-    let mut second: Time = Second::new(2.0) + Minute::new(0.1);
+    let mut metre: crate::Measure<Metre> = Metre::new(5.0) - Millimetre::new(30.0);
+    let mut second: crate::Measure<Second> = Second::new(2.0) + Minute::new(0.1);
 
     // Modify variables a bit (directly as units)
     metre += Centimetre::new(7.0);
@@ -87,7 +87,7 @@ fn computation_units() {
     println!(
         "Speed: {:.3} = {:.3}",
         speed,
-        speed.format::<KilometrePerHour>()
+        speed.as_measure::<KilometrePerHour>()
     );
 }
 

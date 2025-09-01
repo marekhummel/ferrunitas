@@ -1,4 +1,4 @@
-use crate::model::macros::{quantity, unit};
+use crate::{quantity, unit};
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
 use crate::system::prefixes::*;
