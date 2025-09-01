@@ -1,12 +1,8 @@
-use ferrunitas::model::quantity::Quantity;
 use ferrunitas::system::*;
 use ferrunitas::Unit;
-use typenum::*;
 
 #[cfg(test)]
 mod std_operations_tests {
-    use ferrunitas::model::dimension::DimensionVector;
-
     use super::*;
 
     // ===========================

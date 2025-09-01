@@ -94,7 +94,7 @@ macro_rules! unit {
 
 /// Inner macros
 #[doc(hidden)]
-pub(crate) mod __inner_unit_macros {
+pub mod __inner_unit_macros {
     /// Create a unit struct and impl Unit trait
     #[macro_export]
     #[doc(hidden)]

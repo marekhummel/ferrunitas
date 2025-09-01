@@ -124,7 +124,7 @@ macro_rules! quantity {
         quantity!(
             $comp_quantity:
             <$quantity_acc as std::ops::Mul<
-                <$quantity as $crate::model::quantity::TypePow<$exp>>::Output
+                <$quantity as $crate::model::dimension::TypePow<$exp>>::Output
             >>::Output;
             $(($quantities, $exps)),*
         );
