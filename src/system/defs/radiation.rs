@@ -1,5 +1,4 @@
 use crate::model::macros::{quantity, unit};
-use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::electromagnetism::*;
 use crate::system::defs::mechanics::*;

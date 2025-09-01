@@ -1,4 +1,8 @@
-use crate::model::{dimension::Dimension, quantity::QuantityMarker};
+use crate::model::{dimension::Dimension, quantity::QuantityMarker, unit::UnitBase};
+
+pub fn unit_dim_vector<U: UnitBase>() -> String {
+    format_dims::<<U as UnitBase>::DimensionVector>()
+}
 
 pub fn format_quantity<Q: QuantityMarker>() -> String {
     format_dims::<<Q as QuantityMarker>::DimensionVector>()
@@ -109,8 +113,8 @@ macro_rules! verify_unit {
 
             #[test]
             fn [<test_ $unit:lower _ $quantity:lower _value>]() {
-                let quantity = <$unit as $crate::model::unit::Unit>::new(1.0);
-                $crate::common::assert_almost_equal!(quantity.raw_value(), $value);
+                let measure = <$unit as $crate::model::unit::Unit>::new(1.0);
+                $crate::common::assert_almost_equal!(measure.into_q().raw_value(), $value);
             }
         }
     };

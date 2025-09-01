@@ -1,5 +1,4 @@
 use crate::model::macros::{quantity, unit};
-use crate::model::quantity::Quantity;
 use typenum::*;
 
 // ===========================

@@ -1,9 +1,7 @@
-use std::fmt::{self, Debug};
+use std::fmt::Debug;
 use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::common;
-use crate::model::unit::{Unit, UnitBase};
 use num_traits::Inv;
 use typenum::*;
 
@@ -18,7 +16,7 @@ impl<T: typenum::Integer + Debug + PartialOrd> Dimension for T {
 }
 
 /// Marker trait for all quantity types to extract dimensional components
-pub trait Dimensioned: Debug + Clone + Copy {
+pub trait Dimensioned: Debug + Clone + Copy + PartialEq {
     type M: Dimension;
     type L: Dimension;
     type T: Dimension;
@@ -63,7 +61,7 @@ where
     type J = J;
 }
 
-impl<M, L, T, I, Th, N, J> DimensionVector<M, L, T, I, Th, N, J>
+impl<M, L, T, I, Th, N, J> Default for DimensionVector<M, L, T, I, Th, N, J>
 where
     M: Dimension,
     L: Dimension,
@@ -73,7 +71,7 @@ where
     N: Dimension,
     J: Dimension,
 {
-    pub fn new() -> Self {
+    fn default() -> Self {
         Self {
             _phantom: PhantomData,
         }
@@ -95,7 +93,7 @@ where
     type Output = Self;
 
     fn add(self, _: Self) -> Self::Output {
-        Self::Output::new()
+        Self::Output::default()
     }
 }
 
@@ -113,7 +111,7 @@ where
     type Output = Self;
 
     fn sub(self, _: Self) -> Self::Output {
-        Self::Output::new()
+        Self::Output::default()
     }
 }
 
@@ -155,7 +153,7 @@ where
     >;
 
     fn mul(self, _: DimensionVector<M2, L2, T2, I2, Th2, N2, J2>) -> Self::Output {
-        Self::Output::new()
+        Self::Output::default()
     }
 }
 
@@ -197,7 +195,7 @@ where
     >;
 
     fn div(self, _: DimensionVector<M2, L2, T2, I2, Th2, N2, J2>) -> Self::Output {
-        Self::Output::new()
+        Self::Output::default()
     }
 }
 
@@ -230,7 +228,7 @@ where
     >;
 
     fn inv(self) -> Self::Output {
-        Self::Output::new()
+        Self::Output::default()
     }
 }
 
@@ -273,6 +271,6 @@ where
     >;
 
     fn pow(self) -> Self::Output {
-        Self::Output::new()
+        Self::Output::default()
     }
 }

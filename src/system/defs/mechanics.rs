@@ -1,5 +1,4 @@
 use crate::model::macros::{quantity, unit};
-use crate::model::quantity::Quantity;
 use crate::system::constants::STANDARD_GRAVITY;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
@@ -103,8 +102,8 @@ unit!(prefix: Kilonewton, Kilo, Newton);
 unit!(prefix: Meganewton, Mega, Newton);
 
 unit!(compound: Dyne, "dyn", [(Gram, P1), (Centimetre, P1), (Second, N2)]);
-unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
-unit!(compound: PoundForce, "lbf", [(Pound, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
+unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
+unit!(compound: PoundForce, "lbf", [(Pound, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
 
 // ===========================
 // PRESSURE
@@ -125,10 +124,10 @@ unit!(derived: Atmosphere, "atm", (101_325, Pascal));
 unit!(derived: TechnicalAtmosphere, "at", (1, KilogramForcePerSquareCentimetre));
 unit!(derived: Torr, "Torr", (1.0 / 760.0, Atmosphere));
 
-unit!(compound: MillimetreOfMercury, "mmHg", [(13595.1, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
-unit!(compound: InchOfMercury, "inHg", [(13595.1, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
-unit!(compound: MillimetreOfWater, "mmH2O", [(999.9720, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
-unit!(compound: InchOfWater, "inH2O", [(999.9720, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
+unit!(compound: MillimetreOfMercury, "mmHg", [(13595.1, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
+unit!(compound: InchOfMercury, "inHg", [(13595.1, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
+unit!(compound: MillimetreOfWater, "mmH2O", [(999.9720, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
+unit!(compound: InchOfWater, "inH2O", [(999.9720, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
 
 // ===========================
 // ENERGY

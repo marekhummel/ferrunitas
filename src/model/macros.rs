@@ -166,8 +166,8 @@ pub(crate) mod __inner_unit_macros {
             pub struct $unit_name;
 
             impl $unit_name {
-                pub const fn new_const(value: f64) -> $crate::model::quantity::Quantity<$dim_vec> {
-                    $crate::model::quantity::Quantity::new_const(value * $factor)
+                pub const fn new_const(value: f64) -> $crate::model::measure::Measure<$unit_name> {
+                    $crate::model::measure::Measure::new_const(value)
                 }
             }
 
@@ -236,13 +236,13 @@ pub(crate) mod __inner_unit_macros {
             );
         };
 
-        ($unit_name:ident, $abbrev:literal, [$dim_vec:ty, $factor_acc:expr; (constant $constant:expr, $quantity:ty, $exp:ty) $(, $components:tt)*] ) => {
+        ($unit_name:ident, $abbrev:literal, [$dim_vec:ty, $factor_acc:expr; (constant $constant:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
             $crate::__compound_unit!(
                 $unit_name,
                 $abbrev,
                 [
                     <$dim_vec as std::ops::Mul<
-                        <<$quantity as $crate::model::quantity::QuantityMarker>::DimensionVector as $crate::model::dimension::TypePow<$exp>>::Output
+                        <<$unit as $crate::model::unit::UnitBase>::DimensionVector as $crate::model::dimension::TypePow<$exp>>::Output
                     >>::Output,
                     $factor_acc * $crate::model::macros::__inner_unit_macros::__powi_const(
                         ($constant).value_const(), <$exp as typenum::ToInt<i32>>::INT

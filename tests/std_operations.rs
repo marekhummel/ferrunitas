@@ -1,10 +1,12 @@
 use ferrunitas::model::quantity::Quantity;
-use ferrunitas::model::unit::Unit;
 use ferrunitas::system::*;
+use ferrunitas::Unit;
 use typenum::*;
 
 #[cfg(test)]
 mod std_operations_tests {
+    use ferrunitas::model::dimension::DimensionVector;
+
     use super::*;
 
     // ===========================
@@ -12,7 +14,7 @@ mod std_operations_tests {
     // ===========================
 
     #[test]
-    fn test_add_same_unit() {
+    fn test_add_same_measure() {
         let mass1 = Kilogram::new(2.0);
         let mass2 = Kilogram::new(3.0);
         let result = mass1 + mass2;
@@ -20,7 +22,7 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_add_same_quantity_different_units() {
+    fn test_add_same_quantity_different_measures() {
         let mass1 = Kilogram::new(2.0);
         let mass2 = Gram::new(500.0);
         let result = mass1 + mass2;
@@ -28,18 +30,18 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_add_unit_quantity() {
-        let mass_unit = Kilogram::new(3.0);
+    fn test_add_measure_quantity() {
+        let mass_measure = Kilogram::new(3.0);
         let mass_quantity = Gram::new(2000.0).into_q();
-        let result = mass_unit + mass_quantity;
+        let result = mass_measure + mass_quantity;
         assert_eq!(result, Kilogram::new(5.0));
     }
 
     #[test]
-    fn test_add_quantity_unit() {
+    fn test_add_quantity_measure() {
         let mass_quantity = Kilogram::new(3.0).into_q();
-        let mass_unit = Gram::new(2000.0);
-        let result = mass_quantity + mass_unit;
+        let mass_measure = Gram::new(2000.0);
+        let result = mass_quantity + mass_measure;
         assert_eq!(result, Mass::new(5.0));
     }
 
@@ -48,7 +50,7 @@ mod std_operations_tests {
     // ===========================
 
     #[test]
-    fn test_add_assign_same_unit() {
+    fn test_add_assign_same_measure() {
         let mut length = Metre::new(10.0);
         let length2 = Metre::new(5.0);
         length += length2;
@@ -56,7 +58,7 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_add_assign_same_quantity_different_units() {
+    fn test_add_assign_same_quantity_different_measures() {
         let mut length = Metre::new(1.0);
         let length2 = Centimetre::new(50.0);
         length += length2;
@@ -64,7 +66,7 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_add_assign_unit_quantity() {
+    fn test_add_assign_measure_quantity() {
         let mut mass = Kilogram::new(3.0);
         let mass_quantity = Gram::new(2000.0).into_q();
         mass += mass_quantity;
@@ -72,10 +74,10 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_add_assign_quantity_unit() {
+    fn test_add_assign_quantity_measure() {
         let mut mass_quantity = Kilogram::new(3.0).into_q();
-        let mass_unit = Gram::new(2000.0);
-        mass_quantity += mass_unit;
+        let mass_measure = Gram::new(2000.0);
+        mass_quantity += mass_measure;
         assert_eq!(mass_quantity, Mass::new(5.0));
     }
 
@@ -84,7 +86,7 @@ mod std_operations_tests {
     // ===========================
 
     #[test]
-    fn test_sub_same_unit() {
+    fn test_sub_same_measure() {
         let time1 = Second::new(10.0);
         let time2 = Second::new(3.0);
         let result = time1 - time2;
@@ -92,7 +94,7 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_sub_same_quantity_different_units() {
+    fn test_sub_same_quantity_different_measures() {
         let time1 = Minute::new(2.0);
         let time2 = Second::new(30.0);
         let result = time1 - time2;
@@ -100,18 +102,18 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_sub_unit_quantity() {
-        let mass_unit = Kilogram::new(5.0);
+    fn test_sub_measure_quantity() {
+        let mass_measure = Kilogram::new(5.0);
         let mass_quantity = Gram::new(2000.0).into_q();
-        let result = mass_unit - mass_quantity;
+        let result = mass_measure - mass_quantity;
         assert_eq!(result, Kilogram::new(3.0));
     }
 
     #[test]
-    fn test_sub_quantity_unit() {
+    fn test_sub_quantity_measure() {
         let mass_quantity = Kilogram::new(5.0).into_q();
-        let mass_unit = Gram::new(2000.0);
-        let result = mass_quantity - mass_unit;
+        let mass_measure = Gram::new(2000.0);
+        let result = mass_quantity - mass_measure;
         assert_eq!(result, Mass::new(3.0));
     }
 
@@ -120,7 +122,7 @@ mod std_operations_tests {
     // ===========================
 
     #[test]
-    fn test_sub_assign_same_unit() {
+    fn test_sub_assign_same_measure() {
         let mut area = SquareMetre::new(25.0);
         let area2 = SquareMetre::new(9.0);
         area -= area2;
@@ -128,7 +130,7 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_sub_assign_same_quantity_different_units() {
+    fn test_sub_assign_same_quantity_different_measures() {
         let mut area = SquareMetre::new(1.0);
         let area2 = SquareCentimetre::new(2000.0);
         area -= area2;
@@ -136,7 +138,7 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_sub_assign_unit_quantity() {
+    fn test_sub_assign_measure_quantity() {
         let mut mass = Kilogram::new(5.0);
         let mass_quantity = Gram::new(2000.0).into_q();
         mass -= mass_quantity;
@@ -144,10 +146,10 @@ mod std_operations_tests {
     }
 
     #[test]
-    fn test_sub_assign_quantity_unit() {
+    fn test_sub_assign_quantity_measure() {
         let mut mass_quantity = Kilogram::new(5.0).into_q();
-        let mass_unit = Gram::new(2000.0);
-        mass_quantity -= mass_unit;
+        let mass_measure = Gram::new(2000.0);
+        mass_quantity -= mass_measure;
         assert_eq!(mass_quantity, Mass::new(3.0));
     }
 
@@ -183,11 +185,11 @@ mod std_operations_tests {
     }
 
     // ===========================
-    // UNIT × UNIT MULTIPLICATION TESTS
+    // measure × measure MULTIPLICATION TESTS
     // ===========================
 
     #[test]
-    fn test_unit_mul_unit() {
+    fn test_measure_mul_measure() {
         let mass = Kilogram::new(5.0);
         let acceleration = MetrePerSecondSquared::new(2.0);
         let force = mass * acceleration;
@@ -195,11 +197,11 @@ mod std_operations_tests {
     }
 
     // ===========================
-    // UNIT × QUANTITY MULTIPLICATION TESTS
+    // measure × QUANTITY MULTIPLICATION TESTS
     // ===========================
 
     #[test]
-    fn test_unit_mul_quantity() {
+    fn test_measure_mul_quantity() {
         let mass = Kilogram::new(5.0);
         let acceleration_quantity = MetrePerSecondSquared::new(2.0).into_q();
         let force = mass * acceleration_quantity;
@@ -207,11 +209,11 @@ mod std_operations_tests {
     }
 
     // ===========================
-    // QUANTITY × UNIT MULTIPLICATION TESTS
+    // QUANTITY × measure MULTIPLICATION TESTS
     // ===========================
 
     #[test]
-    fn test_quantity_mul_unit() {
+    fn test_quantity_mul_measure() {
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration = MetrePerSecondSquared::new(2.0);
         let force = mass_quantity * acceleration;
@@ -240,7 +242,7 @@ mod std_operations_tests {
         let velocity = MetrePerSecond::new(4.0);
         let result = scalar / velocity;
 
-        type InverseVelocity = Quantity<Z0, N1, P1, Z0, Z0, Z0, Z0>;
+        type InverseVelocity = Quantity<DimensionVector<Z0, N1, P1, Z0, Z0, Z0, Z0>>;
         assert_eq!(result, InverseVelocity::new(5.0));
     }
 
@@ -264,11 +266,11 @@ mod std_operations_tests {
     }
 
     // ===========================
-    // UNIT ÷ UNIT DIVISION TESTS
+    // measure ÷ measure DIVISION TESTS
     // ===========================
 
     #[test]
-    fn test_unit_div_unit() {
+    fn test_measure_div_measure() {
         let force = Newton::new(10.0);
         let mass = Kilogram::new(5.0);
         let acceleration = force / mass;
@@ -276,11 +278,11 @@ mod std_operations_tests {
     }
 
     // ===========================
-    // UNIT ÷ QUANTITY DIVISION TESTS
+    // measure ÷ QUANTITY DIVISION TESTS
     // ===========================
 
     #[test]
-    fn test_unit_div_quantity() {
+    fn test_measure_div_quantity() {
         let force = Newton::new(10.0);
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration = force / mass_quantity;
@@ -288,11 +290,11 @@ mod std_operations_tests {
     }
 
     // ===========================
-    // QUANTITY ÷ UNIT DIVISION TESTS
+    // QUANTITY ÷ measure DIVISION TESTS
     // ===========================
 
     #[test]
-    fn test_quantity_div_unit() {
+    fn test_quantity_div_measure() {
         let force_quantity = Newton::new(10.0).into_q();
         let mass = Kilogram::new(5.0);
         let acceleration = force_quantity / mass;

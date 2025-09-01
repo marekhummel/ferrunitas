@@ -15,5 +15,6 @@ mod sealed {
 }
 
 // Export Unit on crate level for easy access
+pub use crate::model::measure::Measure;
 pub use crate::model::unit::Unit;
 // pub use crate::system_test as system;

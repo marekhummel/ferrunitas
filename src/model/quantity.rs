@@ -1,12 +1,12 @@
 use std::fmt::{self, Debug};
 use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-use crate::common;
 use crate::model::dimension::{Dimensioned, TypePow};
+use crate::model::measure::Measure;
 use crate::model::unit::{Unit, UnitBase};
 use num_traits::Inv;
-use typenum::{Diff, Integer, Negate, NonZero, Prod, Sum, ToInt};
+use typenum::{Integer, NonZero, ToInt};
 
 // ===========================
 // Type-Level Dimensional System
@@ -32,23 +32,24 @@ impl<D: Dimensioned> Quantity<D> {
         }
     }
 
-    pub const fn new_const(value: f64) -> Self {
-        Self {
-            value,
-            _phantom: PhantomData,
-        }
+    pub fn from<U: Unit<Quantity = Self>>(value: impl Into<f64>) -> Self {
+        Measure::<U>::new(value.into()).into_q()
     }
 
     pub fn raw_value(&self) -> f64 {
         self.value
     }
 
-    pub const fn value_const(&self) -> f64 {
-        self.value
+    pub fn as_measure<U: Unit<Quantity = Self>>(&self) -> Measure<U> {
+        Measure::from_q(*self)
     }
 
-    pub fn format<U: UnitBase>(&self) -> String {
-        format!("{} {}", self.raw_value() / U::FACTOR, U::ABBREV)
+    pub fn convert<U1, U2>(value: f64) -> Measure<U2>
+    where
+        U1: Unit<Quantity = Self>,
+        U2: Unit<Quantity = Self>,
+    {
+        U1::new(value).convert::<U2>()
     }
 }
 
@@ -68,7 +69,7 @@ impl<D: Dimensioned> Dimensioned for Quantity<D> {
 
 /// Marker trait for types to be used in macros, not meant for outside usage
 #[doc(hidden)]
-pub trait QuantityMarker: Sized + Debug + Clone + Copy + crate::sealed::Sealed {
+pub trait QuantityMarker: Sized + Debug + Clone + Copy + PartialEq + crate::sealed::Sealed {
     type DimensionVector: Dimensioned;
 
     fn new(value: f64) -> Self;
@@ -107,9 +108,9 @@ impl<D: Dimensioned> fmt::Display for Quantity<D> {
 // ===========================
 
 // Addition - only works for same dimensions
-impl<D: Dimensioned> Add<Quantity<D>> for Quantity<D>
+impl<D> Add<Quantity<D>> for Quantity<D>
 where
-    D: Add,
+    D: Dimensioned + Add,
     <D as Add>::Output: Dimensioned,
 {
     type Output = Quantity<<D as Add>::Output>;
@@ -119,9 +120,31 @@ where
     }
 }
 
+impl<D, U> Add<Measure<U>> for Quantity<D>
+where
+    D: Dimensioned + Add,
+    U: Unit<Quantity = Quantity<D>>,
+    <D as Add>::Output: Dimensioned,
+{
+    type Output = Quantity<<D as Add>::Output>;
+
+    fn add(self, rhs: Measure<U>) -> Self::Output {
+        Self::Output::new(self.raw_value() + rhs.into_q().raw_value())
+    }
+}
+
 impl<D: Dimensioned> AddAssign<Quantity<D>> for Quantity<D> {
     fn add_assign(&mut self, rhs: Quantity<D>) {
         self.value += rhs.raw_value();
+    }
+}
+
+impl<D: Dimensioned, U> AddAssign<Measure<U>> for Quantity<D>
+where
+    U: Unit<Quantity = Quantity<D>>,
+{
+    fn add_assign(&mut self, rhs: Measure<U>) {
+        *self += rhs.into_q();
     }
 }
 
@@ -138,9 +161,31 @@ where
     }
 }
 
+impl<D, U> Sub<Measure<U>> for Quantity<D>
+where
+    D: Dimensioned + Sub,
+    U: Unit<Quantity = Quantity<D>>,
+    <D as Sub>::Output: Dimensioned,
+{
+    type Output = Quantity<<D as Sub>::Output>;
+
+    fn sub(self, rhs: Measure<U>) -> Self::Output {
+        self - rhs.into_q()
+    }
+}
+
 impl<D: Dimensioned> SubAssign<Quantity<D>> for Quantity<D> {
     fn sub_assign(&mut self, rhs: Quantity<D>) {
         self.value -= rhs.raw_value();
+    }
+}
+
+impl<D: Dimensioned, U> SubAssign<Measure<U>> for Quantity<D>
+where
+    U: Unit<Quantity = Quantity<D>>,
+{
+    fn sub_assign(&mut self, rhs: Measure<U>) {
+        *self -= rhs.into_q();
     }
 }
 
@@ -157,6 +202,19 @@ where
     }
 }
 
+impl<D1: Dimensioned, D2: Dimensioned, U> Mul<Measure<U>> for Quantity<D1>
+where
+    U: Unit<Quantity = Quantity<D2>>,
+    D1: Mul<D2>,
+    <D1 as Mul<D2>>::Output: Dimensioned,
+{
+    type Output = Quantity<<D1 as Mul<D2>>::Output>;
+
+    fn mul(self, rhs: Measure<U>) -> Self::Output {
+        self * rhs.into_q()
+    }
+}
+
 // Division - subtracts dimensions at type level
 impl<D1: Dimensioned, D2: Dimensioned> Div<Quantity<D2>> for Quantity<D1>
 where
@@ -167,6 +225,19 @@ where
 
     fn div(self, rhs: Quantity<D2>) -> Self::Output {
         Self::Output::new(self.raw_value() / rhs.raw_value())
+    }
+}
+
+impl<D1: Dimensioned, D2: Dimensioned, U> Div<Measure<U>> for Quantity<D1>
+where
+    U: Unit<Quantity = Quantity<D2>>,
+    D1: Div<D2>,
+    <D1 as Div<D2>>::Output: Dimensioned,
+{
+    type Output = Quantity<<D1 as Div<D2>>::Output>;
+
+    fn div(self, rhs: Measure<U>) -> Self::Output {
+        self / rhs.into_q()
     }
 }
 

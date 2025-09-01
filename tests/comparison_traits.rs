@@ -7,25 +7,25 @@ mod comparison_traits_tests {
     use super::*;
 
     // ===========================
-    // UNIT PARTIAL_EQ TESTS
+    // MEASURE PARTIAL_EQ TESTS
     // ===========================
 
     #[test]
-    fn test_unit_eq_same_unit_same_value() {
+    fn test_measure_eq_same_measure_same_value() {
         let mass1 = Kilogram::new(5.0);
         let mass2 = Kilogram::new(5.0);
         assert_eq!(mass1, mass2);
     }
 
     #[test]
-    fn test_unit_eq_same_unit_different_value() {
+    fn test_measure_eq_same_measure_different_value() {
         let mass1 = Kilogram::new(5.0);
         let mass2 = Kilogram::new(3.0);
         assert_ne!(mass1, mass2);
     }
 
     #[test]
-    fn test_unit_eq_same_quantity_different_units_equal_when_converted() {
+    fn test_measure_eq_same_quantity_different_measures_equal_when_converted() {
         let mass1 = Kilogram::new(2.0);
         let mass2 = Gram::new(2000.0); // 2 kg in grams
         assert_eq!(mass1.into_q(), mass2.into_q());
@@ -33,14 +33,14 @@ mod comparison_traits_tests {
     }
 
     #[test]
-    fn test_unit_eq_same_quantity_different_units_not_equal_when_different() {
+    fn test_measure_eq_same_quantity_different_measures_not_equal_when_different() {
         let mass1 = Kilogram::new(2.0);
         let mass2 = Gram::new(1500.0); // 1.5 kg in grams
         assert_ne!(mass1.into_q(), mass2.into_q()); // Should not be equal
     }
 
     /// ```compile_fail
-    /// use crate::units::*;
+    /// use crate::measures::*;
     ///
     /// fn bad_eq() {
     ///     let mass = Kilogram::new(5.0);
@@ -79,11 +79,11 @@ mod comparison_traits_tests {
     }
 
     // ===========================
-    // UNIT PARTIAL_ORD TESTS
+    // MEASURE PARTIAL_ORD TESTS
     // ===========================
 
     #[test]
-    fn test_unit_ord_same_unit_less_than() {
+    fn test_measure_ord_same_measure_less_than() {
         let mass1 = Kilogram::new(3.0);
         let mass2 = Kilogram::new(5.0);
         assert!(mass1 < mass2);
@@ -91,7 +91,7 @@ mod comparison_traits_tests {
     }
 
     #[test]
-    fn test_unit_ord_same_unit_greater_than() {
+    fn test_measure_ord_same_measure_greater_than() {
         let mass1 = Kilogram::new(7.0);
         let mass2 = Kilogram::new(5.0);
         assert!(mass1 > mass2);
@@ -99,7 +99,7 @@ mod comparison_traits_tests {
     }
 
     #[test]
-    fn test_unit_ord_same_unit_equal() {
+    fn test_measure_ord_same_measure_equal() {
         let mass1 = Kilogram::new(5.0);
         let mass2 = Kilogram::new(5.0);
         assert!(mass1 <= mass2);
@@ -108,7 +108,7 @@ mod comparison_traits_tests {
     }
 
     #[test]
-    fn test_unit_ord_different_units_same_quantity() {
+    fn test_measure_ord_different_measures_same_quantity() {
         let mass1 = Kilogram::new(2.0);
         let mass2 = Gram::new(2500.0); // 2.5 kg
         assert!(mass1.into_q() < mass2.into_q()); // 2 kg < 2.5 kg
@@ -116,7 +116,7 @@ mod comparison_traits_tests {
     }
 
     /// ```compile_fail
-    /// use crate::units::*;
+    /// use crate::measures::*;
     ///
     /// fn bad_eq() {
     ///     let mass1 = Kilogram::new(5.0);
@@ -126,7 +126,7 @@ mod comparison_traits_tests {
     /// ```
 
     #[test]
-    fn test_unit_ord_different_units_equal_when_converted() {
+    fn test_measure_ord_different_measures_equal_when_converted() {
         let mass1 = Kilogram::new(3.0);
         let mass2 = Gram::new(3000.0); // 3 kg
         let q1 = mass1.into_q();
@@ -166,7 +166,7 @@ mod comparison_traits_tests {
     }
 
     #[test]
-    fn test_quantity_ord_from_different_units() {
+    fn test_quantity_ord_from_different_measures() {
         let mass1: Mass = Kilogram::new(2.0).into_q();
         let mass2: Mass = Gram::new(2500.0).into_q(); // 2.5 kg
         assert!(mass1 < mass2);
@@ -174,7 +174,7 @@ mod comparison_traits_tests {
     }
 
     #[test]
-    fn test_quantity_ord_from_different_units_equal_values() {
+    fn test_quantity_ord_from_different_measures_equal_values() {
         let mass1: Mass = Kilogram::new(3.0).into_q();
         let mass2: Mass = Gram::new(3000.0).into_q(); // 3 kg
         assert!(mass1 <= mass2);
@@ -191,44 +191,44 @@ mod comparison_traits_tests {
     }
 
     // ===========================
-    // MIXED UNIT/QUANTITY COMPARISON TESTS
+    // MIXED MEASURE/QUANTITY COMPARISON TESTS
     // ===========================
 
     #[test]
-    fn test_unit_vs_quantity_eq_same_value() {
-        let mass_unit = Kilogram::new(5.0);
+    fn test_measure_vs_quantity_eq_same_value() {
+        let mass_measure = Kilogram::new(5.0);
         let mass_quantity: Mass = Kilogram::new(5.0).into_q();
 
         // Units and quantities should be comparable when converted
-        assert_eq!(mass_unit.into_q(), mass_quantity);
-        assert_eq!(mass_quantity.as_unit::<Kilogram>(), mass_unit);
+        assert_eq!(mass_measure.into_q(), mass_quantity);
+        assert_eq!(mass_quantity.as_measure::<Kilogram>(), mass_measure);
     }
 
     #[test]
-    fn test_unit_vs_quantity_eq_different_value() {
-        let mass_unit = Kilogram::new(5.0);
+    fn test_measure_vs_quantity_eq_different_value() {
+        let mass_measure = Kilogram::new(5.0);
         let mass_quantity: Mass = Kilogram::new(3.0).into_q();
 
-        assert_ne!(mass_unit.into_q(), mass_quantity);
-        assert_ne!(mass_quantity.as_unit::<Kilogram>(), mass_unit);
+        assert_ne!(mass_measure.into_q(), mass_quantity);
+        assert_ne!(mass_quantity.as_measure::<Kilogram>(), mass_measure);
     }
 
     #[test]
-    fn test_unit_vs_quantity_ord() {
-        let mass_unit = Kilogram::new(3.0);
+    fn test_measure_vs_quantity_ord() {
+        let mass_measure = Kilogram::new(3.0);
         let mass_quantity: Mass = Kilogram::new(5.0).into_q();
 
-        assert!(mass_unit.into_q() < mass_quantity);
-        assert!(mass_unit < mass_quantity.as_unit::<Kilogram>());
+        assert!(mass_measure.into_q() < mass_quantity);
+        assert!(mass_measure < mass_quantity.as_measure::<Kilogram>());
     }
 
     #[test]
-    fn test_unit_vs_quantity_ord_with_unit_conversion() {
-        let mass_unit = Kilogram::new(2.0);
+    fn test_measure_vs_quantity_ord_with_measure_conversion() {
+        let mass_measure = Kilogram::new(2.0);
         let mass_quantity: Mass = Gram::new(2500.0).into_q(); // 2.5 kg
 
-        assert!(mass_unit.into_q() < mass_quantity);
-        assert!(mass_unit < mass_quantity.as_unit::<Kilogram>());
+        assert!(mass_measure.into_q() < mass_quantity);
+        assert!(mass_measure < mass_quantity.as_measure::<Kilogram>());
     }
 
     // ===========================

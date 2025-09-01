@@ -1,15 +1,18 @@
 //! Example usage of the Ferrunitas library regarding functions.
 //! Generally its recommended to stick to quantities within functions, see below
 
-use ferrunitas::{system::*, Unit};
+use ferrunitas::{system::*, Measure, Unit};
 
 // Requiring specific units in function signatures
-fn calculate_kinetic_energy(mass: Gram, velocity: MetrePerSecond) -> Joule {
-    (0.5 * mass * velocity * velocity).as_unit()
+fn calculate_kinetic_energy(
+    mass: Measure<Gram>,
+    velocity: Measure<MetrePerSecond>,
+) -> Measure<Joule> {
+    (0.5 * mass * velocity * velocity).as_measure()
 }
 
 // Working with quantities and where clause
-fn calculate_work<F, L>(force: F, distance: L) -> Energy
+fn calculate_work<F, L>(force: Measure<F>, distance: Measure<L>) -> Energy
 where
     F: Unit<Quantity = Force>,
     L: Unit<Quantity = Length>,
@@ -19,25 +22,25 @@ where
 
 // Working with quantities and impl
 fn calculate_power_from_work_and_time(
-    work: impl Unit<Quantity = Energy>,
-    time: impl Unit<Quantity = Time>,
+    work: Measure<impl Unit<Quantity = Energy>>,
+    time: Measure<impl Unit<Quantity = Time>>,
 ) -> Power {
     work.into_q() / time.into_q()
 }
 
 // Accepting any unit of that quantity but returning a specific unit
 fn calculate_force(
-    mass: impl Unit<Quantity = Mass>,
-    acceleration: impl Unit<Quantity = Acceleration>,
-) -> Newton {
-    (mass.into_q() * acceleration.into_q()).as_unit()
+    mass: Measure<impl Unit<Quantity = Mass>>,
+    acceleration: Measure<impl Unit<Quantity = Acceleration>>,
+) -> Measure<Newton> {
+    (mass.into_q() * acceleration.into_q()).as_measure()
 }
 
 // Accepting any unit but computing with units requires more guards, as they can not be
 // attached to the generic Unit trait yet.
-fn calculate_velocity<L, T>(distance: L, time: T) -> Velocity
+fn calculate_velocity<L, T>(distance: Measure<L>, time: Measure<T>) -> Velocity
 where
-    L: Unit<Quantity = Length> + std::ops::Div<T, Output = Velocity>,
+    L: Unit<Quantity = Length>, // + std::ops::Div<T, Output = Velocity>,
     T: Unit<Quantity = Time>,
 {
     distance / time
@@ -67,7 +70,7 @@ fn main() {
         "Work done by force {} over distance {}: {:.2}",
         force,
         distance,
-        work.as_unit::<Joule>()
+        work.as_measure::<Joule>()
     );
 
     // Test power: P = W/t
@@ -78,7 +81,7 @@ fn main() {
         "Power of work {} over time {}: {:.2}",
         work,
         time,
-        power.as_unit::<Watt>()
+        power.as_measure::<Watt>()
     );
 
     // Test force: F = ma
@@ -98,19 +101,20 @@ fn main() {
         "Velocity of distance {} over time {}: {:.3}",
         distance,
         time,
-        velocity.as_unit::<MetrePerSecond>()
+        velocity.as_measure::<MetrePerSecond>()
     );
 
     // Test acceleration: a = v/t
     let velocity_start = MetrePerSecond::new(0.0);
     let velocity_end = MetrePerSecond::new(30.0);
     let time = Second::new(6.0);
-    let acceleration = calculate_acceleration((velocity_end - velocity_start).to_q(), time.to_q());
+    let acceleration =
+        calculate_acceleration((velocity_end - velocity_start).into_q(), time.into_q());
     println!(
         "Acceleration from {} to {} over time {}: {:.2}",
         velocity_start,
         velocity_end,
         time,
-        acceleration.as_unit::<MetrePerSecondSquared>()
+        acceleration.as_measure::<MetrePerSecondSquared>()
     );
 }

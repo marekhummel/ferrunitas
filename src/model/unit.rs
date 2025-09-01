@@ -1,26 +1,11 @@
-use std::{
-    fmt::{Debug, Display},
-    marker::PhantomData,
-    ops::{Add, Div, Mul, Sub},
-};
+use std::fmt::Debug;
 
-use crate::model::{
-    dimension::Dimensioned,
-    prefix::{Prefix, Prefixable},
-    quantity::QuantityMarker,
-};
+use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityMarker};
 
 pub trait UnitBase: crate::sealed::Sealed + Debug + Clone + Copy {
     type DimensionVector: Dimensioned;
     const FACTOR: f64;
     const ABBREV: &'static str;
-
-    // /// Create a new unit from a raw value
-    // fn new(value: impl Into<f64>) -> Self::InternalQuantity {
-    //     <Self::InternalQuantity>::new(value.into() * Self::FACTOR)
-    // }
-
-    // fn internal_new(value: impl Into<f64>) -> Self;
 }
 
 impl<U> crate::sealed::Sealed for U where U: UnitBase {}
@@ -31,10 +16,10 @@ impl<U> crate::sealed::Sealed for U where U: UnitBase {}
 pub trait Unit:
     UnitBase<DimensionVector = <Self::Quantity as QuantityMarker>::DimensionVector>
 {
-    type Quantity: QuantityMarker;
+    type Quantity: QuantityMarker + Dimensioned;
 
-    /// Create a new unit from a raw value
-    fn new(value: impl Into<f64>) -> Self::Quantity {
-        <Self::Quantity>::new(value.into() * Self::FACTOR)
+    /// Create a new measure from a raw value
+    fn new(value: impl Into<f64>) -> Measure<Self> {
+        Measure::new(value.into())
     }
 }
