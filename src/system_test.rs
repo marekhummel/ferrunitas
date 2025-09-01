@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_variables)]
 
-use crate::model::macros::{prefix, unit};
+use crate::model::macros::{prefix, quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
 use typenum::*;
@@ -16,7 +16,8 @@ prefix!(Kilo, 1e3, "k");
 prefix!(Mega, 1e6, "M");
 
 // MASS
-pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
+// quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
+quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Gram, "g", Mass; prefixable, factor = 0.001,);
 unit!(prefix: Kilogram, Kilo, Gram);
@@ -27,7 +28,8 @@ unit!(derived: Pound, "lb", (16, Ounce));
 unit!(derived: Stone, "st", (14, Pound));
 
 // LENGTH
-pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
+// quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
+quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Metre, "m", Length; prefixable,);
 
@@ -43,7 +45,8 @@ unit!(derived: Mile, "mi", (1760, Yard));
 unit!(derived: NauticalMile, "NM", (1852, Metre); prefixable);
 
 // Time
-pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
+// quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
+quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Second, "s", Time; prefixable,);
 
@@ -54,51 +57,18 @@ unit!(derived: Hour, "h", (60, Minute));
 unit!(derived: Day, "d", (24, Hour));
 
 // Speed
-pub type Velocity = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0>; // L T⁻¹
+// pub type Velocity<U> = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0, U>; // L T⁻¹
+quantity!(Velocity: M Z0, L P1, T N1, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(compound: MetrePerSecond, "m/s", [(Metre, P1), (Second, N1)]);
 unit!(compound: KilometrePerHour, "km/h", [(Kilometre, P1), (Hour, N1)]);
 unit!(compound: MilePerHour, "mph", [(Mile, P1), (Hour, N1)]);
 unit!(compound: Knot, "kn", [(NauticalMile, P1), (Hour, N1)]);
 
-fn computation_quantities() {
-    // Define inputs
-    let metre = Metre::new(5.0);
-    let millimetre = Millimetre::new(30.0);
-    let second = Second::new(2.0);
-    let minute = Minute::new(0.1);
-
-    // Work with quantities
-    let mut distance: Length = metre.into_q() + millimetre.into_q();
-    let mut time: Time = second.into_q() + minute.into_q();
-
-    // Modify variables a bit
-    distance += Centimetre::new(7.0).into_q();
-    distance -= Centimetre::new(3.0).into_q();
-    distance /= 2.0;
-    time += Millisecond::new(50.0).into_q();
-    time *= 1.5;
-
-    // Compute work and power.
-    let whatever = distance * time;
-    let speed: Velocity = distance / time; // v = d/t
-
-    // Output
-    println!("--- Computation Example (Quantities) ---");
-    println!("Distance: {:.3}", distance);
-    println!("Time: {:.3}", time);
-    println!(
-        "Speed: {:.3} (as unit: {:.3})",
-        speed,
-        speed.as_unit::<KilometrePerHour>()
-    );
-    println!();
-}
-
 fn computation_units() {
     // Define base variable
-    let mut metre = Metre::new(5.0) - Millimetre::new(30.0);
-    let mut second = Second::new(2.0) + Minute::new(0.1);
+    let mut metre: Length = Metre::new(5.0) - Millimetre::new(30.0);
+    let mut second: Time = Second::new(2.0) + Minute::new(0.1);
 
     // Modify variables a bit (directly as units)
     metre += Centimetre::new(7.0);
@@ -109,7 +79,7 @@ fn computation_units() {
 
     // Compute work and power. Note that any multiplication or division of units with other units or
     // quantities will result in a quantity and requires explicit conversion into a unit.
-    let speed: Velocity = metre / second; // v = d/t
+    let speed = metre / second; // v = d/t
 
     println!("--- Computation Example (Units) ---");
     println!("Metres: {:.3}", metre);
@@ -117,11 +87,10 @@ fn computation_units() {
     println!(
         "Speed: {:.3} = {:.3}",
         speed,
-        speed.as_unit::<KilometrePerHour>()
+        speed.format::<KilometrePerHour>()
     );
 }
 
 fn main() {
-    computation_quantities();
     computation_units();
 }

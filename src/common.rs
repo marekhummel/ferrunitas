@@ -1,55 +1,86 @@
-/// Public trait in private module to prevent external implementations
-pub trait Sealed {}
+use crate::model::{dimension::Dimension, quantity::QuantityMarker};
 
-/// Public macro to display quantity type if needed
-#[macro_export]
-macro_rules! format_quantity_dims {
-    ($quantity:ty) => {{
-        let items: [(&str, i8); 7] =
-            [
-                (
-                    "M",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::M as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "L",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::L as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "T",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::T as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "I",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::I as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "Θ",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::Th as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "N",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::N as typenum::Integer>::to_i8(),
-                ),
-                (
-                    "J",
-                    <<$quantity as $crate::model::quantity::Dimensioned>::J as typenum::Integer>::to_i8(),
-                ),
-            ];
-        let mut dim_string = String::new();
-        for (dim, exp) in items {
-            if exp == 0 {
-                continue;
-            }
-            dim_string.push_str(&format!("{}^{}·", dim, exp));
-        }
-        if !dim_string.is_empty() {
-            dim_string.pop();
-        }
-
-        dim_string
-    }};
+pub fn format_quantity<Q: QuantityMarker>() -> String {
+    format_dims::<<Q as QuantityMarker>::DimensionVector>()
 }
+
+pub fn format_dims<D: Dimensioned>() -> String {
+    let items: [(&str, i8); 7] = [
+        ("M", D::M::to_int()),
+        ("L", D::L::to_int()),
+        ("T", D::T::to_int()),
+        ("I", D::I::to_int()),
+        ("Θ", D::Th::to_int()),
+        ("N", D::N::to_int()),
+        ("J", D::J::to_int()),
+    ];
+
+    let mut dim_string = String::new();
+    for (dim, exp) in items {
+        if exp == 0 {
+            continue;
+        }
+        dim_string.push_str(&format!("{}^{}·", dim, exp));
+    }
+    if !dim_string.is_empty() {
+        dim_string.pop();
+    }
+
+    dim_string
+}
+
+// /// Public macro to display quantity type if needed
+// #[macro_export]
+// macro_rules! format_quantity_dims {
+//     ($quantity:ty) => {{
+//         $crate::format_quantity_dims!(dim: <$quantity as $crate::model::quantity::QuantityMarker>::DimensionVector);
+//     }};
+
+//     (dim: $dim_vec:ty) => {{
+//         let items: [(&str, i8); 7] = [
+//             (
+//                 "M",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::M as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//             (
+//                 "L",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::L as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//             (
+//                 "T",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::T as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//             (
+//                 "I",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::I as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//             (
+//                 "Θ",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::Th as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//             (
+//                 "N",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::N as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//             (
+//                 "J",
+//                 <<$dim_vec as $crate::model::quantity::Dimensioned>::J as $crate::model::dimension::Dimension>::to_int(),
+//             ),
+//         ];
+//         let mut dim_string = String::new();
+//         for (dim, exp) in items {
+//             if exp == 0 {
+//                 continue;
+//             }
+//             dim_string.push_str(&format!("{}^{}·", dim, exp));
+//         }
+//         if !dim_string.is_empty() {
+//             dim_string.pop();
+//         }
+
+//         dim_string
+//     }}
+// }
 
 /// Generate two unit tests for a unit: quantity validation and value conversion
 #[cfg(test)]
@@ -60,7 +91,6 @@ macro_rules! verify_unit {
             fn [<test_ $unit:lower _ $quantity:lower _quantity>]() {
                 use $crate::model::unit::{Unit};
                 use std::any::TypeId;
-                use $crate::format_quantity_dims;
 
                 // Runtime type assertion - check that TypeIds are identical
                 let unit_quantity_type_id = TypeId::of::<<$unit as Unit>::Quantity>();
@@ -71,20 +101,15 @@ macro_rules! verify_unit {
                     expected_quantity_type_id,
                     "Type mismatch: {} has quantity type ({}) that doesn't match expected {} ({})",
                     stringify!($unit),
-                    format_quantity_dims!(<$unit as Unit>::Quantity),
+                    $crate::common::format_quantity::<<$unit as Unit>::Quantity>(),
                     stringify!($quantity),
-                    format_quantity_dims!($quantity)
+                    $crate::common::format_quantity::<$quantity>()
                 );
             }
 
             #[test]
             fn [<test_ $unit:lower _ $quantity:lower _value>]() {
-                use $crate::model::unit::UnitBase;
-                use $crate::model::quantity::ToQuantity;
-
-                let unit = $unit::new(1.0);
-                let quantity = unit.internal_into_q();
-
+                let quantity = <$unit as $crate::model::unit::Unit>::new(1.0);
                 $crate::common::assert_almost_equal!(quantity.raw_value(), $value);
             }
         }
@@ -123,6 +148,8 @@ pub(crate) use assert_almost_equal;
 
 #[cfg(test)]
 pub(crate) use verify_unit;
+
+use crate::model::dimension::Dimensioned;
 
 #[cfg(test)]
 mod tests {

@@ -1,11 +1,11 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use typenum::*;
 
 // ===========================
 // DIMENSIONLESS QUANTITIES
 // ===========================
-pub type Dimensionless = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
+quantity!(Dimensionless: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
 unit!(base: One, "1", Dimensionless;);
 
 // Plane angle

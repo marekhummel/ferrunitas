@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::defs::mechanics::PoundForce;
 use crate::system::prefixes::*;
@@ -7,7 +7,7 @@ use typenum::*;
 // ===========================
 // MASS
 // ===========================
-pub type Mass = Quantity<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
+quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Gram, "g", Mass; prefixable, factor = 0.001,); // To counteract mass anomaly, that kilogram is base for mass
 
@@ -43,7 +43,7 @@ unit!(compound: Slug, "slug", [(PoundForce, P1), (Second, P2), (Foot, N1)]);
 // ===========================
 // LENGTH
 // ===========================
-pub type Length = Quantity<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
+quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Metre, "m", Length; prefixable,);
 
@@ -78,7 +78,7 @@ unit!(prefix: Megaparsec, Mega, Parsec);
 // ===========================
 // TIME
 // ===========================
-pub type Time = Quantity<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
+quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Second, "s", Time; prefixable,);
 
@@ -115,7 +115,7 @@ unit!(derived: BesselianYear, "Besselian year", (365.242198781, Day)); // Astron
 // ===========================
 // ELECTRIC CURRENT
 // ===========================
-pub type ElectricCurrent = Quantity<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
+quantity!(ElectricCurrent: M Z0, L Z0, T Z0, I P1, Th Z0, N Z0, J Z0);
 
 unit!(base: Ampere, "A", ElectricCurrent; prefixable,);
 
@@ -126,7 +126,7 @@ unit!(prefix: Kiloampere, Kilo, Ampere);
 // ===========================
 // TEMPERATURE
 // ===========================
-pub type Temperature = Quantity<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
+quantity!(Temperature: M Z0, L Z0, T Z0, I Z0, Th P1, N Z0, J Z0);
 
 unit!(base: Kelvin, "K", Temperature; prefixable,);
 
@@ -140,7 +140,7 @@ unit!(prefix: Microkelvin, Micro, Kelvin);
 // ===========================
 // AMOUNT OF SUBSTANCE
 // ===========================
-pub type AmountOfSubstance = Quantity<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
+quantity!(AmountOfSubstance: M Z0, L Z0, T Z0, I Z0, Th Z0, N P1, J Z0);
 
 unit!(base: Mole, "mol", AmountOfSubstance; prefixable,);
 
@@ -151,7 +151,7 @@ unit!(prefix: Nanomole, Nano, Mole);
 // ===========================
 // LUMINOUS INTENSITY
 // ===========================
-pub type LuminousIntensity = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
+quantity!(LuminousIntensity: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J P1);
 
 unit!(base: Candela, "cd", LuminousIntensity; prefixable,);
 

@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::constants::STANDARD_GRAVITY;
 use crate::system::defs::base::*;
@@ -10,7 +10,7 @@ use typenum::*;
 // ===========================
 // AREA
 // ===========================
-pub type Area = Quantity<Z0, P2, Z0, Z0, Z0, Z0, Z0>; // L²
+quantity!(Area: M Z0, L P2, T Z0, I Z0, Th Z0, N Z0, J Z0); // L²
 
 unit!(compound: SquareMetre, "m²", [(Metre, P2)]; prefixable);
 unit!(compound: SquareKilometre, "km²", [(Kilometre, P2)]);
@@ -23,7 +23,7 @@ unit!(prefix: Hectare, Hecto, Are);
 // ===========================
 // VOLUME
 // ===========================
-pub type Volume = Quantity<Z0, P3, Z0, Z0, Z0, Z0, Z0>; // L³
+quantity!(Volume: M Z0, L P3, T Z0, I Z0, Th Z0, N Z0, J Z0); // L³
 
 unit!(compound: CubicMetre, "m³", [(Metre, P3)]);
 unit!(compound: Litre, "l", [(Decimetre, P3)]; prefixable);
@@ -55,7 +55,7 @@ unit!(compound: BoardFoot, "bd ft", [(Foot, P2), (Inch, P1)]);
 // ===========================
 // VELOCITY
 // ===========================
-pub type Velocity = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0>; // L T⁻¹
+quantity!(Velocity: M Z0, L P1, T N1, I Z0, Th Z0, N Z0, J Z0); // L T⁻¹
 
 unit!(compound: MetrePerSecond, "m/s", [(Metre, P1), (Second, N1)]);
 unit!(compound: KilometrePerHour, "km/h", [(Kilometre, P1), (Hour, N1)]);
@@ -65,7 +65,7 @@ unit!(compound: Knot, "kn", [(NauticalMile, P1), (Hour, N1)]);
 // ===========================
 // ACCELERATION
 // ===========================
-pub type Acceleration = Quantity<Z0, P1, N2, Z0, Z0, Z0, Z0>; // L T⁻²
+quantity!(Acceleration: M Z0, L P1, T N2, I Z0, Th Z0, N Z0, J Z0); // L T⁻²
 
 unit!(compound: MetrePerSecondSquared, "m/s²", [(Metre, P1), (Second, N2)]);
 unit!(compound: Gal, "Gal", [(Centimetre, P1), (Second, N2)]; prefixable);
@@ -73,14 +73,14 @@ unit!(compound: Gal, "Gal", [(Centimetre, P1), (Second, N2)]; prefixable);
 // ===========================
 // WAVE NUMBER
 // ===========================
-pub type WaveNumber = Quantity<Z0, N1, Z0, Z0, Z0, Z0, Z0>; // L⁻¹
+quantity!(WaveNumber: M Z0, L N1, T Z0, I Z0, Th Z0, N Z0, J Z0); // L⁻¹
 
 unit!(compound: ReciprocalMetre, "m⁻¹", [(Metre, N1)]);
 
 // ===========================
 // DENSITY
 // ===========================
-pub type Density = Quantity<P1, N3, Z0, Z0, Z0, Z0, Z0>; // M L⁻³
+quantity!(Density: M P1, L N3, T Z0, I Z0, Th Z0, N Z0, J Z0); // M L⁻³
 
 unit!(compound: KilogramPerCubicMetre, "kg/m³", [(Kilogram, P1), (CubicMetre, N1)]);
 unit!(compound: GramPerCubicCentimetre, "g/cm³", [(Gram, P1), (CubicCentimetre, N1)]);
@@ -88,7 +88,7 @@ unit!(compound: GramPerCubicCentimetre, "g/cm³", [(Gram, P1), (CubicCentimetre,
 // ===========================
 // SPECIFIC VOLUME
 // ===========================
-pub type SpecificVolume = Quantity<N1, P3, Z0, Z0, Z0, Z0, Z0>; // L³ M⁻¹
+quantity!(SpecificVolume: M N1, L P3, T Z0, I Z0, Th Z0, N Z0, J Z0); // L³ M⁻¹
 
 unit!(compound: CubicMetrePerKilogram, "m³/kg", [(CubicMetre, P1), (Kilogram, N1)]);
 unit!(compound: CubicCentimetrePerGram, "cm³/g", [(CubicCentimetre, P1), (Gram, N1)]);
@@ -96,20 +96,20 @@ unit!(compound: CubicCentimetrePerGram, "cm³/g", [(CubicCentimetre, P1), (Gram,
 // ===========================
 // FORCE
 // ===========================
-pub type Force = Quantity<P1, P1, N2, Z0, Z0, Z0, Z0>; // M L T⁻²
+quantity!(Force: M P1, L P1, T N2, I Z0, Th Z0, N Z0, J Z0); // M L T⁻²
 
 unit!(compound: Newton, "N", [(Kilogram, P1), (Metre, P1), (Second, N2)]; prefixable);
 unit!(prefix: Kilonewton, Kilo, Newton);
 unit!(prefix: Meganewton, Mega, Newton);
 
 unit!(compound: Dyne, "dyn", [(Gram, P1), (Centimetre, P1), (Second, N2)]);
-unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
-unit!(compound: PoundForce, "lbf", [(Pound, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
+unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
+unit!(compound: PoundForce, "lbf", [(Pound, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
 
 // ===========================
 // PRESSURE
 // ===========================
-pub type Pressure = Quantity<P1, N1, N2, Z0, Z0, Z0, Z0>; // M L⁻¹ T⁻²
+quantity!(Pressure: M P1, L N1, T N2, I Z0, Th Z0, N Z0, J Z0); // M L⁻¹ T⁻²
 
 unit!(compound: Pascal, "Pa", [(Newton, P1), (Metre, N2)]; prefixable);
 unit!(prefix: Kilopascal, Kilo, Pascal);
@@ -125,15 +125,15 @@ unit!(derived: Atmosphere, "atm", (101_325, Pascal));
 unit!(derived: TechnicalAtmosphere, "at", (1, KilogramForcePerSquareCentimetre));
 unit!(derived: Torr, "Torr", (1.0 / 760.0, Atmosphere));
 
-unit!(compound: MillimetreOfMercury, "mmHg", [(13595.1, KilogramPerCubicMetre, P1), (Millimetre, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
-unit!(compound: InchOfMercury, "inHg", [(13595.1, KilogramPerCubicMetre, P1), (Inch, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
-unit!(compound: MillimetreOfWater, "mmH2O", [(999.9720, KilogramPerCubicMetre, P1), (Millimetre, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
-unit!(compound: InchOfWater, "inH2O", [(999.9720, KilogramPerCubicMetre, P1), (Inch, P1), (STANDARD_GRAVITY.0, MetrePerSecondSquared, P1)]);
+unit!(compound: MillimetreOfMercury, "mmHg", [(13595.1, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
+unit!(compound: InchOfMercury, "inHg", [(13595.1, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
+unit!(compound: MillimetreOfWater, "mmH2O", [(999.9720, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
+unit!(compound: InchOfWater, "inH2O", [(999.9720, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, Acceleration, P1)]);
 
 // ===========================
 // ENERGY
 // ===========================
-pub type Energy = Quantity<P1, P2, N2, Z0, Z0, Z0, Z0>; // M L² T⁻²
+quantity!(Energy: M P1, L P2, T N2, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻²
 
 unit!(compound: Joule, "J", [(Newton, P1), (Metre, P1)]; prefixable);
 unit!(prefix: Kilojoule, Kilo, Joule);
@@ -162,7 +162,7 @@ unit!(derived: Quad, "quad", (1e15, BritishThermalUnit));
 // ===========================
 // POWER
 // ===========================
-pub type Power = Quantity<P1, P2, N3, Z0, Z0, Z0, Z0>; // M L² T⁻³
+quantity!(Power: M P1, L P2, T N3, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻³
 
 unit!(compound: Watt, "W", [(Joule, P1), (Second, N1)]; prefixable);
 unit!(prefix: Kilowatt, Kilo, Watt);
@@ -175,7 +175,7 @@ unit!(compound: ImperialHorsepower, "bhp", [(550, FootPoundForce, P1), (Second, 
 // ===========================
 // FREQUENCY
 // ===========================
-pub type Frequency = Quantity<Z0, Z0, N1, Z0, Z0, Z0, Z0>; // T⁻¹
+quantity!(Frequency: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0); // T⁻¹
 
 unit!(compound: Hertz, "Hz", [(Second, N1)]; prefixable);
 unit!(prefix: Kilohertz, Kilo, Hertz);
@@ -186,7 +186,7 @@ unit!(prefix: Terahertz, Tera, Hertz);
 // ===========================
 // ANGULAR VELOCITY
 // ===========================
-pub type AngularVelocity = Quantity<Z0, Z0, N1, Z0, Z0, Z0, Z0>; // T⁻¹
+quantity!(AngularVelocity: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0); // T⁻¹
 
 unit!(compound: RadianPerSecond, "rad/s", [(Radian, P1), (Second, N1)]);
 unit!(compound: DegreePerSecond, "°/s", [(Degree, P1), (Second, N1)]);
@@ -195,14 +195,14 @@ unit!(compound: RevolutionPerMinute, "rpm", [(Radian, P1), (Minute, N1)]);
 // ===========================
 // ANGULAR ACCELERATION
 // ===========================
-pub type AngularAcceleration = Quantity<Z0, Z0, N2, Z0, Z0, Z0, Z0>; // T⁻²
+quantity!(AngularAcceleration: M Z0, L Z0, T N2, I Z0, Th Z0, N Z0, J Z0); // T⁻²
 
 unit!(compound: RadianPerSecondSquared, "rad/s²", [(Radian, P1), (Second, N2)]);
 
 // ===========================
 // TORQUE / MOMENT
 // ===========================
-pub type Torque = Quantity<P1, P2, N2, Z0, Z0, Z0, Z0>; // M L² T⁻²
+quantity!(Torque: M P1, L P2, T N2, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻²
 
 unit!(compound: NewtonMetre, "N·m", [(Newton, P1), (Metre, P1)]);
 unit!(compound: FootPound, "ft·lbf", [(Foot, P1), (PoundForce, P1)]);
@@ -210,14 +210,14 @@ unit!(compound: FootPound, "ft·lbf", [(Foot, P1), (PoundForce, P1)]);
 // ===========================
 // MOMENT OF INERTIA
 // ===========================
-pub type MomentOfInertia = Quantity<P1, P2, Z0, Z0, Z0, Z0, Z0>; // M L²
+quantity!(MomentOfInertia: M P1, L P2, T Z0, I Z0, Th Z0, N Z0, J Z0); // M L²
 
 unit!(compound: KilogramSquareMetre, "kg·m²", [(Kilogram, P1), (SquareMetre, P1)]);
 
 // ===========================
 // DYNAMIC VISCOSITY
 // ===========================
-pub type DynamicViscosity = Quantity<P1, N1, N1, Z0, Z0, Z0, Z0>; // M L⁻¹ T⁻¹
+quantity!(DynamicViscosity: M P1, L N1, T N1, I Z0, Th Z0, N Z0, J Z0); // M L⁻¹ T⁻¹
 
 unit!(compound: PascalSecond, "Pa·s", [(Pascal, P1), (Second, P1)]);
 unit!(compound: Poise, "P", [(Dyne, P1), (Second, P1), (Centimetre, N2)]; prefixable);
@@ -226,7 +226,7 @@ unit!(prefix: Centipoise, Centi, Poise);
 // ===========================
 // KINEMATIC VISCOSITY
 // ===========================
-pub type KinematicViscosity = Quantity<Z0, P2, N1, Z0, Z0, Z0, Z0>; // L² T⁻¹
+quantity!(KinematicViscosity: M Z0, L P2, T N1, I Z0, Th Z0, N Z0, J Z0); // L² T⁻¹
 
 unit!(compound: SquareMetrePerSecond, "m²/s", [(SquareMetre, P1), (Second, N1)]);
 unit!(compound: Stokes, "St", [(SquareCentimetre, P1), (Second, N1)]; prefixable);
@@ -235,7 +235,7 @@ unit!(prefix: Centistokes, Centi, Stokes);
 // ===========================
 // SURFACE TENSION
 // ===========================
-pub type SurfaceTension = Quantity<P1, Z0, N2, Z0, Z0, Z0, Z0>; // M T⁻²
+quantity!(SurfaceTension: M P1, L Z0, T N2, I Z0, Th Z0, N Z0, J Z0); // M T⁻²
 
 unit!(compound: NewtonPerMetre, "N/m", [(Newton, P1), (Metre, N1)]);
 unit!(compound: DynePerCentimetre, "dyn/cm", [(Dyne, P1), (Centimetre, N1)]);
@@ -243,7 +243,7 @@ unit!(compound: DynePerCentimetre, "dyn/cm", [(Dyne, P1), (Centimetre, N1)]);
 // ===========================
 // ACTION
 // ===========================
-pub type Action = Quantity<P1, P2, N1, Z0, Z0, Z0, Z0>; // M L² T⁻¹
+quantity!(Action: M P1, L P2, T N1, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻¹
 
 unit!(compound: JouleSecond, "J⋅s", [(Joule, P1), (Second, P1)]);
 

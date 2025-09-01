@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::electromagnetism::*;
@@ -9,7 +9,7 @@ use typenum::*;
 // ===========================
 // RADIOACTIVITY
 // ===========================
-pub type Radioactivity = Quantity<Z0, Z0, N1, Z0, Z0, Z0, Z0>; // T⁻¹
+quantity!(Radioactivity: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0); // T⁻¹
 
 unit!(compound: Becquerel, "Bq", [(Second, N1)]; prefixable);
 unit!(prefix: Kilobecquerel, Kilo, Becquerel);
@@ -25,7 +25,7 @@ unit!(prefix: Picocurie, Pico, Curie);
 // ===========================
 // ABSORBED DOSE
 // ===========================
-pub type AbsorbedDose = Quantity<Z0, P2, N2, Z0, Z0, Z0, Z0>; // L² T⁻²
+quantity!(AbsorbedDose: M Z0, L P2, T N2, I Z0, Th Z0, N Z0, J Z0); // L² T⁻²
 
 unit!(compound: Gray, "Gy", [(Joule, P1), (Kilogram, N1)]; prefixable);
 unit!(prefix: Milligray, Milli, Gray);
@@ -36,7 +36,7 @@ unit!(derived: Rad, "rad", (0.01, Gray));
 // ===========================
 // EQUIVALENT DOSE
 // ===========================
-pub type EquivalentDose = Quantity<Z0, P2, N2, Z0, Z0, Z0, Z0>; // L² T⁻²
+quantity!(EquivalentDose: M Z0, L P2, T N2, I Z0, Th Z0, N Z0, J Z0); // L² T⁻²
 
 unit!(compound: Sievert, "Sv", [(Joule, P1), (Kilogram, N1)]; prefixable);
 unit!(prefix: Millisievert, Milli, Sievert);
@@ -48,7 +48,7 @@ unit!(prefix: Millirem, Milli, Rem);
 // ===========================
 // EXPOSURE (X-RAY/GAMMA RAY)
 // ===========================
-pub type Exposure = Quantity<N1, Z0, P1, P1, Z0, Z0, Z0>; // M⁻¹ T I
+quantity!(Exposure: M N1, L Z0, T P1, I P1, Th Z0, N Z0, J Z0); // M⁻¹ T I
 
 unit!(compound: CoulombPerKilogram, "C/kg", [(Coulomb, P1), (Kilogram, N1)]);
 unit!(derived: Roentgen, "R", (2.58e-4, CoulombPerKilogram));
@@ -56,7 +56,7 @@ unit!(derived: Roentgen, "R", (2.58e-4, CoulombPerKilogram));
 // ===========================
 // DOSE RATE
 // ===========================
-pub type DoseRate = Quantity<Z0, P2, N3, Z0, Z0, Z0, Z0>; // L² T⁻³
+quantity!(DoseRate: M Z0, L P2, T N3, I Z0, Th Z0, N Z0, J Z0); // L² T⁻³
 
 unit!(compound: GrayPerSecond, "Gy/s", [(Gray, P1), (Second, N1)]);
 unit!(compound: SievertPerSecond, "Sv/s", [(Sievert, P1), (Second, N1)]);
@@ -65,7 +65,7 @@ unit!(compound: RadPerSecond, "rad/s", [(Rad, P1), (Second, N1)]);
 // ===========================
 // NUCLEAR CROSS SECTION
 // ===========================
-pub type CrossSection = Quantity<Z0, P2, Z0, Z0, Z0, Z0, Z0>; // L²
+quantity!(CrossSection: M Z0, L P2, T Z0, I Z0, Th Z0, N Z0, J Z0); // L²
 
 unit!(derived: Barn, "b", (1e-28, SquareMetre); prefixable);
 unit!(prefix: Millibarn, Milli, Barn);
@@ -75,7 +75,7 @@ unit!(prefix: Nanobarn, Nano, Barn);
 // ===========================
 // FLUENCE
 // ===========================
-pub type Fluence = Quantity<Z0, N2, Z0, Z0, Z0, Z0, Z0>; // L⁻²
+quantity!(Fluence: M Z0, L N2, T Z0, I Z0, Th Z0, N Z0, J Z0); // L⁻²
 
 unit!(compound: ParticlePerSquareMetre, "m⁻²", [(Metre, N2)]);
 unit!(compound: ParticlePerSquareCentimetre, "cm⁻²", [(Centimetre, N2)]);
@@ -83,7 +83,7 @@ unit!(compound: ParticlePerSquareCentimetre, "cm⁻²", [(Centimetre, N2)]);
 // ===========================
 // FLUX DENSITY
 // ===========================
-pub type FluxDensity = Quantity<Z0, N2, N1, Z0, Z0, Z0, Z0>; // L⁻² T⁻¹
+quantity!(FluxDensity: M Z0, L N2, T N1, I Z0, Th Z0, N Z0, J Z0); // L⁻² T⁻¹
 
 unit!(compound: ParticlePerSquareMetreSecond, "m⁻²⋅s⁻¹", [(Metre, N2), (Second, N1)]);
 unit!(compound: ParticlePerSquareCentimetreSecond, "cm⁻²⋅s⁻¹", [(Centimetre, N2), (Second, N1)]);

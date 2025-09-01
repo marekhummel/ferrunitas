@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
@@ -7,14 +7,14 @@ use typenum::*;
 // ===========================
 // ACOUSTIC IMPEDANCE
 // ===========================
-pub type AcousticImpedance = Quantity<P1, N2, N1, Z0, Z0, Z0, Z0>; // M L⁻² T⁻¹
+quantity!(AcousticImpedance: M P1, L N2, T N1, I Z0, Th Z0, N Z0, J Z0); // M L⁻² T⁻¹
 
 unit!(compound: Rayl, "rayl", [(Pascal, P1), (Second, P1), (Metre, N1)]);
 
 // ===========================
 // SOUND INTENSITY
 // ===========================
-pub type SoundIntensity = Quantity<P1, Z0, N3, Z0, Z0, Z0, Z0>; // M T⁻³
+quantity!(SoundIntensity: M P1, L Z0, T N3, I Z0, Th Z0, N Z0, J Z0); // M T⁻³
 
 // Already defined in photometrics for Irradiance
 // unit!(compound: WattPerSquareMetre, "W/m²", [(Watt, P1), (Metre, N2)]);
@@ -22,7 +22,7 @@ pub type SoundIntensity = Quantity<P1, Z0, N3, Z0, Z0, Z0, Z0>; // M T⁻³
 // ===========================
 // SOUND EXPOSURE
 // ===========================
-pub type SoundExposure = Quantity<P2, N2, N3, Z0, Z0, Z0, Z0>; // M² L⁻² T⁻³
+quantity!(SoundExposure: M P2, L N2, T N3, I Z0, Th Z0, N Z0, J Z0); // M² L⁻² T⁻³
 
 unit!(compound: PascalSquaredSecond, "Pa²⋅s", [(Pascal, P2), (Second, P1)]);
 

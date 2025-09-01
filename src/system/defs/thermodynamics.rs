@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
@@ -7,15 +7,15 @@ use typenum::*;
 // ===========================
 // HEAT CAPACITY / ENTROPY
 // ===========================
-pub type HeatCapacity = Quantity<P1, P2, N2, Z0, N1, Z0, Z0>; // M L² T⁻² Θ⁻¹
-pub type Entropy = Quantity<P1, P2, N2, Z0, N1, Z0, Z0>; // M L² T⁻² Θ⁻¹
+quantity!(HeatCapacity: M P1, L P2, T N2, I Z0, Th N1, N Z0, J Z0); // M L² T⁻² Θ⁻¹
+quantity!(Entropy: M P1, L P2, T N2, I Z0, Th N1, N Z0, J Z0); // M L² T⁻² Θ⁻¹
 
 unit!(compound: JoulePerKelvin, "J/K", [(Joule, P1), (Kelvin, N1)]);
 
 // ===========================
 // SPECIFIC HEAT CAPACITY
 // ===========================
-pub type SpecificHeat = Quantity<Z0, P2, N2, Z0, N1, Z0, Z0>; // L² T⁻² Θ⁻¹
+quantity!(SpecificHeat: M Z0, L P2, T N2, I Z0, Th N1, N Z0, J Z0); // L² T⁻² Θ⁻¹
 
 unit!(compound: JoulePerKilogramKelvin, "J/(kg·K)", [(Joule, P1), (Kilogram, N1), (Kelvin, N1)]);
 unit!(compound: KilojoulePerKilogramKelvin, "kJ/(kg·K)", [(Kilojoule, P1), (Kilogram, N1), (Kelvin, N1)]);
@@ -23,7 +23,7 @@ unit!(compound: KilojoulePerKilogramKelvin, "kJ/(kg·K)", [(Kilojoule, P1), (Kil
 // ===========================
 // THERMAL CONDUCTIVITY
 // ===========================
-pub type ThermalConductivity = Quantity<P1, P1, N3, Z0, N1, Z0, Z0>; // M L T⁻³ Θ⁻¹
+quantity!(ThermalConductivity: M P1, L P1, T N3, I Z0, Th N1, N Z0, J Z0); // M L T⁻³ Θ⁻¹
 
 unit!(compound: WattPerMetreKelvin, "W/(m·K)", [(Watt, P1), (Metre, N1), (Kelvin, N1)]);
 unit!(compound: MilliwattPerMetreKelvin, "mW/(m·K)", [(Milliwatt, P1), (Metre, N1), (Kelvin, N1)]);
@@ -31,21 +31,21 @@ unit!(compound: MilliwattPerMetreKelvin, "mW/(m·K)", [(Milliwatt, P1), (Metre, 
 // ===========================
 // THERMAL RESISTANCE
 // ===========================
-pub type ThermalResistance = Quantity<N1, N2, P3, Z0, P1, Z0, Z0>; // M⁻¹ L⁻² T³ Θ
+quantity!(ThermalResistance: M N1, L N2, T P3, I Z0, Th P1, N Z0, J Z0); // M⁻¹ L⁻² T³ Θ
 
 unit!(compound: KelvinPerWatt, "K/W", [(Kelvin, P1), (Watt, N1)]);
 
 // ===========================
 // THERMAL RESISTIVITY
 // ===========================
-pub type ThermalResistivity = Quantity<N1, N1, P3, Z0, P1, Z0, Z0>; // M⁻¹ L⁻¹ T³ Θ
+quantity!(ThermalResistivity: M N1, L N1, T P3, I Z0, Th P1, N Z0, J Z0); // M⁻¹ L⁻¹ T³ Θ
 
 unit!(compound: MetreKelvinPerWatt, "m·K/W", [(Metre, P1), (Kelvin, P1), (Watt, N1)]);
 
 // ===========================
 // THERMAL DIFFUSIVITY
 // ===========================
-pub type ThermalDiffusivity = Quantity<Z0, P2, N1, Z0, Z0, Z0, Z0>; // L² T⁻¹
+quantity!(ThermalDiffusivity: M Z0, L P2, T N1, I Z0, Th Z0, N Z0, J Z0); // L² T⁻¹
 
 // Already defined in mechanics for kinematic viscosity
 // unit!(compound: SquareMetrePerSecond, "m²/s", [(Metre, P2), (Second, N1)]);
@@ -53,14 +53,14 @@ pub type ThermalDiffusivity = Quantity<Z0, P2, N1, Z0, Z0, Z0, Z0>; // L² T⁻�
 // ===========================
 // HEAT TRANSFER COEFFICIENT
 // ===========================
-pub type HeatTransferCoefficient = Quantity<P1, Z0, N3, Z0, N1, Z0, Z0>; // M T⁻³ Θ⁻¹
+quantity!(HeatTransferCoefficient: M P1, L Z0, T N3, I Z0, Th N1, N Z0, J Z0); // M T⁻³ Θ⁻¹
 
 unit!(compound: WattPerSquareMetreKelvin, "W/(m²·K)", [(Watt, P1), (Metre, N2), (Kelvin, N1)]);
 
 // ===========================
 // THERMAL EXPANSION COEFFICIENT
 // ===========================
-pub type ThermalExpansionCoefficient = Quantity<Z0, Z0, Z0, Z0, N1, Z0, Z0>; // Θ⁻¹
+quantity!(ThermalExpansionCoefficient: M Z0, L Z0, T Z0, I Z0, Th N1, N Z0, J Z0); // Θ⁻¹
 
 unit!(compound: PerKelvin, "K⁻¹", [(Kelvin, N1)]);
 

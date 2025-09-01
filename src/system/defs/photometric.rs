@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
@@ -9,21 +9,21 @@ use typenum::*;
 // ===========================
 // LUMINOUS FLUX (Steradiands are not dimensionless in SI, so this is equal to Luminious Intensity)
 // ===========================
-pub type LuminousFlux = Quantity<Z0, Z0, Z0, Z0, Z0, Z0, P1>; // J
+quantity!(LuminousFlux: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J P1); // J
 
 unit!(compound: Lumen, "lm", [(Candela, P1), (Steradian, P1)]);
 
 // ===========================
 // LUMINANCE
 // ===========================
-pub type Luminance = Quantity<Z0, N2, Z0, Z0, Z0, Z0, P1>; // L⁻² J
+quantity!(Luminance: M Z0, L N2, T Z0, I Z0, Th Z0, N Z0, J P1); // L⁻² J
 
 unit!(compound: Nit, "nt", [(Candela, P1), (Metre, N2)]; prefixable);
 
 // ===========================
 // ILLUMINANCE
 // ===========================
-pub type Illuminance = Quantity<Z0, N2, Z0, Z0, Z0, Z0, P1>; // L⁻² J
+quantity!(Illuminance: M Z0, L N2, T Z0, I Z0, Th Z0, N Z0, J P1); // L⁻² J
 
 unit!(compound: Lux, "lx", [(Lumen, P1), (SquareMetre, N1)]; prefixable);
 unit!(prefix: Kilolux, Kilo, Lux);
@@ -31,14 +31,14 @@ unit!(prefix: Kilolux, Kilo, Lux);
 // ===========================
 // OPTICAL POWER (LENS)
 // ===========================
-pub type OpticalPower = Quantity<Z0, N1, Z0, Z0, Z0, Z0, Z0>; // L⁻¹
+quantity!(OpticalPower: M Z0, L N1, T Z0, I Z0, Th Z0, N Z0, J Z0); // L⁻¹
 
 unit!(compound: Dioptre, "D", [(Metre, N1)]);
 
 // ===========================
 // LUMINOUS ENERGY
 // ===========================
-pub type LuminousEnergy = Quantity<Z0, Z0, P1, Z0, Z0, Z0, P1>; // T J
+quantity!(LuminousEnergy: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J P1); // T J
 
 unit!(compound: LumenSecond, "lm⋅s", [(Lumen, P1), (Second, P1)]);
 unit!(derived: Talbot, "T", (1, LumenSecond)); // Historical unit
@@ -46,42 +46,42 @@ unit!(derived: Talbot, "T", (1, LumenSecond)); // Historical unit
 // ===========================
 // LUMINOUS EXPOSURE
 // ===========================
-pub type LuminousExposure = Quantity<Z0, N2, P1, Z0, Z0, Z0, P1>; // L⁻² T J
+quantity!(LuminousExposure: M Z0, L N2, T P1, I Z0, Th Z0, N Z0, J P1); // L⁻² T J
 
 unit!(compound: LuxSecond, "lx⋅s", [(Lux, P1), (Second, P1)]);
 
 // ===========================
 // LUMINOUS EFFICACY
 // ===========================
-pub type LuminousEfficacy = Quantity<N1, N2, P3, Z0, Z0, Z0, P1>; // M⁻¹ L⁻² T³ J
+quantity!(LuminousEfficacy: M N1, L N2, T P3, I Z0, Th Z0, N Z0, J P1); // M⁻¹ L⁻² T³ J
 
 unit!(compound: LumenPerWatt, "lm/W", [(Lumen, P1), (Watt, N1)]);
 
 // ===========================
 // RADIANCE
 // ===========================
-pub type Radiance = Quantity<P1, Z0, N3, Z0, Z0, Z0, Z0>; // M T⁻³
+quantity!(Radiance: M P1, L Z0, T N3, I Z0, Th Z0, N Z0, J Z0); // M T⁻³
 
 unit!(compound: WattPerSquareMetreSteradian, "W/(m²⋅sr)", [(Watt, P1), (Metre, N2), (Steradian, N1)]);
 
 // ===========================
 // RADIANT INTENSITY
 // ===========================
-pub type RadiantIntensity = Quantity<P1, P2, N3, Z0, Z0, Z0, Z0>; // M L² T⁻³
+quantity!(RadiantIntensity: M P1, L P2, T N3, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻³
 
 unit!(compound: WattPerSteradian, "W/sr", [(Watt, P1), (Steradian, N1)]);
 
 // ===========================
 // IRRADIANCE / RADIANT EXITANCE
 // ===========================
-pub type Irradiance = Quantity<P1, Z0, N3, Z0, Z0, Z0, Z0>; // M T⁻³
+quantity!(Irradiance: M P1, L Z0, T N3, I Z0, Th Z0, N Z0, J Z0); // M T⁻³
 
 unit!(compound: WattPerSquareMetre, "W/m²", [(Watt, P1), (Metre, N2)]);
 
 // ===========================
 // SPECTRAL RADIANCE
 // ===========================
-pub type SpectralRadiance = Quantity<P1, N1, N3, Z0, Z0, Z0, Z0>; // M L⁻¹ T⁻³
+quantity!(SpectralRadiance: M P1, L N1, T N3, I Z0, Th Z0, N Z0, J Z0); // M L⁻¹ T⁻³
 
 unit!(compound: WattPerSquareMetreMetreSteradian, "W/(m³⋅sr)", [(Watt, P1), (Metre, N3), (Steradian, N1)]);
 unit!(compound: WattPerSquareMetreNanometreSteradian, "W/(m²⋅nm⋅sr)", [(Watt, P1), (Metre, N2), (Nanometre, N1), (Steradian, N1)]);

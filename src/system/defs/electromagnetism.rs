@@ -1,4 +1,4 @@
-use crate::model::macros::unit;
+use crate::model::macros::{quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
@@ -7,7 +7,7 @@ use typenum::*;
 // ===========================
 // ELECTRIC CHARGE
 // ===========================
-pub type Charge = Quantity<Z0, Z0, P1, P1, Z0, Z0, Z0>; // T I
+quantity!(Charge: M Z0, L Z0, T P1, I P1, Th Z0, N Z0, J Z0); // T I
 
 unit!(compound: Coulomb, "C", [(Second, P1), (Ampere, P1)]; prefixable);
 unit!(prefix: Millicoulomb, Milli, Coulomb);
@@ -17,7 +17,7 @@ unit!(prefix: Nanocoulomb, Nano, Coulomb);
 // ===========================
 // ELECTRIC POTENTIAL
 // ===========================
-pub type Potential = Quantity<P1, P2, N3, N1, Z0, Z0, Z0>; // M L² T⁻³ I⁻¹
+quantity!(Potential: M P1, L P2, T N3, I N1, Th Z0, N Z0, J Z0); // M L² T⁻³ I⁻¹
 
 unit!(compound: Volt, "V", [(Watt, P1), (Ampere, N1)]; prefixable);
 unit!(prefix: Millivolt, Milli, Volt);
@@ -28,7 +28,7 @@ unit!(prefix: Megavolt, Mega, Volt);
 // ===========================
 // CAPACITANCE
 // ===========================
-pub type Capacitance = Quantity<N1, N2, P4, P2, Z0, Z0, Z0>; // M⁻¹ L⁻² T⁴ I²
+quantity!(Capacitance: M N1, L N2, T P4, I P2, Th Z0, N Z0, J Z0); // M⁻¹ L⁻² T⁴ I²
 
 unit!(compound: Farad, "F", [(Coulomb, P1), (Volt, N1)]; prefixable);
 unit!(prefix: Millifarad, Milli, Farad);
@@ -39,7 +39,7 @@ unit!(prefix: Picofarad, Pico, Farad);
 // ===========================
 // RESISTANCE
 // ===========================
-pub type Resistance = Quantity<P1, P2, N3, N2, Z0, Z0, Z0>; // M L² T⁻³ I⁻²
+quantity!(Resistance: M P1, L P2, T N3, I N2, Th Z0, N Z0, J Z0); // M L² T⁻³ I⁻²
 
 unit!(compound: Ohm, "Ω", [(Volt, P1), (Ampere, N1)]; prefixable);
 unit!(prefix: Milliohm, Milli, Ohm);
@@ -49,7 +49,7 @@ unit!(prefix: Megaohm, Mega, Ohm);
 // ===========================
 // CONDUCTANCE
 // ===========================
-pub type Conductance = Quantity<N1, N2, P3, P2, Z0, Z0, Z0>; // M⁻¹ L⁻² T³ I²
+quantity!(Conductance: M N1, L N2, T P3, I P2, Th Z0, N Z0, J Z0); // M⁻¹ L⁻² T³ I²
 
 unit!(compound: Siemens, "S", [(Ohm, N1)]; prefixable);
 unit!(prefix: Millisiemens, Milli, Siemens);
@@ -58,14 +58,14 @@ unit!(prefix: Microsiemens, Micro, Siemens);
 // ===========================
 // MAGNETIC FLUX
 // ===========================
-pub type MagneticFlux = Quantity<P1, P2, N2, N1, Z0, Z0, Z0>; // M L² T⁻² I⁻¹
+quantity!(MagneticFlux: M P1, L P2, T N2, I N1, Th Z0, N Z0, J Z0); // M L² T⁻² I⁻¹
 
 unit!(compound: Weber, "Wb", [(Volt, P1), (Second, P1)]; prefixable);
 
 // ===========================
 // MAGNETIC FLUX DENSITY
 // ===========================
-pub type MagneticFluxDensity = Quantity<P1, Z0, N2, N1, Z0, Z0, Z0>; // M T⁻² I⁻¹
+quantity!(MagneticFluxDensity: M P1, L Z0, T N2, I N1, Th Z0, N Z0, J Z0); // M T⁻² I⁻¹
 
 unit!(compound: Tesla, "T", [(Weber, P1), (Metre, N2)]; prefixable);
 
@@ -74,7 +74,7 @@ unit!(derived: Gauss, "G", (1e-4, Tesla));
 // ===========================
 // INDUCTANCE
 // ===========================
-pub type Inductance = Quantity<P1, P2, N2, N2, Z0, Z0, Z0>; // M L² T⁻² I⁻²
+quantity!(Inductance: M P1, L P2, T N2, I N2, Th Z0, N Z0, J Z0); // M L² T⁻² I⁻²
 
 unit!(compound: Henry, "H", [(Weber, P1), (Ampere, N1)]; prefixable);
 unit!(prefix: Millihenry, Milli, Henry);
@@ -83,63 +83,63 @@ unit!(prefix: Microhenry, Micro, Henry);
 // ===========================
 // ELECTRIC FIELD STRENGTH
 // ===========================
-pub type ElectricField = Quantity<P1, P1, N3, N1, Z0, Z0, Z0>; // M L T⁻³ I⁻¹
+quantity!(ElectricField: M P1, L P1, T N3, I N1, Th Z0, N Z0, J Z0); // M L T⁻³ I⁻¹
 
 unit!(compound: VoltPerMetre, "V/m", [(Volt, P1), (Metre, N1)]);
 
 // ===========================
 // MAGNETIC FIELD STRENGTH
 // ===========================
-pub type MagneticFieldStrength = Quantity<Z0, N1, Z0, P1, Z0, Z0, Z0>; // L⁻¹ I
+quantity!(MagneticFieldStrength: M Z0, L N1, T Z0, I P1, Th Z0, N Z0, J Z0); // L⁻¹ I
 
 unit!(compound: AmperePerMetre, "A/m", [(Ampere, P1), (Metre, N1)]);
 
 // ===========================
 // ELECTRIC CONDUCTIVITY
 // ===========================
-pub type ElectricConductivity = Quantity<N1, N3, P3, P2, Z0, Z0, Z0>; // M⁻¹ L⁻³ T³ I²
+quantity!(ElectricConductivity: M N1, L N3, T P3, I P2, Th Z0, N Z0, J Z0); // M⁻¹ L⁻³ T³ I²
 
 unit!(compound: SiemensPerMetre, "S/m", [(Siemens, P1), (Metre, N1)]);
 
 // ===========================
 // ELECTRIC DISPLACEMENT FIELD
 // ===========================
-pub type ElectricDisplacement = Quantity<Z0, N2, P1, P1, Z0, Z0, Z0>; // L⁻² T I
+quantity!(ElectricDisplacement: M Z0, L N2, T P1, I P1, Th Z0, N Z0, J Z0); // L⁻² T I
 
 unit!(compound: CoulombPerSquareMetre, "C/m²", [(Coulomb, P1), (SquareMetre, N1)]);
 
 // ===========================
 // PERMITTIVITY
 // ===========================
-pub type Permittivity = Quantity<N1, N3, P4, P2, Z0, Z0, Z0>; // M⁻¹ L⁻³ T⁴ I²
+quantity!(Permittivity: M N1, L N3, T P4, I P2, Th Z0, N Z0, J Z0); // M⁻¹ L⁻³ T⁴ I²
 
 unit!(compound: FaradPerMetre, "F/m", [(Farad, P1), (Metre, N1)]);
 
 // ===========================
 // PERMEABILITY
 // ===========================
-pub type Permeability = Quantity<P1, P1, N2, N2, Z0, Z0, Z0>; // M L T⁻² I⁻²
+quantity!(Permeability: M P1, L P1, T N2, I N2, Th Z0, N Z0, J Z0); // M L T⁻² I⁻²
 
 unit!(compound: HenryPerMetre, "H/m", [(Henry, P1), (Metre, N1)]);
 
 // ===========================
 // CURRENT DENSITY
 // ===========================
-pub type CurrentDensity = Quantity<Z0, N2, Z0, P1, Z0, Z0, Z0>; // L⁻² I
+quantity!(CurrentDensity: M Z0, L N2, T Z0, I P1, Th Z0, N Z0, J Z0); // L⁻² I
 
 unit!(compound: AmperePerSquareMetre, "A/m²", [(Ampere, P1), (SquareMetre, N1)]);
 
 // ===========================
 // CHARGE DENSITY
 // ===========================
-pub type ChargeDensity = Quantity<Z0, N3, P1, P1, Z0, Z0, Z0>; // L⁻³ T I
+quantity!(ChargeDensity: M Z0, L N3, T P1, I P1, Th Z0, N Z0, J Z0); // L⁻³ T I
 
 unit!(compound: CoulombPerCubicMetre, "C/m³", [(Coulomb, P1), (CubicMetre, N1)]);
 
 // ===========================
 // MAGNETIC MOMENT
 // ===========================
-pub type MagneticMoment = Quantity<Z0, P2, Z0, P1, Z0, Z0, Z0>; // L² I
+quantity!(MagneticMoment: M Z0, L P2, T Z0, I P1, Th Z0, N Z0, J Z0); // L² I
 
 unit!(compound: AmpereSquareMetre, "A⋅m²", [(Ampere, P1), (SquareMetre, P1)]);
 unit!(compound: JoulePerTesla, "J/T", [(Joule, P1), (Tesla, N1)]);

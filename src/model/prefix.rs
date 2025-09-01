@@ -1,9 +1,7 @@
 //! SI prefixes for units
 
-use crate::common;
-
 /// Trait for SI prefixes
-pub trait Prefix: common::Sealed {
+pub trait Prefix: crate::sealed::Sealed {
     /// The multiplier for this prefix
     const FACTOR: f64;
 
@@ -12,4 +10,4 @@ pub trait Prefix: common::Sealed {
 }
 
 /// Implemented by types that can have SI prefixes
-pub trait Prefixable: common::Sealed {}
+pub trait Prefixable: crate::sealed::Sealed {}
