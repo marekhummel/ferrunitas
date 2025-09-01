@@ -16,9 +16,11 @@ fn units_measures_and_quantities() {
     // To express units with a value, use measures
     let l1: Measure<Foot> = Foot::new(402);
     let l2: Measure<Centimetre> = Centimetre::new(30);
-    let l_sum: Measure<Foot> = l1 + l2;
+    let l3: Measure<Inch> = Measure::new(6);
+    let l_sum: Measure<Foot> = l1 + l2 + l3;
     println!("1st Measure in Foot: {}", l1);
     println!("2nd Measure in Centimetres: {}", l2);
+    println!("3rd Measure in Inches: {}", l3);
     println!("Sum Measure in Foot (LHS unit): {}", l_sum);
     println!();
 

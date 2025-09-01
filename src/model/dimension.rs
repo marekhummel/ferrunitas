@@ -78,7 +78,9 @@ where
     }
 }
 
+// ======================
 // ARITHMETIC
+// ======================
 
 impl<M, L, T, I, Th, N, J> Add for DimensionVector<M, L, T, I, Th, N, J>
 where

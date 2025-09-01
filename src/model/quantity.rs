@@ -8,42 +8,47 @@ use crate::model::unit::Unit;
 use num_traits::Inv;
 use typenum::{Integer, NonZero, ToInt};
 
-// ===========================
-// Type-Level Dimensional System
-// ===========================
-
 /// Quantity with type-level dimensional signature
 /// Dimensions: [Mass, Length, Time, Current, Temperature, Amount, Luminosity]
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Quantity<D: Dimensioned> {
     /// This value holds the raw f64 value of the quantity, only meant for internal use
-    value: f64,
+    pub(crate) value: f64,
     _phantom: PhantomData<D>,
 }
 
+/// Marker trait for types to be used in which the Unit::Quantity
+#[doc(hidden)]
+pub trait QuantityMarker: Sized + Debug + Clone + Copy + PartialEq + crate::sealed::Sealed {
+    fn new(value: f64) -> Self;
+    fn raw_value(&self) -> f64;
+}
+
+// ===========================
+// IMPLS
+// ===========================
+
 /// Default impl
 impl<D: Dimensioned> Quantity<D> {
-    /// Create a new Quantity. Note that this is not intended for public use, use concrete units and convert to quantity.
-    #[doc(hidden)]
-    pub fn new(value: f64) -> Self {
+    /// Create a new Quantity.
+    pub(crate) fn new(value: f64) -> Self {
         Self {
             value,
             _phantom: PhantomData,
         }
     }
 
+    /// Creates quantity instance based on value and unit
     pub fn from<U: Unit<Quantity = Self>>(value: impl Into<f64>) -> Self {
         Measure::<U>::new(value.into()).into_q()
     }
 
-    pub fn raw_value(&self) -> f64 {
-        self.value
-    }
-
+    /// Converts this quantity into a measure of given unit
     pub fn as_measure<U: Unit<Quantity = Self>>(&self) -> Measure<U> {
         Measure::from_q(*self)
     }
 
+    /// Direct convert of a unit into another of this quantity.
     pub fn convert<U1, U2>(value: f64) -> Measure<U2>
     where
         U1: Unit<Quantity = Self>,
@@ -67,19 +72,7 @@ impl<D: Dimensioned> Dimensioned for Quantity<D> {
     type J = D::J;
 }
 
-/// Marker trait for types to be used in macros, not meant for outside usage
-#[doc(hidden)]
-pub trait QuantityMarker: Sized + Debug + Clone + Copy + PartialEq + crate::sealed::Sealed {
-    type DimensionVector: Dimensioned;
-
-    fn new(value: f64) -> Self;
-    fn raw_value(&self) -> f64;
-}
-
-/// Conversion for quantities
 impl<D: Dimensioned> QuantityMarker for Quantity<D> {
-    type DimensionVector = D;
-
     fn new(value: f64) -> Self {
         Self::new(value)
     }
@@ -92,7 +85,7 @@ impl<D: Dimensioned> QuantityMarker for Quantity<D> {
 /// Display of quantity
 impl<D: Dimensioned> fmt::Display for Quantity<D> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let dim_string = crate::common::format_quantity::<Self>();
+        let dim_string = crate::common::format_dims::<Self>();
         std::fmt::Display::fmt(&self.value, f)?;
         write!(f, " [{}]", dim_string)?;
         Ok(())
@@ -103,40 +96,43 @@ impl<D: Dimensioned> fmt::Display for Quantity<D> {
 // MACRO
 // ===========================
 
-/// Macro to get quantity type by combining others
+/// Define a new quantity either by a list of 7 dimensions or by compounding others.
 #[macro_export]
 macro_rules! quantity {
     // Literal case
     ($quantity:ident: M $mass:ty, L $length:ty, T $time:ty, I $current:ty, Th $temperature:ty, N $amount:ty, J $luminosity:ty) => {
         quantity!(
             $quantity:
-            $crate::model::dimension::DimensionVector<$mass, $length, $time, $current, $temperature, $amount, $luminosity>;
+            $crate::model::quantity::Quantity<
+                $crate::model::dimension::DimensionVector<
+                    $mass, $length, $time, $current, $temperature, $amount, $luminosity
+                >
+            >;
         );
     };
 
-    // Compound case
-    ($quantity:ident: [$(($dims:ty, $exps:ty)),+]) => {
+    // External compound case
+    ($comp_quantity:ident: [$(($quantities:ty, $exps:ty)),+]) => {
         quantity!(
-            $quantity:
-            $crate::model::dimension::DimensionZero; $(($dims, $exps)),+
+            $comp_quantity:
+            $crate::model::quantity::Quantity<$crate::model::dimension::DimensionZero>; $(($quantities, $exps)),+
         );
     };
 
     // Recursive case
-    ($quantity:ident: $dim_acc:ty; ($dim_vec:ty, $exp:ty) $(, ($dims:ty, $exps:ty))*) => {
+    ($comp_quantity:ident: $quantity_acc:ty; ($quantity:ty, $exp:ty) $(, ($quantities:ty, $exps:ty))*) => {
         quantity!(
-            $quantity:
-            <$dim_acc as std::ops::Mul<
-                <$dim_vec as $crate::model::dimension::TypePow<$exp>>::Output
+            $comp_quantity:
+            <$quantity_acc as std::ops::Mul<
+                <$quantity as $crate::model::quantity::TypePow<$exp>>::Output
             >>::Output;
-            $(($dims, $exps)),*
+            $(($quantities, $exps)),*
         );
     };
 
     // Base case
-    ($quantity:ident: $dim_acc:ty;) => {
-        pub type $quantity =
-            $crate::model::quantity::Quantity<$dim_acc>;
+    ($comp_quantity:ident: $quantity_acc:ty;) => {
+        pub type $comp_quantity = $quantity_acc;
     };
 }
 

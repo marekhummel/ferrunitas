@@ -55,22 +55,22 @@ mod comparison_traits_tests {
 
     #[test]
     fn test_quantity_eq_same_value() {
-        let mass1: Mass = Mass::new(5.0);
-        let mass2: Mass = Mass::new(5.0);
+        let mass1: Mass = Kilogram::new(5.0).into_q();
+        let mass2: Mass = Kilogram::new(5.0).into_q();
         assert_eq!(mass1, mass2);
     }
 
     #[test]
     fn test_quantity_eq_different_value() {
-        let mass1: Mass = Mass::new(5.0);
-        let mass2: Mass = Mass::new(3.0);
+        let mass1: Mass = Kilogram::new(5.0).into_q();
+        let mass2: Mass = Kilogram::new(3.0).into_q();
         assert_ne!(mass1, mass2);
     }
 
     #[test]
     fn test_quantity_eq_different_quantity_types() {
-        let _mass: Mass = Mass::new(5.0);
-        let _length: Length = Length::new(5.0);
+        let _mass: Mass = Kilogram::new(5.0).into_q();
+        let _length: Length = Metre::new(5.0).into_q();
 
         assert_ne!(
             std::any::type_name::<Mass>(),
@@ -142,24 +142,24 @@ mod comparison_traits_tests {
 
     #[test]
     fn test_quantity_ord_less_than() {
-        let mass1: Mass = Mass::new(3.0);
-        let mass2: Mass = Mass::new(5.0);
+        let mass1: Mass = Kilogram::new(3.0).into_q();
+        let mass2: Mass = Kilogram::new(5.0).into_q();
         assert!(mass1 < mass2);
         assert!(mass1 <= mass2);
     }
 
     #[test]
     fn test_quantity_ord_greater_than() {
-        let mass1: Mass = Mass::new(7.0);
-        let mass2: Mass = Mass::new(5.0);
+        let mass1: Mass = Kilogram::new(7.0).into_q();
+        let mass2: Mass = Kilogram::new(5.0).into_q();
         assert!(mass1 > mass2);
         assert!(mass1 >= mass2);
     }
 
     #[test]
     fn test_quantity_ord_equal() {
-        let mass1: Mass = Mass::new(5.0);
-        let mass2: Mass = Mass::new(5.0);
+        let mass1: Mass = Kilogram::new(5.0).into_q();
+        let mass2: Mass = Kilogram::new(5.0).into_q();
         assert!(mass1 <= mass2);
         assert!(mass1 >= mass2);
         assert_eq!(mass1.partial_cmp(&mass2), Some(std::cmp::Ordering::Equal));
@@ -184,8 +184,8 @@ mod comparison_traits_tests {
 
     #[test]
     fn test_quantity_ord_precision() {
-        let energy1: Energy = Energy::new(10.0);
-        let energy2: Energy = Energy::new(10.000001);
+        let energy1: Energy = Joule::new(10.0).into_q();
+        let energy2: Energy = Joule::new(10.000001).into_q();
         assert!(energy1 < energy2);
         assert!(energy2 > energy1);
     }
@@ -241,8 +241,8 @@ mod comparison_traits_tests {
         let mass2 = Gram::new(0.0);
         assert_eq!(mass1.into_q(), mass2.into_q());
 
-        let mass_q1: Mass = Mass::new(0.0);
-        let mass_q2: Mass = Mass::new(0.0);
+        let mass_q1: Mass = Kilogram::new(0.0).into_q();
+        let mass_q2: Mass = Kilogram::new(0.0).into_q();
         assert_eq!(mass_q1, mass_q2);
     }
 
@@ -252,8 +252,8 @@ mod comparison_traits_tests {
         let temp2 = Kelvin::new(-10.0);
         assert!(temp1 > temp2); // -5 > -10
 
-        let temp_q1: Temperature = Temperature::new(-5.0);
-        let temp_q2: Temperature = Temperature::new(-10.0);
+        let temp_q1: Temperature = Kelvin::new(-5.0).into_q();
+        let temp_q2: Temperature = Kelvin::new(-10.0).into_q();
         assert!(temp_q1 > temp_q2);
     }
 
@@ -263,8 +263,8 @@ mod comparison_traits_tests {
         let mass2 = Kilogram::new(1.0000000);
         assert!(mass1 > mass2);
 
-        let mass_q1: Mass = Mass::new(1.0000001);
-        let mass_q2: Mass = Mass::new(1.0000000);
+        let mass_q1: Mass = Kilogram::new(1.0000001).into_q();
+        let mass_q2: Mass = Kilogram::new(1.0000000).into_q();
         assert!(mass_q1 > mass_q2);
     }
 
@@ -274,8 +274,8 @@ mod comparison_traits_tests {
         let mass2 = Kilogram::new(2e15);
         assert!(mass1 < mass2);
 
-        let mass_q1: Mass = Mass::new(1e15);
-        let mass_q2: Mass = Mass::new(2e15);
+        let mass_q1: Mass = Kilogram::new(1e15).into_q();
+        let mass_q2: Mass = Kilogram::new(2e15).into_q();
         assert!(mass_q1 < mass_q2);
     }
 }

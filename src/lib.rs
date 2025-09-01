@@ -14,7 +14,8 @@ mod sealed {
     pub trait Sealed {}
 }
 
-// Export Unit on crate level for easy access
+// Export on crate level for easy access
 pub use crate::model::measure::Measure;
 pub use crate::model::unit::Unit;
+pub use typenum::consts as typenum_consts;
 // pub use crate::system_test as system;

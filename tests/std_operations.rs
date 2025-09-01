@@ -42,7 +42,7 @@ mod std_operations_tests {
         let mass_quantity = Kilogram::new(3.0).into_q();
         let mass_measure = Gram::new(2000.0);
         let result = mass_quantity + mass_measure;
-        assert_eq!(result, Mass::new(5.0));
+        assert_eq!(result, Kilogram::new(5.0).into_q());
     }
 
     // ===========================
@@ -78,7 +78,7 @@ mod std_operations_tests {
         let mut mass_quantity = Kilogram::new(3.0).into_q();
         let mass_measure = Gram::new(2000.0);
         mass_quantity += mass_measure;
-        assert_eq!(mass_quantity, Mass::new(5.0));
+        assert_eq!(mass_quantity, Kilogram::new(5.0).into_q());
     }
 
     // ===========================
@@ -114,7 +114,7 @@ mod std_operations_tests {
         let mass_quantity = Kilogram::new(5.0).into_q();
         let mass_measure = Gram::new(2000.0);
         let result = mass_quantity - mass_measure;
-        assert_eq!(result, Mass::new(3.0));
+        assert_eq!(result, Kilogram::new(3.0).into_q());
     }
 
     // ===========================
@@ -150,7 +150,7 @@ mod std_operations_tests {
         let mut mass_quantity = Kilogram::new(5.0).into_q();
         let mass_measure = Gram::new(2000.0);
         mass_quantity -= mass_measure;
-        assert_eq!(mass_quantity, Mass::new(3.0));
+        assert_eq!(mass_quantity, Kilogram::new(3.0).into_q());
     }
 
     // ===========================
@@ -193,7 +193,7 @@ mod std_operations_tests {
         let mass = Kilogram::new(5.0);
         let acceleration = MetrePerSecondSquared::new(2.0);
         let force = mass * acceleration;
-        assert_eq!(force, Force::new(10.0));
+        assert_eq!(force, Newton::new(10.0).into_q());
     }
 
     // ===========================
@@ -205,7 +205,7 @@ mod std_operations_tests {
         let mass = Kilogram::new(5.0);
         let acceleration_quantity = MetrePerSecondSquared::new(2.0).into_q();
         let force = mass * acceleration_quantity;
-        assert_eq!(force, Force::new(10.0));
+        assert_eq!(force, Newton::new(10.0).into_q());
     }
 
     // ===========================
@@ -217,7 +217,7 @@ mod std_operations_tests {
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration = MetrePerSecondSquared::new(2.0);
         let force = mass_quantity * acceleration;
-        assert_eq!(force, Force::new(10.0));
+        assert_eq!(force, Newton::new(10.0).into_q());
     }
 
     // ===========================
@@ -229,7 +229,7 @@ mod std_operations_tests {
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration_quantity = MetrePerSecondSquared::new(2.0).into_q();
         let force = mass_quantity * acceleration_quantity;
-        assert_eq!(force, Force::new(10.0));
+        assert_eq!(force, Newton::new(10.0).into_q());
     }
 
     // ===========================
@@ -239,11 +239,10 @@ mod std_operations_tests {
     #[test]
     fn test_scalar_div_lhs() {
         let scalar = 20.0;
-        let velocity = MetrePerSecond::new(4.0);
+        let velocity = Metre::new(4.0);
         let result = scalar / velocity;
 
-        type InverseVelocity = Quantity<DimensionVector<Z0, N1, P1, Z0, Z0, Z0, Z0>>;
-        assert_eq!(result, InverseVelocity::new(5.0));
+        assert_eq!(result, ReciprocalMetre::new(5.0).into_q());
     }
 
     #[test]
@@ -274,7 +273,7 @@ mod std_operations_tests {
         let force = Newton::new(10.0);
         let mass = Kilogram::new(5.0);
         let acceleration = force / mass;
-        assert_eq!(acceleration, Acceleration::new(2.0));
+        assert_eq!(acceleration, MetrePerSecondSquared::new(2.0).into_q());
     }
 
     // ===========================
@@ -286,7 +285,7 @@ mod std_operations_tests {
         let force = Newton::new(10.0);
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration = force / mass_quantity;
-        assert_eq!(acceleration, Acceleration::new(2.0));
+        assert_eq!(acceleration, MetrePerSecondSquared::new(2.0).into_q());
     }
 
     // ===========================
@@ -298,7 +297,7 @@ mod std_operations_tests {
         let force_quantity = Newton::new(10.0).into_q();
         let mass = Kilogram::new(5.0);
         let acceleration = force_quantity / mass;
-        assert_eq!(acceleration, Acceleration::new(2.0));
+        assert_eq!(acceleration, MetrePerSecondSquared::new(2.0).into_q());
     }
 
     // ===========================
@@ -310,6 +309,6 @@ mod std_operations_tests {
         let force_quantity = Newton::new(10.0).into_q();
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration = force_quantity / mass_quantity;
-        assert_eq!(acceleration, Acceleration::new(2.0));
+        assert_eq!(acceleration, MetrePerSecondSquared::new(2.0).into_q());
     }
 }

@@ -46,14 +46,14 @@ impl<U: Unit> Measure<U> {
 
     // --------------------
 
-    pub const fn new_const(value: f64) -> Self {
+    pub(crate) const fn new_const(value: f64) -> Self {
         Self {
             value,
             _phantom: std::marker::PhantomData,
         }
     }
 
-    pub const fn value_const(&self) -> f64 {
+    pub(crate) const fn value_const(&self) -> f64 {
         self.value
     }
 }
@@ -247,7 +247,6 @@ where
 {
     type Output = <f64 as Div<U::Quantity>>::Output;
 
-    #[allow(clippy::suspicious_arithmetic_impl)] // Fine because we invert the quantity
     fn div(self, rhs: Measure<U>) -> Self::Output {
         self / rhs.into_q()
     }

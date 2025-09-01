@@ -103,12 +103,6 @@ pub(crate) mod __inner_unit_macros {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
             pub struct $unit_name;
 
-            impl $unit_name {
-                pub const fn new_const(value: f64) -> $crate::model::measure::Measure<$unit_name> {
-                    $crate::model::measure::Measure::new_const(value)
-                }
-            }
-
             impl $crate::model::unit::Unit for $unit_name {
                 type Quantity = $quantity;
                 const FACTOR: f64 = $factor;
