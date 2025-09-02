@@ -29,14 +29,14 @@ macro_rules! unit {
     };
 
 
-    (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr; prefixable, $($optionals:tt)*) => {
-        unit!(base_internal: $unit_name, $abbrev, $quantity, $factor; $($optionals)*);
+    (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr; prefixable $(, $($optionals:tt)*)?) => {
+        unit!(base_internal: $unit_name, $abbrev, $quantity, $factor; $($($optionals)*)?);
 
         impl $crate::model::prefix::Prefixable for $unit_name {}
     };
 
-    (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr; factor = $new_factor:expr, $($optionals:tt)*) => {
-        unit!(base_internal: $unit_name, $abbrev, $quantity, $new_factor; $($optionals)*);
+    (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr; factor = $new_factor:expr $(, $($optionals:tt)*)?) => {
+        unit!(base_internal: $unit_name, $abbrev, $quantity, $new_factor; $($($optionals)*)?);
     };
 
     (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr;) => {

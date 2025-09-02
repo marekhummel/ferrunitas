@@ -19,7 +19,7 @@ prefix!(Mega, 1e6, "M");
 // quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
 quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
-unit!(base: Gram, "g", Mass; prefixable, factor = 0.001,);
+unit!(base: Gram, "g", Mass; prefixable, factor = 0.001);
 unit!(prefix: Kilogram, Kilo, Gram);
 unit!(prefix: Milligram, Milli, Gram);
 unit!(derived: Tonne, "t", (1000, Kilogram); prefixable);
@@ -31,7 +31,7 @@ unit!(derived: Stone, "st", (14, Pound));
 // quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
-unit!(base: Metre, "m", Length; prefixable,);
+unit!(base: Metre, "m", Length; prefixable);
 
 unit!(prefix: Kilometre, Kilo, Metre);
 unit!(prefix: Centimetre, Centi, Metre);
@@ -48,7 +48,7 @@ unit!(derived: NauticalMile, "NM", (1852, Metre); prefixable);
 // quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
 quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
 
-unit!(base: Second, "s", Time; prefixable,);
+unit!(base: Second, "s", Time; prefixable);
 
 unit!(prefix: Millisecond, Milli, Second);
 

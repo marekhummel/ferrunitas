@@ -1,6 +1,6 @@
-use crate::{quantity, unit};
 use crate::system::defs::mechanics::PoundForce;
 use crate::system::prefixes::*;
+use crate::{quantity, unit};
 use typenum::*;
 
 // ===========================
@@ -8,7 +8,7 @@ use typenum::*;
 // ===========================
 quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
-unit!(base: Gram, "g", Mass; prefixable, factor = 0.001,); // To counteract mass anomaly, that kilogram is base for mass
+unit!(base: Gram, "g", Mass; prefixable, factor = 0.001); // To counteract mass anomaly, that kilogram is base for mass
 
 unit!(prefix: Kilogram, Kilo, Gram);
 unit!(prefix: Milligram, Milli, Gram);
@@ -44,7 +44,7 @@ unit!(compound: Slug, "slug", [(PoundForce, P1), (Second, P2), (Foot, N1)]);
 // ===========================
 quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
-unit!(base: Metre, "m", Length; prefixable,);
+unit!(base: Metre, "m", Length; prefixable);
 
 unit!(prefix: Kilometre, Kilo, Metre);
 unit!(prefix: Decimetre, Deci, Metre);
@@ -79,7 +79,7 @@ unit!(prefix: Megaparsec, Mega, Parsec);
 // ===========================
 quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
 
-unit!(base: Second, "s", Time; prefixable,);
+unit!(base: Second, "s", Time; prefixable);
 
 unit!(prefix: Millisecond, Milli, Second);
 unit!(prefix: Microsecond, Micro, Second);
@@ -116,7 +116,7 @@ unit!(derived: BesselianYear, "Besselian year", (365.242198781, Day)); // Astron
 // ===========================
 quantity!(ElectricCurrent: M Z0, L Z0, T Z0, I P1, Th Z0, N Z0, J Z0);
 
-unit!(base: Ampere, "A", ElectricCurrent; prefixable,);
+unit!(base: Ampere, "A", ElectricCurrent; prefixable);
 
 unit!(prefix: Milliampere, Milli, Ampere);
 unit!(prefix: Microampere, Micro, Ampere);
@@ -127,7 +127,7 @@ unit!(prefix: Kiloampere, Kilo, Ampere);
 // ===========================
 quantity!(Temperature: M Z0, L Z0, T Z0, I Z0, Th P1, N Z0, J Z0);
 
-unit!(base: Kelvin, "K", Temperature; prefixable,);
+unit!(base: Kelvin, "K", Temperature; prefixable);
 
 unit!(prefix: Millikelvin, Milli, Kelvin);
 unit!(prefix: Microkelvin, Micro, Kelvin);
@@ -141,7 +141,7 @@ unit!(prefix: Microkelvin, Micro, Kelvin);
 // ===========================
 quantity!(AmountOfSubstance: M Z0, L Z0, T Z0, I Z0, Th Z0, N P1, J Z0);
 
-unit!(base: Mole, "mol", AmountOfSubstance; prefixable,);
+unit!(base: Mole, "mol", AmountOfSubstance; prefixable);
 
 unit!(prefix: Millimole, Milli, Mole);
 unit!(prefix: Micromole, Micro, Mole);
@@ -152,7 +152,7 @@ unit!(prefix: Nanomole, Nano, Mole);
 // ===========================
 quantity!(LuminousIntensity: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J P1);
 
-unit!(base: Candela, "cd", LuminousIntensity; prefixable,);
+unit!(base: Candela, "cd", LuminousIntensity; prefixable);
 
 unit!(prefix: Millicandela, Milli, Candela);
 unit!(prefix: Microcandela, Micro, Candela);
