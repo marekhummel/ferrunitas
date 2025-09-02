@@ -16,7 +16,7 @@ impl<T: typenum::Integer + Debug + PartialOrd> Dimension for T {
 }
 
 /// Marker trait for all quantity types to extract dimensional components
-pub trait Dimensioned: Debug + Clone + Copy + PartialEq {
+pub trait Dimensioned: Debug + Clone + Copy + PartialEq + crate::model::sealed::Sealed {
     type M: Dimension;
     type L: Dimension;
     type T: Dimension;
@@ -41,6 +41,18 @@ where
 }
 
 pub type DimensionZero = DimensionVector<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
+
+impl<M, L, T, I, Th, N, J> crate::model::sealed::Sealed for DimensionVector<M, L, T, I, Th, N, J>
+where
+    M: Dimension,
+    L: Dimension,
+    T: Dimension,
+    I: Dimension,
+    Th: Dimension,
+    N: Dimension,
+    J: Dimension,
+{
+}
 
 impl<M, L, T, I, Th, N, J> Dimensioned for DimensionVector<M, L, T, I, Th, N, J>
 where

@@ -3,7 +3,7 @@ use crate::model::{
     unit::Unit,
 };
 
-pub fn unit_dim_vector<U: Unit>() -> String {
+pub fn format_unit_dims<U: Unit>() -> String {
     format_dims::<<U as Unit>::Quantity>()
 }
 

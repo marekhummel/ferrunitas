@@ -19,8 +19,8 @@ macro_rules! prefix {
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $prefix_name;
 
-        impl $crate::model::prefix::Prefix for $prefix_name {
-            const FACTOR: f64 = $factor;
+        impl $crate::__model::Prefix for $prefix_name {
+            const FACTOR: f64 = $factor as f64;
             const SYMBOL: &'static str = $symbol;
         }
     };

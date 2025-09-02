@@ -1,18 +1,18 @@
 use ferrunitas::system::*;
-use ferrunitas::{common::unit_dim_vector, Measure, Unit};
+use ferrunitas::{common::format_unit_dims, Measure, Unit};
 
 fn units_measures_and_quantities() {
     println!("--- Units, Quantities and Measures Example ---");
 
-    // Units
+    // -- Units
     // Units are zero-sized-types with a fixed scale factor to the SI base unit.
     // Its main use is for creating measures, instantiation is irrelevant
     println!("Unit instance: '{:?}' '{}'", Foot, Foot);
-    // However they hold information regarding their dimension vector
-    println!("Dimension of unit: {}", unit_dim_vector::<Foot>());
+    // However they hold information regarding their dimension vector (see examples/misc.rs)
+    println!("Dimension of unit: {}", format_unit_dims::<Foot>());
     println!();
 
-    // Measures
+    // -- Measures
     // To express units with a value, use measures
     let l1: Measure<Foot> = Foot::new(402);
     let l2: Measure<Centimetre> = Centimetre::new(30);
@@ -24,7 +24,7 @@ fn units_measures_and_quantities() {
     println!("Sum Measure in Foot (LHS unit): {}", l_sum);
     println!();
 
-    // Quantities
+    // -- Quantities
     // Quantities are types holding a value and its dimensional information.
     // They can be created from measures, or as a result from multiplication, division or exponentiation (see below).
     let v1: Length = l1.into_q();
@@ -35,29 +35,23 @@ fn units_measures_and_quantities() {
 }
 
 fn conversion() {
-    let l = Litre::new(30.64);
-    let l_to_q = l.into_q();
-    let cm3_via_q1 = l_to_q.as_measure::<CubicCentimetre>();
-    let cm3_via_q2: Measure<CubicCentimetre> = l_to_q.as_measure();
-    let cm3_direct1 = l.convert::<CubicCentimetre>();
-    let cm3_direct2: Measure<CubicCentimetre> = l.convert();
+    let ltr = Litre::new(30.64);
+    let volume = ltr.into_q();
+    let cm3_via_q1 = volume.as_measure::<CubicCentimetre>();
+    let cm3_via_q2: Measure<CubicCentimetre> = volume.as_measure();
+    let cm3_direct1 = ltr.convert::<CubicCentimetre>();
+    let cm3_direct2: Measure<CubicCentimetre> = ltr.convert();
     let cm3_oneline = Volume::convert::<Litre, CubicCentimetre>(30.64);
 
     println!("--- Conversion Example ---");
-    println!("Litres: {}", l);
-    println!("Litres to Quantity: {:.6}", l_to_q);
-    println!(
-        "Litres via Quantity to Cubic Centimetres (method 1): {:.2}",
-        cm3_via_q1
-    );
-    println!(
-        "Litres via Quantity to Cubic Centimetres (method 2): {:.2}",
-        cm3_via_q2
-    );
-    println!("Litres to Cubic Centimetres (direct 1): {:.2}", cm3_direct1);
-    println!("Litres to Cubic Centimetres (direct 2): {:.2}", cm3_direct2);
-    println!("Volume convert in one line: {:.2}", cm3_oneline);
-    println!("Final Result: {:.2} == {:.2}", l, cm3_direct2);
+    println!("Litres:                                              {}", ltr);
+    println!("Litres to Quantity:                                  {:.6}", volume);
+    println!("Litres via Quantity to Cubic Centimetres (method 1): {:.2}", cm3_via_q1);
+    println!("Litres via Quantity to Cubic Centimetres (method 2): {:.2}", cm3_via_q2);
+    println!("Litres to Cubic Centimetres (direct 1):              {:.2}", cm3_direct1);
+    println!("Litres to Cubic Centimetres (direct 2):              {:.2}", cm3_direct2);
+    println!("Volume convert in one line:                          {:.2}", cm3_oneline);
+    println!("* Final Result: {:.2} == {:.2}", ltr, cm3_direct2);
     println!();
 }
 
@@ -76,9 +70,10 @@ fn interop_unit_quantity() {
     let t_sum3: Measure<Tonne> = t + t2_q;
     let t_sum4: Mass = t_q + t2_q;
     println!("{} == {}   and  {} == {}", t_sum1, t_sum3, t_sum2, t_sum4);
-    println!("Also: {} == {}", t_sum2, t_sum2.as_measure::<Tonne>());
+    println!("Also: {} == {}", t_sum1, t_sum2.as_measure::<Tonne>());
 
-    // Multiplication and division (unless scalar) always results in a quantity, but works in any combination of unit and quantity
+    // Multiplication and division (unless scalar) always results in a quantity,
+    // but works in any combination of unit and quantity
     let f_q1: Force = t * a;
     let f_q2: Force = t_q * a;
     let f_q3: Force = t * a_q;
@@ -97,6 +92,9 @@ fn comparison() {
     let e2: Energy = p * t;
     let ftlbf = e1.as_measure::<FootPoundForce>();
     let kj = e2.as_measure::<Kilojoule>();
+
+    // Note that Ord and Eq traits are kept as expected (type and inner fields match)
+    // For cross-unit equality use this method.
     let are_equal = ftlbf.is_equal_to(&kj);
 
     println!("--- Comparison Example ---");
@@ -129,11 +127,7 @@ fn computation_quantities() {
     println!("Distance: {:.3}", distance);
     println!("Time: {:.3}", time);
     println!("Work: {:.3}", work);
-    println!(
-        "Power: {:.3} (as unit: {:.3})",
-        power,
-        power.as_measure::<Kilowatt>()
-    );
+    println!("Power: {:.3} (as unit: {:.3})", power, power.as_measure::<Kilowatt>());
     println!();
 }
 

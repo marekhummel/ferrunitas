@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityMarker};
 
 /// Top-Level definition of a Unit.
-pub trait Unit: Debug + Clone + Copy + crate::sealed::Sealed {
+pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     type Quantity: QuantityMarker + Dimensioned;
     const FACTOR: f64;
     const ABBREV: &'static str;
@@ -13,8 +13,6 @@ pub trait Unit: Debug + Clone + Copy + crate::sealed::Sealed {
         Measure::new(value.into())
     }
 }
-
-impl<U> crate::sealed::Sealed for U where U: Unit {}
 
 // ============================================
 // MACROS
@@ -32,7 +30,7 @@ macro_rules! unit {
     (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr; prefixable $(, $($optionals:tt)*)?) => {
         unit!(base_internal: $unit_name, $abbrev, $quantity, $factor; $($($optionals)*)?);
 
-        impl $crate::model::prefix::Prefixable for $unit_name {}
+        impl $crate::__model::Prefixable for $unit_name {}
     };
 
     (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr; factor = $new_factor:expr $(, $($optionals:tt)*)?) => {
@@ -53,8 +51,8 @@ macro_rules! unit {
     (derived: $unit_name:ident, $abbrev:literal, ($factor:expr, $base_unit:ty)) => {
         $crate::__unit!(
             $unit_name,
-            <$base_unit as $crate::model::unit::Unit>::Quantity,
-            ($factor as f64) * <$base_unit as $crate::model::unit::Unit>::FACTOR,
+            <$base_unit as $crate::__model::Unit>::Quantity,
+            ($factor as f64) * <$base_unit as $crate::__model::Unit>::FACTOR,
             $abbrev
         );
     };
@@ -71,7 +69,7 @@ macro_rules! unit {
             $unit_name,
             $abbrev,
             [
-                $crate::model::quantity::Quantity<$crate::model::dimension::DimensionZero>,
+                $crate::__model::Quantity<$crate::__model::DimensionZero>,
                 1.0;
                 $($components),+
             ]
@@ -82,11 +80,11 @@ macro_rules! unit {
     (prefix: $alias:ident, $prefix:ty, $base_unit:ty) => {
         $crate::__unit!(
             $alias,
-            <$base_unit as $crate::model::unit::Unit>::Quantity,
-            <$prefix as $crate::model::prefix::Prefix>::FACTOR * <$base_unit as $crate::model::unit::Unit>::FACTOR,
+            <$base_unit as $crate::__model::Unit>::Quantity,
+            <$prefix as $crate::__model::Prefix>::FACTOR * <$base_unit as $crate::__model::Unit>::FACTOR,
             const_format::concatcp!(
-                <$prefix as $crate::model::prefix::Prefix>::SYMBOL,
-                <$base_unit as $crate::model::unit::Unit>::ABBREV
+                <$prefix as $crate::__model::Prefix>::SYMBOL,
+                <$base_unit as $crate::__model::Unit>::ABBREV
             )
         );
     };
@@ -103,7 +101,7 @@ pub mod __inner_unit_macros {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
             pub struct $unit_name;
 
-            impl $crate::model::unit::Unit for $unit_name {
+            impl $crate::__model::Unit for $unit_name {
                 type Quantity = $quantity;
                 const FACTOR: f64 = $factor;
                 const ABBREV: &'static str = $abbrev;
@@ -111,7 +109,7 @@ pub mod __inner_unit_macros {
 
             impl std::fmt::Display for $unit_name {
                 fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                    write!(f, "{}", <$unit_name as $crate::model::unit::Unit>::ABBREV)
+                    write!(f, "{}", <$unit_name as $crate::__model::Unit>::ABBREV)
                 }
             }
         };
@@ -147,10 +145,10 @@ pub mod __inner_unit_macros {
                 $abbrev,
                 [
                     <$quantity as std::ops::Mul<
-                        <<$unit as $crate::model::unit::Unit>::Quantity as $crate::model::dimension::TypePow<$exp>>::Output
+                        <<$unit as $crate::__model::Unit>::Quantity as $crate::__model::TypePow<$exp>>::Output
                     >>::Output,
-                    $factor_acc * $crate::model::unit::__inner_unit_macros::__powi_const(
-                        ($scalar as f64) * <$unit as $crate::model::unit::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
+                    $factor_acc * $crate::__model::__inner_unit_macros::__powi_const(
+                        ($scalar as f64) * <$unit as $crate::__model::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
                     );
                     $($components),*
                 ]
@@ -163,9 +161,9 @@ pub mod __inner_unit_macros {
                 $abbrev,
                 [
                     <$quantity as std::ops::Mul<
-                        <<$unit as $crate::model::unit::Unit>::Quantity as $crate::model::dimension::TypePow<$exp>>::Output
+                        <<$unit as $crate::__model::Unit>::Quantity as $crate::model::dimension::TypePow<$exp>>::Output
                     >>::Output,
-                    $factor_acc * $crate::model::unit::__inner_unit_macros::__powi_const(
+                    $factor_acc * $crate::__model::__inner_unit_macros::__powi_const(
                         ($constant).value_const(), <$exp as typenum::ToInt<i32>>::INT
                     );
                     $($components),*

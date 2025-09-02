@@ -1,6 +1,6 @@
 // use ferrunitas::model::quantity::QuantityMarker;
-use ferrunitas::model::unit::Unit;
 use ferrunitas::system::*;
+use ferrunitas::Unit;
 
 #[cfg(test)]
 mod comparison_traits_tests {

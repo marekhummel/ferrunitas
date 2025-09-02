@@ -4,10 +4,7 @@
 use ferrunitas::{system::*, Measure, Unit};
 
 // Requiring specific units in function signatures
-fn calculate_kinetic_energy(
-    mass: Measure<Gram>,
-    velocity: Measure<MetrePerSecond>,
-) -> Measure<Joule> {
+fn calculate_kinetic_energy(mass: Measure<Gram>, velocity: Measure<MetrePerSecond>) -> Measure<Joule> {
     (0.5 * mass * velocity * velocity).as_measure()
 }
 
@@ -57,10 +54,7 @@ fn main() {
     let mass = Gram::new(4.0);
     let velocity = MetrePerSecond::new(6.0);
     let ke = calculate_kinetic_energy(mass, velocity);
-    println!(
-        "Kinetic Energy of mass {} with velocity {}: {:.4}",
-        mass, velocity, ke
-    );
+    println!("Kinetic Energy of mass {} with velocity {}: {:.4}", mass, velocity, ke);
 
     // Test work: W = F⋅d
     let force = Newton::new(12.0);
@@ -77,21 +71,13 @@ fn main() {
     let work = Joule::new(150.0);
     let time = Second::new(10.0);
     let power = calculate_power_from_work_and_time(work, time);
-    println!(
-        "Power of work {} over time {}: {:.2}",
-        work,
-        time,
-        power.as_measure::<Watt>()
-    );
+    println!("Power of work {} over time {}: {:.2}", work, time, power.as_measure::<Watt>());
 
     // Test force: F = ma
     let mass = Gram::new(8.0);
     let acceleration = MetrePerSecondSquared::new(2.5);
     let force = calculate_force(mass, acceleration);
-    println!(
-        "Force of mass {} with acceleration {}: {:.3}",
-        mass, acceleration, force
-    );
+    println!("Force of mass {} with acceleration {}: {:.3}", mass, acceleration, force);
 
     // Test velocity: v = d/t
     let distance = Metre::new(200.0);
@@ -108,8 +94,7 @@ fn main() {
     let velocity_start = MetrePerSecond::new(0.0);
     let velocity_end = MetrePerSecond::new(30.0);
     let time = Second::new(6.0);
-    let acceleration =
-        calculate_acceleration((velocity_end - velocity_start).into_q(), time.into_q());
+    let acceleration = calculate_acceleration((velocity_end - velocity_start).into_q(), time.into_q());
     println!(
         "Acceleration from {} to {} over time {}: {:.2}",
         velocity_start,

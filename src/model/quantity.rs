@@ -19,9 +19,55 @@ pub struct Quantity<D: Dimensioned> {
 
 /// Marker trait for types to be used in which the Unit::Quantity
 #[doc(hidden)]
-pub trait QuantityMarker: Sized + Debug + Clone + Copy + PartialEq + crate::sealed::Sealed {
+pub trait QuantityMarker:
+    Sized + Debug + Clone + Copy + PartialEq + crate::model::sealed::Sealed
+{
     fn new(value: f64) -> Self;
     fn raw_value(&self) -> f64;
+}
+
+// ===========================
+// MACRO
+// ===========================
+
+/// Define a new quantity either by a list of 7 dimensions or by compounding others.
+#[macro_export]
+macro_rules! quantity {
+    // Literal case
+    ($quantity:ident: M $mass:ty, L $length:ty, T $time:ty, I $current:ty, Th $temperature:ty, N $amount:ty, J $luminosity:ty) => {
+        quantity!(
+            $quantity:
+            $crate::__model::Quantity<
+                $crate::__model::DimensionVector<
+                    $mass, $length, $time, $current, $temperature, $amount, $luminosity
+                >
+            >;
+        );
+    };
+
+    // External compound case
+    ($comp_quantity:ident: [$(($quantities:ty, $exps:ty)),+]) => {
+        quantity!(
+            $comp_quantity:
+            $crate::__model::Quantity<$crate::__model::DimensionZero>; $(($quantities, $exps)),+
+        );
+    };
+
+    // Recursive case
+    ($comp_quantity:ident: $quantity_acc:ty; ($quantity:ty, $exp:ty) $(, ($quantities:ty, $exps:ty))*) => {
+        quantity!(
+            $comp_quantity:
+            <$quantity_acc as std::ops::Mul<
+                <$quantity as $crate::__model::TypePow<$exp>>::Output
+            >>::Output;
+            $(($quantities, $exps)),*
+        );
+    };
+
+    // Base case
+    ($comp_quantity:ident: $quantity_acc:ty;) => {
+        pub type $comp_quantity = $quantity_acc;
+    };
 }
 
 // ===========================
@@ -59,7 +105,7 @@ impl<D: Dimensioned> Quantity<D> {
 }
 
 /// Make sure quantity is sealed for QuantityMarker trait
-impl<D: Dimensioned> crate::sealed::Sealed for Quantity<D> {}
+impl<D: Dimensioned> crate::model::sealed::Sealed for Quantity<D> {}
 
 /// Basic handlers for quantities
 impl<D: Dimensioned> Dimensioned for Quantity<D> {
@@ -90,50 +136,6 @@ impl<D: Dimensioned> fmt::Display for Quantity<D> {
         write!(f, " [{}]", dim_string)?;
         Ok(())
     }
-}
-
-// ===========================
-// MACRO
-// ===========================
-
-/// Define a new quantity either by a list of 7 dimensions or by compounding others.
-#[macro_export]
-macro_rules! quantity {
-    // Literal case
-    ($quantity:ident: M $mass:ty, L $length:ty, T $time:ty, I $current:ty, Th $temperature:ty, N $amount:ty, J $luminosity:ty) => {
-        quantity!(
-            $quantity:
-            $crate::model::quantity::Quantity<
-                $crate::model::dimension::DimensionVector<
-                    $mass, $length, $time, $current, $temperature, $amount, $luminosity
-                >
-            >;
-        );
-    };
-
-    // External compound case
-    ($comp_quantity:ident: [$(($quantities:ty, $exps:ty)),+]) => {
-        quantity!(
-            $comp_quantity:
-            $crate::model::quantity::Quantity<$crate::model::dimension::DimensionZero>; $(($quantities, $exps)),+
-        );
-    };
-
-    // Recursive case
-    ($comp_quantity:ident: $quantity_acc:ty; ($quantity:ty, $exp:ty) $(, ($quantities:ty, $exps:ty))*) => {
-        quantity!(
-            $comp_quantity:
-            <$quantity_acc as std::ops::Mul<
-                <$quantity as $crate::model::dimension::TypePow<$exp>>::Output
-            >>::Output;
-            $(($quantities, $exps)),*
-        );
-    };
-
-    // Base case
-    ($comp_quantity:ident: $quantity_acc:ty;) => {
-        pub type $comp_quantity = $quantity_acc;
-    };
 }
 
 // ===========================

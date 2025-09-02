@@ -1,10 +1,11 @@
-pub mod constants;
-pub mod defs;
-pub mod prefixes;
+// Modules can stay private, as all members are publicly re-exported
+mod constants;
+mod defs;
+mod prefixes;
 
 // --
 
-// Public export of all prefixes and units under ferrunitas::system::*
+// Public export of all prefixes, constants and units under ferrunitas::system::*
 pub use constants::*;
 pub use prefixes::*;
 

@@ -1,3 +1,6 @@
+/// This file is only for internal testing purposes.
+/// It is not linked in the crate and thus has no meaning to users.
+
 #![allow(dead_code, unused_variables)]
 
 use crate::model::macros::{prefix, quantity, unit};
