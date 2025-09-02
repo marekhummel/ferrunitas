@@ -1,7 +1,7 @@
 //! Example usage of the Ferrunitas library regarding functions.
 //! Generally its recommended to stick to quantities within functions, see below
 
-use ferrunitas::{system::*, Measure, Unit};
+use ferrunitas::{Measure, Unit, system::*};
 
 // Requiring specific units in function signatures
 fn calculate_kinetic_energy(mass: Measure<Gram>, velocity: Measure<MetrePerSecond>) -> Measure<Joule> {

@@ -18,7 +18,7 @@ pub mod __model {
         dimension::{DimensionVector, DimensionZero, TypePow},
         prefix::{Prefix, Prefixable},
         quantity::Quantity,
-        unit::{Unit, __inner_unit_macros},
+        unit::{__inner_unit_macros, Unit},
     };
 }
 

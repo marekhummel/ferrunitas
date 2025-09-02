@@ -1,5 +1,5 @@
-use ferrunitas::typenum_consts::*;
 use ferrunitas::Unit;
+use ferrunitas::typenum_consts::*;
 use ferrunitas::{prefix, quantity, unit};
 
 // Demonstration on how to use the macros to define new units / quantities / prefixes.

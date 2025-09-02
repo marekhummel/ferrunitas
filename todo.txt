@@ -1,11 +1,6 @@
-- #[inline(always)]
-
-- Comments design choices (macro vs generic impl etc.)
-
 - Linear conversion for Temperature
 
 - Information tech units (bytes and stuff) as well as those prefixes
-- VISIBILITY! (Pub Unit trait and inner Unit trait etc.?)
 - Cargo TOML
 - Deps
 - README
@@ -13,3 +8,5 @@
 - Radians, bytes, steradians not dimless?
 - Docs with Doctests?
 - Check ownership and borrowing impls
+- Cargo package include / exclude
+- Publish to crates.io

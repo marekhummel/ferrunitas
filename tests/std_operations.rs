@@ -1,5 +1,5 @@
-use ferrunitas::system::*;
 use ferrunitas::Unit;
+use ferrunitas::system::*;
 
 #[cfg(test)]
 mod std_operations_tests {

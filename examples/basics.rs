@@ -1,5 +1,5 @@
 use ferrunitas::system::*;
-use ferrunitas::{common::format_unit_dims, Measure, Unit};
+use ferrunitas::{Measure, Unit, common::format_unit_dims};
 
 fn units_measures_and_quantities() {
     println!("--- Units, Quantities and Measures Example ---");

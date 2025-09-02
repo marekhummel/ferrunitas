@@ -1,11 +1,12 @@
 [package]
 name = "ferrunitas"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 description = "A type-safe unit conversion library with compile-time dimensional analysis"
-license = "MIT OR Apache-2.0"
-keywords = ["units", "physics", "dimensional-analysis", "type-safety"]
-categories = ["science", "mathematics"]
+license = "Apache-2.0"
+keywords = ["units", "conversion", "measurement", "SI", "dimensional-analysis"]
+categories = ["science", "data-structures", "mathematics", "value-formatting"]
+repository = "https://github.com/marekhummel/ferrunitas"
 
 [lib]
 name = "ferrunitas"

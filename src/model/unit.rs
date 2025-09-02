@@ -193,10 +193,6 @@ pub mod __inner_unit_macros {
             base *= base;
             e >>= 1;
         }
-        if neg {
-            1.0 / acc
-        } else {
-            acc
-        }
+        if neg { 1.0 / acc } else { acc }
     }
 }
