@@ -8,7 +8,11 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 use num_traits::Inv;
 use typenum::*;
 
-/// Dimension marker trait
+/// Dimension exponent marker.
+///
+/// Implemented by typenum integers representing a single base dimension's
+/// exponent (e.g. `P2`, `N1`, `Z0`). Provides conversion to a signed integer.
+/// Required to be used with the dimensional vector.
 pub trait Dimension: Debug + Clone + Copy + PartialOrd + PartialEq {
     fn to_int() -> i8;
 }
@@ -18,7 +22,11 @@ impl<T: typenum::Integer + Debug + PartialOrd> Dimension for T {
     }
 }
 
-/// Marker trait for all quantity types to extract dimensional components
+/// Implemented by types that carry a 7‑component dimensional signature.
+///
+/// Associated types correspond to exponents of base dimensions in order:
+/// Mass (M), Length (L), Time (T), Electric Current (I), Temperature (Th),
+/// Amount of Substance (N), Luminous Intensity (J).
 pub trait Dimensioned: Debug + Clone + Copy + PartialEq + crate::model::sealed::Sealed {
     type M: Dimension;
     type L: Dimension;
@@ -30,6 +38,10 @@ pub trait Dimensioned: Debug + Clone + Copy + PartialEq + crate::model::sealed::
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+/// Concrete carrier of seven base dimension exponents.
+///
+/// Invariant: contains no runtime data; all information lives at the type
+/// level. Construction is always zero-cost.
 pub struct DimensionVector<M, L, T, I, Th, N, J>
 where
     M: Dimension,
@@ -43,6 +55,7 @@ where
     _phantom: PhantomData<(M, L, T, I, Th, N, J)>,
 }
 
+/// Convenience alias for a zero (all exponents 0) dimension signature.
 pub type DimensionZero = DimensionVector<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
 
 impl<M, L, T, I, Th, N, J> crate::model::sealed::Sealed for DimensionVector<M, L, T, I, Th, N, J>
@@ -255,7 +268,9 @@ pub trait TypePow<Exp>
 where
     Exp: Integer + NonZero + ToInt<i32>,
 {
+    /// Resulting dimension vector.
     type Output;
+    /// Apply exponent of type level hence no value.
     fn pow(self) -> Self::Output;
 }
 

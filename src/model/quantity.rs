@@ -12,8 +12,11 @@ use crate::model::unit::Unit;
 use num_traits::Inv;
 use typenum::{Integer, NonZero, ToInt};
 
-/// Quantity with type-level dimensional signature
-/// Dimensions: [Mass, Length, Time, Current, Temperature, Amount, Luminosity]
+/// Dimensioned magnitude independent of a concrete display unit.
+///
+/// Encodes 7‑component dimensional signature in type parameter `D`. Values are
+/// stored as raw `f64` in canonical base units. Use `as_measure` / `from` to
+/// convert to and from concrete unit `Measure` types.
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Quantity<D: Dimensioned> {
     /// This value holds the raw f64 value of the quantity, only meant for internal use
@@ -21,7 +24,8 @@ pub struct Quantity<D: Dimensioned> {
     _phantom: PhantomData<D>,
 }
 
-/// Marker trait for types to be used in which the Unit::Quantity
+/// Internal marker implemented by all quantity instantiations to gate trait
+/// implementations outside the crate (sealed via `sealed::Sealed`).
 #[doc(hidden)]
 pub trait QuantityMarker:
     Sized + Debug + Clone + Copy + PartialEq + crate::model::sealed::Sealed
@@ -70,6 +74,7 @@ macro_rules! quantity {
 
     // Base case
     ($comp_quantity:ident: $quantity_acc:ty;) => {
+        /// Auto-generated quantity type alias produced by `quantity!` macro.
         pub type $comp_quantity = $quantity_acc;
     };
 }
@@ -80,7 +85,7 @@ macro_rules! quantity {
 
 /// Default impl
 impl<D: Dimensioned> Quantity<D> {
-    /// Create a new Quantity.
+    /// Create a new quantity from a canonical base value (crate internal).
     pub(crate) fn new(value: f64) -> Self {
         Self {
             value,
@@ -88,17 +93,17 @@ impl<D: Dimensioned> Quantity<D> {
         }
     }
 
-    /// Creates quantity instance based on value and unit
+    /// Construct this quantity from a numeric value expressed in unit `U`.
     pub fn from<U: Unit<Quantity = Self>>(value: impl Into<f64>) -> Self {
         Measure::<U>::new(value.into()).into_q()
     }
 
-    /// Converts this quantity into a measure of given unit
+    /// Represent this quantity as a `Measure<U>`.
     pub fn as_measure<U: Unit<Quantity = Self>>(&self) -> Measure<U> {
         Measure::from_q(*self)
     }
 
-    /// Direct convert of a unit into another of this quantity.
+    /// Convenience: Convert numeric `value` from unit `U1` to unit `U2` for this quantity type.
     pub fn convert<U1, U2>(value: f64) -> Measure<U2>
     where
         U1: Unit<Quantity = Self>,

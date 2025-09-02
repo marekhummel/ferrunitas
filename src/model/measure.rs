@@ -8,12 +8,18 @@ use crate::model::quantity::{Quantity, QuantityMarker};
 use crate::model::unit::Unit;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+/// Runtime holder of a numeric value tagged with a concrete unit type `U`.
+///
+/// Stores the value in the unit's own scale; conversions use
+/// the unit factor. Prefer `Quantity` for generic dimensional math and use
+/// `Measure` at API boundaries for explicit unit semantics.
 pub struct Measure<U: Unit> {
     value: f64,
     _phantom: std::marker::PhantomData<U>,
 }
 
 impl<U: Unit> Measure<U> {
+    /// Create a new measure from a value expressed in unit `U`.
     pub fn new(value: impl Into<f64>) -> Self {
         Self {
             value: value.into(),
@@ -21,17 +27,21 @@ impl<U: Unit> Measure<U> {
         }
     }
 
+    /// Raw numeric value in unit `U` (no conversion).
     pub fn value(&self) -> f64 {
         self.value
     }
 
+    /// Construct from a quantity of the same dimension.
     pub fn from_q(q: U::Quantity) -> Self {
         Self::new(q.raw_value() / U::FACTOR)
     }
+    /// Convert into a dimensioned quantity using `U`'s factor.
     pub fn into_q(self) -> U::Quantity {
         U::Quantity::new(self.value * U::FACTOR)
     }
 
+    /// Convert to another unit of the same dimension.
     pub fn convert<UOther>(&self) -> Measure<UOther>
     where
         UOther: Unit<Quantity = U::Quantity>,
@@ -39,6 +49,9 @@ impl<U: Unit> Measure<U> {
         Measure::from_q(self.into_q())
     }
 
+    /// Equality across different units of same dimension.
+    /// Typical PartialEq requires type equality, this extends the equality
+    /// check to measures of the same quantity.
     pub fn is_equal_to<UOther>(&self, other: &Measure<UOther>) -> bool
     where
         UOther: Unit<Quantity = U::Quantity>,

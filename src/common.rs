@@ -9,10 +9,12 @@ use crate::model::{
     unit::Unit,
 };
 
+/// Format the underlying quantity dimensions for a given unit type.
 pub fn format_unit_dims<U: Unit>() -> String {
     format_dims::<<U as Unit>::Quantity>()
 }
 
+/// Format the dimension signature of a `Dimensioned` type (like quantities) as a human-readable string.
 pub fn format_dims<D: Dimensioned>() -> String {
     let items: [(&str, i8); 7] = [
         ("M", D::M::to_int()),

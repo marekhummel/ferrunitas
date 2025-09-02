@@ -17,6 +17,7 @@ pub trait Prefixable {}
 #[macro_export]
 macro_rules! prefix {
     ($prefix_name:ident, $factor:expr, $symbol:expr) => {
+        /// Auto-generated prefix type produced by `prefix!` macro.
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $prefix_name;
 
