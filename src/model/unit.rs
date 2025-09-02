@@ -9,7 +9,6 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     const ABBREV: &'static str;
 
     /// Create a new measure from a raw value
-    #[inline(always)]
     fn new(value: impl Into<f64>) -> Measure<Self> {
         Measure::new(value.into())
     }

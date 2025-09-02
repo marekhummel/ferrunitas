@@ -7,3 +7,5 @@
 - Check ownership and borrowing impls
 - Cargo package include / exclude
 - Publish to crates.io
+
+- Usage of inline unclear, benchmark doesnt show differece, yet it seems right to use

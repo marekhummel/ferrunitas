@@ -8,6 +8,9 @@ keywords = ["units", "conversion", "measurement", "SI", "dimensional-analysis"]
 categories = ["science", "data-structures", "mathematics", "value-formatting"]
 repository = "https://github.com/marekhummel/ferrunitas"
 
+[profile.release]
+lto = "fat"
+
 [lib]
 name = "ferrunitas"
 path = "src/lib.rs"
@@ -17,6 +20,3 @@ const_format = "0.2.34"
 num-traits = "0.2.19"
 typenum = "1.18.0"
 paste = "1.0"
-
-[profile.release]
-lto = true
