@@ -1,4 +1,3 @@
-- RESTRICTIONS ON CONVERSIONS!!!
 - #[inline(always)]
 
 - Comments design choices (macro vs generic impl etc.)

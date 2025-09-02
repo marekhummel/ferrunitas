@@ -22,7 +22,11 @@ fn main() {
     println!("MolePerLitre dimensions:    {}", format_unit_dims::<MolePerLitre>());
 
     // Demonstration for crate level imports
-    let _x: Measure<Foot> = Foot::new(3.0);
+    let x: Measure<Foot> = Foot::new(3.0);
+    // TODO: Meant to fail
+    // let y = x.convert::<Newton>();
+    // let a = x.into_q();
+    // let b = a.as_measure::<Newton>();
 
     // Macro usage, see examples/advanced.rs
     quantity!(MyLength: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);

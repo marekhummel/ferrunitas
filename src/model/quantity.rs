@@ -85,16 +85,19 @@ impl<D: Dimensioned> Quantity<D> {
     }
 
     /// Creates quantity instance based on value and unit
+    #[inline(always)]
     pub fn from<U: Unit<Quantity = Self>>(value: impl Into<f64>) -> Self {
         Measure::<U>::new(value.into()).into_q()
     }
 
     /// Converts this quantity into a measure of given unit
+    #[inline(always)]
     pub fn as_measure<U: Unit<Quantity = Self>>(&self) -> Measure<U> {
         Measure::from_q(*self)
     }
 
     /// Direct convert of a unit into another of this quantity.
+    #[inline(always)]
     pub fn convert<U1, U2>(value: f64) -> Measure<U2>
     where
         U1: Unit<Quantity = Self>,

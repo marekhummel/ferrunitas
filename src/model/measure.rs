@@ -18,6 +18,7 @@ impl<U: Unit> Measure<U> {
         }
     }
 
+    #[inline(always)]
     pub fn value(&self) -> f64 {
         self.value
     }
@@ -30,6 +31,7 @@ impl<U: Unit> Measure<U> {
         U::Quantity::new(self.value * U::FACTOR)
     }
 
+    #[inline(always)]
     pub fn convert<UOther>(&self) -> Measure<UOther>
     where
         UOther: Unit<Quantity = U::Quantity>,
@@ -37,6 +39,7 @@ impl<U: Unit> Measure<U> {
         Measure::from_q(self.into_q())
     }
 
+    #[inline(always)]
     pub fn is_equal_to<UOther>(&self, other: &Measure<UOther>) -> bool
     where
         UOther: Unit<Quantity = U::Quantity>,

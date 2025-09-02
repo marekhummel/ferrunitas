@@ -16,3 +16,6 @@ const_format = "0.2.34"
 num-traits = "0.2.19"
 typenum = "1.18.0"
 paste = "1.0"
+
+[profile.release]
+lto = true
