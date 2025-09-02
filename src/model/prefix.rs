@@ -1,4 +1,5 @@
-//! SI prefixes for units
+//! SI prefixes for units. Prefix is just a simple trait, which
+//! can be implemented via the `prefix!` macro.
 
 /// Trait for SI prefixes
 pub trait Prefix {

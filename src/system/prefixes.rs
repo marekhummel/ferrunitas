@@ -1,3 +1,8 @@
+//! SI & additional decimal prefixes.
+//!
+//! Provides prefix marker types (e.g. `Kilo`, `Milli`) with scale factors and
+//! symbols used by the `unit!` macro to generate prefixed unit aliases.
+
 use crate::prefix;
 
 prefix!(Quecto, 1e-30, "q");

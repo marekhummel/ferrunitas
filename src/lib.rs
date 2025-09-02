@@ -1,12 +1,88 @@
-// #![warn(missing_docs)]
-
-//! Ferrunitas - A type-safe unit conversion library leveraging Rust's type system
+//! Ferrunitas – Type‑safe physical quantities & units
 //!
-//! This library provides compile-time dimensional analysis and unit conversions
-//! with zero runtime overhead through Rust's powerful type system.
+//! Ferrunitas lets you express physical formulas with compile‑time dimensional
+//! analysis. Using incompatible units results in a compile error
+//! instead of a runtime surprise. Values are stored as raw `f64`, while *types*
+//! encode the dimensional signature (mass, length, time, …) via the type system.
+//!
+//! # Goals
+//! * Zero / near‑zero runtime overhead (all dimension checks at compile time)
+//! * Ergonomic construction & conversion of units (e.g. `Kilogram::new(5.0)`)
+//! * Seamless arithmetic on both concrete units (e.g. `Newton`) and generic
+//!   quantities (e.g. `Force`)
+//! * Prefix & compound unit support (kilo, milli, square, per, etc.)
+//!
+//! # Core Concepts
+//! * **Unit type**: A concrete label like `Kilogram`, `Metre`, `Newton` that
+//!   carries its dimensional vector & scaling factor to an internal base.
+//! * **Quantity**: A dimensioned numeric value without a fixed display unit.
+//!   You obtain a quantity via `some_unit.into_q()` and it will be the result of
+//!   multiplication and division. They work best when converted back to measures
+//!   and as types for methods.
+//! * **Prefixes / Compounds**: Generated via macros (e.g. `Millivolt`,
+//!   `SquareMetre`, `MetrePerSecond`). These are normal unit types.
+//! * **Conversion**: Convert a quantity back to a chosen unit type with
+//!   `quantity.as_measure::<TargetUnit>()` or convert between unit types by going
+//!   through a quantity: `let kg: Kilogram = grams.convert();`.
+//!
+//! # Quick Start
+//! ```rust
+//! use ferrunitas::{system::{Kilogram, Gram, MetrePerSecondSquared, Millinewton, Newton}, Measure, Unit};
+//!
+//! // Construct concrete units
+//! let m = Kilogram::new(5.0);              // 5 kg
+//! let a = MetrePerSecondSquared::new(2.0); // 2 m/s²
+//!
+//! // Multiply → force (unit × unit -> compound quantity)
+//! let f_q = m * a + Millinewton::new(20.0);                // A quantity of type Force
+//! let f: Measure<Newton> = f_q.as_measure();  // Represent it as Newtons
+//! assert_eq!(f.value(), 10.02);
+//!
+//! // Unit ↔ Quantity ↔ Unit conversion
+//! let g = Gram::new(5000.0);           // 5000 g
+//! let kg_again = g.convert::<Kilogram>();
+//! assert_eq!(kg_again.value(), 5.0);
+//! ```
+//!
+//! # Equality & Ordering
+//! * Concrete unit types (`Kilogram`, `Gram`) are **not** directly comparable to
+//!   each other if their Rust types differ. Convert both to a quantity (or the
+//!   same concrete unit) first. Use `.is_equal_to()` for comparisons.
+//! * Quantities of the same dimension implement `PartialEq` / `PartialOrd`.
+//!
+//! # Arithmetic Overview
+//! | Operation | Works On | Result |
+//! |-----------|----------|--------|
+//! | `+ -`     | Same dimension (unit or quantity) | Same dimension |
+//! | `* /`     | Any compatible dimensions | New derived dimension |
+//! | `* f64` / `f64 *` | Scale value | Same dimension |
+//! | `/ f64`   | Scale value | Same dimension |
+//!
+//! # Limitations / Notes
+//! * Internal storage uses `f64`; typical floating point caveats apply.
+//! * Rounding / formatting of display values is a caller concern, usual format specifiers are respected.
+//! * Only a subset of physical domains is presently defined—extend via macros
+//!   in `system::defs` if needed.
+//!
+//! # Extending
+//! New units, prefixes, or compound relationships can be created using
+//! the provided macros (`unit!`, etc.). The results work just like all the
+//! predefined macros.
+//!
+//! # Minimum Example (copy/paste)
+//! ```rust
+//! use ferrunitas::{system::{Kilometre, Knot, Second, Yard}, Unit};
+//! let a1 = Kilometre::new(1.2);
+//! let a2 = Yard::new(233.0);
+//! let b = Second::new(3400.0);
+//! let speed = ((a1 + a2) / b).as_measure::<Knot>();
+//! println!("{:.2}", speed);
+//! ```
 
 // Make all definitions and the common functions public
+/// Common helper functions & utilities shared across units / quantities.
 pub mod common;
+/// Public system definitions: base, derived, prefixed, and compound units.
 pub mod system;
 
 // Keep model internal, but re-export some types for the exported macros

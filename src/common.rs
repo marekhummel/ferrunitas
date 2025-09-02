@@ -1,3 +1,9 @@
+//! Common helpers & internal testing utilities.
+//!
+//! Provides formatting helpers for dimensional signatures plus internal test
+//! macros (`verify_unit!`, `assert_almost_equal!`) used across unit definition
+//! files. Not typically needed by downstream users directly.
+
 use crate::model::{
     dimension::{Dimension, Dimensioned},
     unit::Unit,

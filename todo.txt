@@ -9,3 +9,5 @@
 - Publish to crates.io
 
 - Usage of inline unclear, benchmark doesnt show differece, yet it seems right to use
+- Support other internal value types rather then f64?
+- Support crates like Serde?

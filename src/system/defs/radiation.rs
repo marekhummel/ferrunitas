@@ -1,3 +1,8 @@
+//! Ionizing radiation & radioactivity units.
+//!
+//! Activity, absorbed dose, equivalent dose and exposure related units built
+//! on energy, mass and time dimensional combinations.
+
 use crate::system::defs::base::*;
 use crate::system::defs::electromagnetism::*;
 use crate::system::defs::mechanics::*;

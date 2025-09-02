@@ -1,3 +1,7 @@
+//! Unit-agnostic dimensioned magnitude (`Quantity<D>`) for arithmetic & conversion.
+//! Quantity supports all arithmetics with measures. Apart from that quantities can
+//! be created with the `quantity!` macro and implement some traits useful for type-safety.
+
 use std::fmt::{self, Debug};
 use std::marker::PhantomData;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};

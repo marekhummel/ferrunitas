@@ -1,3 +1,8 @@
+//! Base / fundamental quantities & common cross-domain units.
+//!
+//! Declares core scalar quantities (Mass, Length, Time, ElectricCurrent, etc.)
+//! and a broad catalog of canonical + historical units with scaling factors.
+
 use crate::system::defs::mechanics::PoundForce;
 use crate::system::prefixes::*;
 use crate::{quantity, unit};

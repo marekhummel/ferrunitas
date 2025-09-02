@@ -1,3 +1,8 @@
+//! Mechanics domain units.
+//!
+//! Defines motion, force, energy, power, pressure, viscosity and related
+//! derived / compound units (e.g. `Newton`, `Joule`, `Pascal`).
+
 use crate::system::constants::STANDARD_GRAVITY;
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
@@ -100,6 +105,7 @@ quantity!(Force: M P1, L P1, T N2, I Z0, Th Z0, N Z0, J Z0); // M L T⁻²
 unit!(compound: Newton, "N", [(Kilogram, P1), (Metre, P1), (Second, N2)]; prefixable);
 unit!(prefix: Kilonewton, Kilo, Newton);
 unit!(prefix: Meganewton, Mega, Newton);
+unit!(prefix: Millinewton, Milli, Newton);
 
 unit!(compound: Dyne, "dyn", [(Gram, P1), (Centimetre, P1), (Second, N2)]);
 unit!(compound: KilogramForce, "kgf", [(Kilogram, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);

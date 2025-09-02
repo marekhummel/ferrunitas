@@ -1,3 +1,8 @@
+//! Unit trait & macros for defining base, derived, compound and prefixed units.
+//! Units are zero-sized structs implementing the Unit trait, which annotates
+//! them with the related quantity and the conversion factor.
+//! Most of this file contains of the macros to create a new unit.
+
 use std::fmt::Debug;
 
 use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityMarker};

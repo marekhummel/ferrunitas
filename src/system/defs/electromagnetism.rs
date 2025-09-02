@@ -1,3 +1,9 @@
+//! Electromagnetism domain units.
+//!
+//! Covers electric charge, potential, resistance, conductance, capacitance,
+//! inductance, magnetic flux & flux density, among others. Units are built
+//! from the base electrical quantity and mechanical dimensions.
+
 use crate::system::defs::base::*;
 use crate::system::defs::mechanics::*;
 use crate::system::prefixes::*;

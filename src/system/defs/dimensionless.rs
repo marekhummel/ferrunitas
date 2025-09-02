@@ -1,3 +1,8 @@
+//! Dimensionless quantities and pure number-like units.
+//!
+//! Provides markers for ratios, angles, efficiency factors and any other
+//! unitless constructs used in formulas.
+
 use crate::{quantity, unit};
 use typenum::*;
 

@@ -11,6 +11,9 @@ repository = "https://github.com/marekhummel/ferrunitas"
 [profile.release]
 lto = "fat"
 
+[lints.rust]
+missing_docs = "warn"
+
 [lib]
 name = "ferrunitas"
 path = "src/lib.rs"

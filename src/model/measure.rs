@@ -1,3 +1,6 @@
+//! Strongly typed value bound to a specific unit (`Measure<U>` runtime wrapper).
+//! Main way to interact with unit-coupled values, and all arithmetic operations are implemented here.
+
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::model::dimension::Dimensioned;

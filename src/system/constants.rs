@@ -1,4 +1,8 @@
-//! Physical constants expressed with strongly typed units.
+//! Selected physical constants.
+//!
+//! Exposes common constants (e.g. gravitational acceleration) as strongly
+//! typed measures for convenient reuse.
+
 // Note that we cant fully leverage the operators for units due to the const.
 // Hence the manual entry of all values
 

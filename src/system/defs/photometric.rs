@@ -1,3 +1,8 @@
+//! Photometric & luminous intensity domain units.
+//!
+//! Includes luminous flux, illuminance and related optical perception based
+//! quantities anchored in luminosity dimension.
+
 use crate::system::defs::base::*;
 use crate::system::defs::dimensionless::*;
 use crate::system::defs::mechanics::*;
