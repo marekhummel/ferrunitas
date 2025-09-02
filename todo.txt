@@ -1,9 +1,6 @@
 - Linear conversion for Temperature
 
 - Information tech units (bytes and stuff) as well as those prefixes
-- Cargo TOML
-- Deps
-- README
 - Compound unit with literals (1, 2, -1) instead of typenum types
 - Radians, bytes, steradians not dimless?
 - Docs with Doctests?
