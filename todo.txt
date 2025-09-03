@@ -1,5 +1,5 @@
 - Linear conversion for Temperature
-- Information tech units (bytes and stuff) as well as those prefixes?
+
 - Compound unit with literals (1, 2, -1) instead of typenum types?
 - Radians, bytes, steradians not dimless?
 - Check ownership and borrowing impls
