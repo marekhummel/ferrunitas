@@ -136,7 +136,7 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 /// unit!(base: Gram, "g", Mass; prefixable, factor = 0.001); // Adjusts for kg base (anomaly in SI system)
 ///
 /// // Non-prefixable base unit
-/// unit!(base: Second, "s", Time;);
+/// unit!(base: Second, "s", Time);
 /// ```
 ///
 /// ## 2. Derived Units (`derived:`)
@@ -252,8 +252,8 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 #[macro_export]
 macro_rules! unit {
     // Base units (prefixable or not)
-    (base: $unit_name:ident, $abbrev:literal, $quantity:ty; $($optionals:tt)* ) => {
-        unit!(base_internal: $unit_name, $abbrev, $quantity, 1.0; $($optionals)*);
+    (base: $unit_name:ident, $abbrev:literal, $quantity:ty $(; $($optionals:tt)*)? ) => {
+        unit!(base_internal: $unit_name, $abbrev, $quantity, 1.0; $($($optionals)*)?);
     };
 
 

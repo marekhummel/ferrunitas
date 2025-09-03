@@ -10,7 +10,7 @@ use typenum::*;
 // DIMENSIONLESS QUANTITIES
 // ===========================
 quantity!(Dimensionless: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
-unit!(base: One, "1", Dimensionless;);
+unit!(base: One, "1", Dimensionless);
 
 // Plane angle
 unit!(derived: Radian, "rad", (1, One));

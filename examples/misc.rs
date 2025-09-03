@@ -31,6 +31,6 @@ fn main() {
     // Macro usage, see examples/advanced.rs
     quantity!(MyLength: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
     prefix!(Quarta, 40, "q");
-    unit!(base: Ellbow, "m", MyLength; prefixable);
+    unit!(base: Elbow, "m", MyLength; prefixable);
     println!("MyLength dimensions:           {}", format_dims::<MyLength>());
 }

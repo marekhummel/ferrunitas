@@ -36,7 +36,7 @@ unit!(derived: Hour, "h", (3600, Second));
 
 // Lastly, instead of using factors we can combine existing units to create a new one.
 
-// Same as the following, as metre and second are base units: unit!(base: MetrePerSecond, "m/s", Velocity;);
+// Same as the following, as metre and second are base units: unit!(base: MetrePerSecond, "m/s", Velocity);
 unit!(compound: MetrePerSecond, "m/s", [(Metre, P1), (Second, N1)]);
 
 // Instead of: unit!(derived: KilometrePerHour, "km/h", (0.277778, MetrePerSecond));
