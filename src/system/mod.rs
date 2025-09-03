@@ -16,6 +16,7 @@ pub use prefixes::*;
 pub use defs::acoustic::*;
 pub use defs::base::*;
 pub use defs::chemical::*;
+pub use defs::computing::*;
 pub use defs::dimensionless::*;
 pub use defs::electromagnetism::*;
 pub use defs::mechanics::*;

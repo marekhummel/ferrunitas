@@ -15,19 +15,11 @@
 //! Run with: `cargo run --example misc`
 
 // For dimensional formatting
+use ferrunitas::Unit;
 use ferrunitas::common::{format_dims, format_unit_dims};
-
-// For access to all definitions to units, quantities and prefixes
 use ferrunitas::system::*;
 
-// Crate root access to most common struct Measure and trait Unit to make methods available
-use ferrunitas::{Measure, Unit};
-
-// Macros for own definitions (typenum consts for quantity macro)
-use ferrunitas::typenum_consts::*;
-use ferrunitas::{prefix, quantity, unit};
-
-fn main() {
+fn dimensions() {
     // If curious, one can print out the dimensions of a quantity / unit
     println!("Force dimensions:           {}", format_dims::<Force>());
     println!("Acceleration dimensions:    {}", format_dims::<Acceleration>());
@@ -36,17 +28,40 @@ fn main() {
     println!("MetrePerSecond dimensions:  {}", format_unit_dims::<MetrePerSecond>());
     println!("Farad dimensions:           {}", format_unit_dims::<Farad>());
     println!("MolePerLitre dimensions:    {}", format_unit_dims::<MolePerLitre>());
+}
 
-    // Demonstration for crate level imports
-    let _x: Measure<Foot> = Foot::new(3.0);
-    // TODO: Meant to fail
-    // let y = _x.convert::<Newton>();
-    // let a = _x.into_q();
-    // let b = a.as_measure::<Newton>();
+fn demonstrate_large_number_precision_issues() {
+    // IEEE 754 double precision (f64) has limitations with very large numbers.
+    // This affects conversions and arithmetic with big prefixes.
+    println!("\n=== Large Number Precision Caveats ===");
 
-    // Macro usage, see examples/advanced.rs
-    quantity!(MyLength: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
-    prefix!(Quarta, 40, "q");
-    unit!(base: Elbow, "m", MyLength; prefixable);
-    println!("MyLength dimensions:           {}", format_dims::<MyLength>());
+    // --Demonstrate precision loss with very large binary prefixes
+    println!("--- Prefix Precision Issues ---");
+    // Yobibyte is 2^80 bytes, as a power of two this works
+    let yobibyte_data = Yobibyte::new(1.0);
+    let bit_data = yobibyte_data.convert::<Bit>();
+    println!("1 Yobibyte  = {:.0} bits", bit_data.value());
+    println!("Expected    = {:.0} bits", (1u128 << 80) as f64 * 8.0);
+
+    // Yottabyte is 10^24 bytes, this will fails
+    let yottabyte_data = Yottabyte::new(1.0);
+    let bit_data = yottabyte_data.convert::<Bit>();
+    println!("1 Yottabyte = {:.0} bits", bit_data.value());
+    println!("Expected    = {:.0} bits", 10u128.pow(24) * 8);
+
+    // -- Demonstrate precision loss in arithmetic due to f64
+    // At this magnitude a difference of 1 is no longer captured, as the mantissa has only 53 bits
+    // Thus, over 2**53 some integers are no longer representable in f64
+    println!("\n--- Arithmetic Precision Loss ---");
+    let large_data = Exabyte::new(1000.0); // 1 Zettabyte worth
+    let small_data = Byte::new(1.0); // 1 Byte
+    let sum = large_data + small_data;
+    println!("1000 Exabytes + 1 Byte:");
+    println!("Result   = {:.0} bytes", sum.convert::<Byte>().value());
+    println!("Expected = {:.0} bytes", 10u128.pow(21) + 1);
+}
+
+fn main() {
+    dimensions();
+    demonstrate_large_number_precision_issues();
 }

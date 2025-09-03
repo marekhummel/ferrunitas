@@ -30,3 +30,34 @@ prefix!(Zetta, 1e21, "Z");
 prefix!(Yotta, 1e24, "Y");
 prefix!(Ronna, 1e27, "R");
 prefix!(Quetta, 1e30, "Q");
+
+// ---
+
+prefix!(Kibi, 1u128 << 10, "Ki");
+prefix!(Mebi, 1u128 << 20, "Mi");
+prefix!(Gibi, 1u128 << 30, "Gi");
+prefix!(Tebi, 1u128 << 40, "Ti");
+prefix!(Pebi, 1u128 << 50, "Pi");
+prefix!(Exbi, 1u128 << 60, "Ei");
+prefix!(Zebi, 1u128 << 70, "Zi");
+prefix!(Yobi, 1u128 << 80, "Yi");
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::prefix::Prefix;
+
+    #[test]
+    fn accuracy_binary_prefixes() {
+        // Works, because even if the number itself exceeds the mantissa size for f64 (53bits)
+        // powers of two are just stored in the exponent.
+        assert_eq!(Kibi::FACTOR as u128, 1u128 << 10);
+        assert_eq!(Mebi::FACTOR as u128, 1u128 << 20);
+        assert_eq!(Gibi::FACTOR as u128, 1u128 << 30);
+        assert_eq!(Tebi::FACTOR as u128, 1u128 << 40);
+        assert_eq!(Pebi::FACTOR as u128, 1u128 << 50);
+        assert_eq!(Exbi::FACTOR as u128, 1u128 << 60);
+        assert_eq!(Zebi::FACTOR as u128, 1u128 << 70);
+        assert_eq!(Yobi::FACTOR as u128, 1u128 << 80);
+    }
+}

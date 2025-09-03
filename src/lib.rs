@@ -27,7 +27,7 @@
 //!
 //! # Quick Start
 //! ```rust
-//! use ferrunitas::{system::{Kilogram, Gram, MetrePerSecondSquared, Millinewton, Newton}, Measure, Unit};
+//! use ferrunitas::{system::*, Measure, Unit};
 //!
 //! // Construct concrete units
 //! let m = Kilogram::new(5.0);              // 5 kg
@@ -42,6 +42,22 @@
 //! let g = Gram::new(5000.0);           // 5000 g
 //! let kg_again = g.convert::<Kilogram>();
 //! assert_eq!(kg_again.value(), 5.0);
+//! ```
+//!
+//! # Relevant imports
+//! ```ignore
+//! // For access to all definitions to units, quantities and prefixes
+//! use ferrunitas::system::*;
+//!
+//! // Crate root access to most common struct Measure and trait Unit to make methods available
+//! use ferrunitas::{Measure, Unit};
+//!
+//! // For dimensional formatting
+//! use ferrunitas::common::{format_dims, format_unit_dims};
+//!
+//! // Macros for own definitions (typenum consts for quantity macro)
+//! use ferrunitas::typenum_consts::*;
+//! use ferrunitas::{prefix, quantity, unit};
 //! ```
 //!
 //! # Equality & Ordering
@@ -59,7 +75,7 @@
 //! | `/ f64`   | Scale value | Same dimension |
 //!
 //! # Limitations / Notes
-//! * Internal storage uses `f64`; typical floating point caveats apply.
+//! * Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
 //! * Rounding / formatting of display values is a caller concern, usual format specifiers are respected.
 //! * Only a subset of physical domains is presently defined—extend via macros
 //!   in `system::defs` if needed.

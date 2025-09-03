@@ -7,6 +7,7 @@
 pub mod acoustic;
 pub mod base;
 pub mod chemical;
+pub mod computing;
 pub mod dimensionless;
 pub mod electromagnetism;
 pub mod mechanics;
