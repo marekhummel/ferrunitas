@@ -1,7 +1,9 @@
 //! Unit trait & macros for defining base, derived, compound and prefixed units.
-//! Units are zero-sized structs implementing the Unit trait, which annotates
-//! them with the related quantity and the conversion factor.
-//! Most of this file contains of the macros to create a new unit.
+//!
+//! This module provides the foundation for the unit system in Ferrunitas. Units are
+//! zero-sized marker types that carry compile-time information about their associated
+//! quantity, conversion factor, and display symbol. The primary interface is the
+//! [`unit!`] macro, which can create four different types of units:
 
 use std::fmt::Debug;
 
@@ -9,13 +11,63 @@ use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityM
 
 /// Core trait implemented by every concrete unit type.
 ///
-/// Provides:
-/// * `Quantity`: associated dimensioned quantity type
-/// * `FACTOR`: scaling factor to canonical base units
-/// * `ABBREV`: printable short symbol
+/// The `Unit` trait is the foundation of the type system, providing the essential
+/// information needed for dimensional analysis and unit conversions. Each unit is
+/// a zero-sized marker type that carries compile-time information about its
+/// associated quantity, conversion factor, and display symbol.
 ///
-/// Units are zero-sized marker types; arithmetic is performed via their
-/// associated `Measure` / `Quantity` values.
+/// Units are typically created using the [`unit!`] macro rather than implementing
+/// this trait manually. The trait provides the scaffolding for type-safe arithmetic
+/// and conversions between different units of the same dimension.
+///
+/// # Associated Types and Constants
+///
+/// - **`Quantity`**: The dimensional quantity this unit measures (e.g., `Length`, `Mass`)
+/// - **`FACTOR`**: Conversion factor to canonical SI base units
+/// - **`ABBREV`**: Short symbol for display (e.g., "m", "kg", "ft")
+///
+/// # Examples
+///
+/// ```
+/// use ferrunitas::system::*;
+/// use ferrunitas::{Measure, Unit};
+///
+/// // Units provide compile-time information
+/// assert_eq!(Metre::FACTOR, 1.0);        // Base SI unit
+/// assert_eq!(Metre::ABBREV, "m");
+///
+/// assert_eq!(Foot::FACTOR, 0.3048);      // Conversion to metres
+/// assert_eq!(Foot::ABBREV, "ft");
+///
+/// assert_eq!(Kilometre::FACTOR, 1000.0); // 1000 metres per kilometre
+/// assert_eq!(Kilometre::ABBREV, "km");
+///
+/// // Create measures using the unit's new() method
+/// let distance = Metre::new(100.0);
+/// let height = Foot::new(6.0);
+/// let long_distance = Kilometre::new(5.0);
+///
+/// // Units can be converted between compatible types via the Measure struct
+/// let distance_in_feet: Measure<Foot> = distance.convert();
+/// println!("100 metres = {:.2}", distance_in_feet);
+/// ```
+///
+/// # Unit Arithmetic
+///
+/// Units participate in dimensional arithmetic through their associated measures:
+///
+/// ```
+/// use ferrunitas::{system::*, Unit};
+///
+/// let length = Metre::new(10.0);
+/// let time = Second::new(2.0);
+///
+/// // Division creates a new quantity with proper dimensions
+/// let velocity: Velocity = length / time;  // 10 m ÷ 2 s = 5 m/s
+///
+/// let speed_kmh = velocity.as_measure::<KilometrePerHour>();
+/// println!("Velocity: {}", speed_kmh);  // 18 km/h
+/// ```
 pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     /// The associated quantity type for this unit.
     type Quantity: QuantityMarker + Dimensioned;
@@ -25,6 +77,31 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     const ABBREV: &'static str;
 
     /// Create a new measure from a raw value
+    ///
+    /// This is the primary constructor for creating [`Measure`] instances.
+    /// It takes any value that can be converted to `f64` and wraps it in
+    /// a measure with this unit type.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use ferrunitas::{system::*, Unit};
+    ///
+    /// // Create measures with different numeric types
+    /// let distance1 = Metre::new(100.0);   // f64
+    /// let distance2 = Metre::new(100);     // integer
+    /// let distance3 = Metre::new(100_u32); // u32
+    ///
+    /// // All create equivalent measures
+    /// assert_eq!(distance1.value(), 100.0);
+    /// assert_eq!(distance2.value(), 100.0);
+    /// assert_eq!(distance3.value(), 100.0);
+    ///
+    /// // Works with any unit type
+    /// let mass = Kilogram::new(5.5);
+    /// let time = Second::new(10);
+    /// let force = Newton::new(50.0);
+    /// ```
     fn new(value: impl Into<f64>) -> Measure<Self> {
         Measure::new(value.into())
     }
@@ -35,6 +112,143 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 // ============================================
 
 /// Macro to define a new unit
+///
+/// This is the primary macro for creating unit types in the Ferrunitas library.
+/// It supports four different patterns for unit definition, each suited to different
+/// use cases. All generated units implement the [`Unit`] trait and can be used
+/// with [`Measure`] for type-safe calculations.
+///
+/// # Unit Types
+///
+/// ## 1. Base Units (`base:`)
+///
+/// Define fundamental units for a quantity, typically with a factor of 1.0 for SI base units.
+///
+/// ```
+/// use ferrunitas::{unit, quantity, typenum_consts::*};
+///
+/// quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
+/// quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
+/// quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
+///
+/// // SI base units
+/// unit!(base: Metre, "m", Length; prefixable);
+/// unit!(base: Gram, "g", Mass; prefixable, factor = 0.001); // Adjusts for kg base (anomaly in SI system)
+///
+/// // Non-prefixable base unit
+/// unit!(base: Second, "s", Time;);
+/// ```
+///
+/// ## 2. Derived Units (`derived:`)
+///
+/// Create units as scaled versions of existing units using a simple multiplication factor.
+///
+/// ```
+/// use ferrunitas::unit;
+/// use ferrunitas::system::*;
+///
+/// // Imperial length units
+/// unit!(derived: Inch, "in", (2.54, Centimetre));
+/// unit!(derived: Foot, "ft", (12, Inch));
+/// unit!(derived: Yard, "yd", (3, Foot));
+/// unit!(derived: Mile, "mi", (1760, Yard));
+///
+/// // Mass units
+/// unit!(derived: Pound, "lb", (453.592, Gram));
+/// unit!(derived: Ounce, "oz", (28.3495, Gram));
+///
+/// // Some derived units can be prefixable
+/// unit!(derived: Tonne, "t", (1000, Kilogram); prefixable);
+/// ```
+///
+/// ## 3. Compound Units (`compound:`)
+///
+/// Define units by combining multiple existing units with exponents, like m/s² or kg⋅m/s².
+/// Avoids hard coding conversion factors if the underlying factors are already present.
+/// E.g., since we know one kilometer equals 1000 meters and one hour equals 3600 seconds,
+/// we can express km/h as a compound unit instead of defining it as 0.277778 m/s.
+///
+/// ```
+/// use ferrunitas::{unit, typenum_consts::*};
+/// use ferrunitas::system::*;
+///
+/// // Velocity: length/time
+/// unit!(compound: MetrePerSecond, "m/s", [(Metre, P1), (Second, N1)]);
+/// unit!(compound: KilometrePerHour, "km/h", [(Kilometre, P1), (Hour, N1)]);
+///
+/// // Acceleration: length/time²
+/// unit!(compound: MetrePerSecondSquared, "m/s²", [(Metre, P1), (Second, N2)]);
+///
+/// // Force: mass × acceleration
+/// unit!(compound: Newton, "N", [(Kilogram, P1), (Metre, P1), (Second, N2)]);
+///
+/// // With scalar factors
+/// unit!(compound: YardsPerMinute, "yd/min", [(3, Foot, P1), (60, Second, N1)]);
+/// ```
+///
+/// ## 4. Prefixed Units (`prefix:`)
+///
+/// Create prefixed versions of existing units automatically.
+///
+/// ```
+/// use ferrunitas::{unit, prefix};
+/// use ferrunitas::system::*;
+///
+/// prefix!(Kilo, 1000, "k");
+/// prefix!(Centi, 0.01, "c");
+/// prefix!(Milli, 0.001, "m");
+///
+/// // These create Kilometre, Centimetre, Millimetre automatically
+/// unit!(prefix: Kilometre, Kilo, Metre);
+/// unit!(prefix: Centimetre, Centi, Metre);
+/// unit!(prefix: Millimetre, Milli, Metre);
+/// ```
+///
+/// # Options
+///
+/// - **`prefixable`**: Allows the unit to be used with prefixes
+/// - **`factor = value`**: Override the conversion factor for base units
+///
+/// # Generated Code
+///
+/// Each `unit!` invocation creates:
+/// - A zero-sized struct representing the unit
+/// - Implementation of the [`Unit`] trait with proper constants
+/// - Implementation of `Display` for the unit symbol
+/// - Optional implementation of [`Prefixable`] if specified
+///
+/// # Examples
+///
+/// ## Complete Example
+///
+/// ```
+/// use ferrunitas::{unit, prefix, quantity, typenum_consts::*, Measure, Unit};
+///
+/// // Define the quantity
+/// quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
+///
+/// // Define base unit
+/// unit!(base: Metre, "m", Length; prefixable);
+///
+/// // Define prefixes
+/// prefix!(Kilo, 1000, "k");
+/// prefix!(Centi, 0.01, "c");
+///
+/// // Create prefixed units
+/// unit!(prefix: Kilometre, Kilo, Metre);
+/// unit!(prefix: Centimetre, Centi, Metre);
+///
+/// // Define derived units
+/// unit!(derived: Foot, "ft", (0.3048, Metre));
+/// unit!(derived: Inch, "in", (2.54, Centimetre));
+///
+/// // Usage
+/// let distance = Metre::new(100.0);
+/// let km_distance: Measure<Kilometre> = distance.convert();
+/// let ft_distance: Measure<Foot> = distance.convert();
+///
+/// println!("Distance: {} = {} = {}", distance, km_distance, ft_distance);
+/// ```
 #[macro_export]
 macro_rules! unit {
     // Base units (prefixable or not)
@@ -61,7 +275,7 @@ macro_rules! unit {
     (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty); prefixable) => {
         unit!(derived: $unit_name, $abbrev, ($factor, $base_unit));
 
-        impl $crate::model::prefix::Prefixable for $unit_name {}
+        impl $crate::__model::Prefixable for $unit_name {}
     };
 
     (derived: $unit_name:ident, $abbrev:literal, ($factor:expr, $base_unit:ty)) => {
@@ -73,11 +287,11 @@ macro_rules! unit {
         );
     };
 
-    // Compound unit (not prefixable by default?)
+    // Compound unit
     (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+]; prefixable) => {
         unit!(compound: $unit_name, $abbrev, [$($components),+]);
 
-        impl $crate::model::prefix::Prefixable for $unit_name {}
+        impl $crate::__model::Prefixable for $unit_name {}
     };
 
     (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+] ) => {
@@ -107,6 +321,10 @@ macro_rules! unit {
 }
 
 /// Inner macros
+///
+/// This module contains implementation details for the [`unit!`] macro.
+/// These macros are not intended for direct use and are hidden from the
+/// public API. They handle the actual code generation for different unit types.
 #[doc(hidden)]
 pub mod __inner_unit_macros {
     /// Create a unit struct and impl Unit trait
@@ -194,6 +412,13 @@ pub mod __inner_unit_macros {
     }
 
     /// Const fn for integer exponentiation
+    ///
+    /// Computes `base^exp` at compile time for integer exponents.
+    /// Used internally by compound unit macros to calculate conversion factors
+    /// when units are raised to various powers.
+    ///
+    /// This is a compile-time implementation of exponentiation that handles
+    /// both positive and negative exponents correctly.
     #[doc(hidden)]
     pub const fn __powi_const(mut base: f64, mut exp: i32) -> f64 {
         if exp == 0 {

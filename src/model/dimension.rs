@@ -110,6 +110,7 @@ where
 // ARITHMETIC
 // ======================
 
+/// Addition - only works for same dimensions
 impl<M, L, T, I, Th, N, J> Add for DimensionVector<M, L, T, I, Th, N, J>
 where
     M: Dimension,
@@ -127,7 +128,7 @@ where
     }
 }
 
-// Subtraction - only works for same dimensions
+/// Subtraction - only works for same dimensions
 impl<M, L, T, I, Th, N, J> Sub for DimensionVector<M, L, T, I, Th, N, J>
 where
     M: Dimension,
@@ -145,7 +146,7 @@ where
     }
 }
 
-// // Multiplication - adds dimensions at type level
+/// Multiplication - adds dimensions at type level
 impl<M1, L1, T1, I1, Th1, N1, J1, M2, L2, T2, I2, Th2, N2, J2>
     Mul<DimensionVector<M2, L2, T2, I2, Th2, N2, J2>>
     for DimensionVector<M1, L1, T1, I1, Th1, N1, J1>
@@ -187,7 +188,7 @@ where
     }
 }
 
-// Division - subtracts dimensions at type level
+/// Division - subtracts dimensions at type level
 impl<M1, L1, T1, I1, Th1, N1, J1, M2, L2, T2, I2, Th2, N2, J2>
     Div<DimensionVector<M2, L2, T2, I2, Th2, N2, J2>>
     for DimensionVector<M1, L1, T1, I1, Th1, N1, J1>
@@ -229,7 +230,7 @@ where
     }
 }
 
-// Inverse quantity
+/// Inverse quantity - negates dimensions at type level
 impl<M, L, T, I, Th, N, J> Inv for DimensionVector<M, L, T, I, Th, N, J>
 where
     M: Neg + Dimension,
