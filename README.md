@@ -16,7 +16,7 @@ Current build and test state: ![Build + Test](https://github.com/marekhummel/fer
 
 ## Usage
 
-### Basic Usage
+### Basics
 
 ```rust
 use ferrunitas::system::*;
@@ -42,7 +42,23 @@ fn main() {
 }
 ```
 
-### Working with Quantities vs Units
+### Relevant imports
+```rust
+// For dimensional formatting
+use ferrunitas::common::{format_dims, format_unit_dims};
+
+// For access to all definitions to units, quantities and prefixes
+use ferrunitas::system::*;
+
+// Crate root access to most common struct Measure and trait Unit to make methods available
+use ferrunitas::{Measure, Unit};
+
+// Macros for own definitions (typenum consts for quantity macro)
+use ferrunitas::typenum_consts::*;
+use ferrunitas::{prefix, quantity, unit};
+```
+
+### Working with Quantities vs Measures
 
 Ferrunitas offers two main ways to work with physical values (they are compatitble with each other regarding arithmetics):
 
@@ -113,7 +129,7 @@ unit!(derived: Yard, "yd", (0.9144, Metre));
 unit!(prefix: Magicmetre, Magic, Metre);
 ```
 
-## Function Signatures
+### Function Signatures
 
 Ferrunitas provides flexible function signatures for different use cases:
 
@@ -154,21 +170,12 @@ cargo run --example advanced
 cargo run --example misc
 ```
 
-## Relevant imports
-```rust
-// For dimensional formatting
-use ferrunitas::common::{format_dims, format_unit_dims};
 
-// For access to all definitions to units, quantities and prefixes
-use ferrunitas::system::*;
 
-// Crate root access to most common struct Measure and trait Unit to make methods available
-use ferrunitas::{Measure, Unit};
+## Limitations / Notes
+* Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
+* Rounding / formatting of display values is a caller concern, however usual format specifiers are respected.
 
-// Macros for own definitions (typenum consts for quantity macro)
-use ferrunitas::typenum_consts::*;
-use ferrunitas::{prefix, quantity, unit};
-```
 
 ## Contributing
 
