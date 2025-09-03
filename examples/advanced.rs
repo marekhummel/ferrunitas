@@ -1,9 +1,23 @@
+//! Advanced usage: Custom unit, quantity, and prefix definitions.
+//!
+//! This example shows how to extend Ferrunitas with your own definitions using
+//! the provided macros. While the standard library includes comprehensive unit
+//! definitions, you may need custom units for specialized applications.
+//!
+//! Demonstrates:
+//! - **Custom Quantities**: Defining new dimensional quantities
+//! - **Custom Prefixes**: Creating SI and non-SI prefixes
+//! - **Custom Units**: All four types of unit definitions (base, derived, compound, prefixed)
+//! - **Integration**: How custom definitions work seamlessly with existing units
+//!
+//! Note: These examples redefine units that already exist in the library
+//! for demonstration purposes.
+//!
+//! Run with: `cargo run --example advanced`
+
 use ferrunitas::Unit;
 use ferrunitas::typenum_consts::*;
 use ferrunitas::{prefix, quantity, unit};
-
-// Demonstration on how to use the macros to define new units / quantities / prefixes.
-// Obviously these types are defined in the library already.
 
 // ===== QUANTITIES =====
 // New quantities. Defined by either a list of 7 exponents (M, L, T, I, Th, N, J) or

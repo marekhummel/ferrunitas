@@ -1,3 +1,5 @@
+//! Tests for comparison traits (PartialEq, PartialOrd) on measures and quantities.
+
 // use ferrunitas::model::quantity::QuantityMarker;
 use ferrunitas::Unit;
 use ferrunitas::system::*;

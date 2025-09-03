@@ -1,3 +1,19 @@
+//! Miscellaneous utilities and debugging features.
+//!
+//! This example showcases various utility functions and debugging capabilities
+//! provided by Ferrunitas, along with import patterns for different use cases.
+//!
+//! Features demonstrated:
+//! - **Dimensional Introspection**: Viewing the dimensional signature of quantities and units
+//! - **Import Patterns**: Different ways to import and organize Ferrunitas types
+//! - **Debugging Tools**: Utilities for understanding and debugging dimensional types
+//! - **Custom Definitions**: Quick examples of macro usage
+//!
+//! This is useful for understanding the internal structure of the type system
+//! and for debugging dimensional analysis issues.
+//!
+//! Run with: `cargo run --example misc`
+
 // For dimensional formatting
 use ferrunitas::common::{format_dims, format_unit_dims};
 

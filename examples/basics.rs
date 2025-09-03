@@ -1,3 +1,15 @@
+//! Basic usage examples for the Ferrunitas unit conversion library.
+//!
+//! This example demonstrates the fundamental concepts and operations in Ferrunitas:
+//!
+//! - **Units, Measures, and Quantities**: Understanding the three core types
+//! - **Unit Conversions**: Multiple ways to convert between compatible units
+//! - **Interoperability**: How measures and quantities work together
+//! - **Cross-unit Comparisons**: Comparing values in different units
+//! - **Arithmetic Operations**: Computing with both measures and quantities
+//!
+//! Run with: `cargo run --example basics`
+
 use ferrunitas::system::*;
 use ferrunitas::{Measure, Unit, common::format_unit_dims};
 

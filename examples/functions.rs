@@ -1,5 +1,19 @@
-//! Example usage of the Ferrunitas library regarding functions.
-//! Generally its recommended to stick to quantities within functions, see below
+//! Function signature patterns for dimensional types.
+//!
+//! This example demonstrates different approaches for writing functions that work
+//! with Ferrunitas types, showcasing various levels of flexibility and type safety.
+//! Generally, it's recommended to use quantities within functions for maximum flexibility.
+//!
+//! Function patterns shown:
+//! - **Specific Units**: Functions requiring exact unit types
+//! - **Generic Units**: Functions accepting any unit of a quantity (using `impl Unit`)
+//! - **Where Clauses**: More complex generic constraints
+//! - **Pure Quantities**: Working directly with dimensionless quantities
+//! - **Mixed Approaches**: Combining different parameter styles
+//!
+//! Each pattern has trade-offs between flexibility, type safety, and API simplicity.
+//!
+//! Run with: `cargo run --example functions`
 
 use ferrunitas::{Measure, Unit, system::*};
 

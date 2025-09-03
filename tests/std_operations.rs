@@ -1,3 +1,5 @@
+//! Tests for standard arithmetic operations (+, -, *, /) on measures and quantities.
+
 use ferrunitas::Unit;
 use ferrunitas::system::*;
 
