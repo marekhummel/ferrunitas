@@ -2,6 +2,8 @@
 
 A Rust library for compile-time dimensional analysis and unit conversions. Ferrunitas provides type safety for physical quantities and prevents dimensional errors at compile time through Rust's powerful type system.
 
+Current build and test state: ![Build + Test](https://github.com/marekhummel/ferrunitas/actions/workflows/main.yml/badge.svg)
+
 ## Features
 
 - **Compile-time dimensional analysis**: Prevents adding incompatible quantities (e.g. mass + length) at compile time
