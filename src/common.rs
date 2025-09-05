@@ -43,7 +43,48 @@ pub fn format_dims<D: Dimensioned>() -> String {
 /// Generate two unit tests for a unit: quantity validation and value conversion
 #[cfg(test)]
 macro_rules! verify_unit {
+    // Default
     ($unit:ty, $quantity:ty, $value:expr) => {
+        paste::paste! {
+            #[test]
+            fn [<test_ $unit:lower _ $quantity:lower _value>]() {
+                assert_eq!(<$unit as $crate::model::unit::Unit>::OFFSET, 0.0, "Offset is set, use respective branch");
+
+                let measure = <$unit as $crate::model::unit::Unit>::new(1.0);
+                $crate::common::assert_almost_equal!(measure.into_q().value, $value, "Value");
+            }
+        }
+
+        verify_unit!($unit, $quantity);
+    };
+
+    // With offset
+    ($unit:ty, $quantity:ty; offset_tests [$(($base_val:expr, $unit_val:expr)),* $(,)?]) => {
+        paste::paste! {
+            #[test]
+            fn [<test_ $unit:lower _ $quantity:lower _value_offset>]() {
+                use $crate::model::measure::Measure;
+                assert_ne!(<$unit as $crate::model::unit::Unit>::OFFSET, 0.0, "Offset is not set, use respective branch");
+
+                $(
+                    // Test Base -> Unit conversion
+                    let base = <$quantity as $crate::model::quantity::QuantityMarker>::new($base_val);
+                    let unit_measure: Measure<$unit> = base.as_measure();
+                    $crate::common::assert_almost_equal!(unit_measure.value(), $unit_val, "Base to Unit");
+
+                    // Test Unit -> Kelvin conversion
+                    let unit_measure = <$unit as $crate::model::unit::Unit>::new($unit_val);
+                    let base = unit_measure.into_q();
+                    $crate::common::assert_almost_equal!(base.value, $base_val, "Unit to Base");
+                )*
+            }
+        }
+
+        verify_unit!($unit, $quantity);
+    };
+
+    // Just quantity
+    ($unit:ty, $quantity:ty) => {
         paste::paste! {
             #[test]
             fn [<test_ $unit:lower _ $quantity:lower _quantity>]() {
@@ -64,39 +105,27 @@ macro_rules! verify_unit {
                     $crate::common::format_dims::<$quantity>()
                 );
             }
-
-            #[test]
-            fn [<test_ $unit:lower _ $quantity:lower _value>]() {
-                let measure = <$unit as $crate::model::unit::Unit>::new(1.0);
-                $crate::common::assert_almost_equal!(measure.into_q().value, $value);
-            }
         }
-    };
+    }
 }
 
 /// Assert that two floating point values are almost equal within an epsilon
 #[cfg(test)]
 macro_rules! assert_almost_equal {
-    ($left:expr, $right:expr) => {
-        $crate::common::assert_almost_equal!($left, $right, 0.1, 1e-4);
+    ($left:expr, $right:expr, $desc:literal) => {
+        $crate::common::assert_almost_equal!($left, $right, 1e-5, 1e-8, $desc);
     };
-    ($left:expr, $right:expr, $epsilon_abs:expr, $epsilon_rel:expr) => {
+    ($left:expr, $right:expr, $epsilon_abs:expr, $epsilon_rel:expr, $desc:literal) => {
         let left_val: f64 = $left;
         let right_val: f64 = $right;
         let diff = (left_val - right_val).abs();
-
-        assert!(
-            diff < $epsilon_abs,
-            "abs assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (epsilon: `{}`)",
-            left_val, right_val, diff, $epsilon_abs
-        );
-
         let max_val = left_val.abs().max(right_val.abs());
-        let relative_epsilon = ($epsilon_rel as f64) * max_val;
+        let epsilon = $epsilon_abs + ($epsilon_rel as f64) * max_val;
+
         assert!(
-            diff <= relative_epsilon,
-            "rel assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (relative epsilon: `{}`, max value: `{}`)",
-            left_val, right_val, diff, relative_epsilon, max_val
+            diff <= epsilon,
+            "{}: Assertion failed: `(left ≈ right)`\n  left: `{}`\n right: `{}`\n difference: `{}` (total epsilon: `{}`)",
+            $desc, left_val, right_val, diff, epsilon
         );
     };
 }
@@ -111,19 +140,19 @@ pub(crate) use verify_unit;
 mod tests {
     #[test]
     fn test_assert_almost_equal_default_epsilon() {
-        assert_almost_equal!(1.0, 1.0);
-        assert_almost_equal!(1.0, 1.0000000001);
+        assert_almost_equal!(1.0, 1.0, "Test 1");
+        assert_almost_equal!(1.0, 1.0000000001, "Test 2");
     }
 
     #[test]
     fn test_assert_almost_equal_custom_epsilon() {
-        assert_almost_equal!(1.0, 1.1, 0.2, 1);
-        assert_almost_equal!(5.0, 5.05, 0.1, 1);
+        assert_almost_equal!(1.0, 1.1, 0.2, 1, "Test 3");
+        assert_almost_equal!(5.0, 5.05, 0.1, 1, "Test 4");
     }
 
     #[test]
     #[should_panic]
     fn test_assert_almost_equal_should_panic() {
-        assert_almost_equal!(1.0, 2.0, 0.1, 1e-7);
+        assert_almost_equal!(1.0, 2.0, 0.1, 1e-7, "Test 5");
     }
 }

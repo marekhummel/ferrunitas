@@ -77,8 +77,7 @@
 //! # Limitations / Notes
 //! * Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
 //! * Rounding / formatting of display values is a caller concern, usual format specifiers are respected.
-//! * Only a subset of physical domains is presently defined—extend via macros
-//!   in `system::defs` if needed.
+//! * Offsets are supported for temperature scales, but are quite limited in usage besides simple conversion.
 //!
 //! # Extending
 //! New units, prefixes, or compound relationships can be created using

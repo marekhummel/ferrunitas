@@ -137,9 +137,14 @@ unit!(base: Kelvin, "K", Temperature; prefixable);
 unit!(prefix: Millikelvin, Milli, Kelvin);
 unit!(prefix: Microkelvin, Micro, Kelvin);
 
-// TODO
-// unit!(derived: Celsius, "°C", (1.0, Kelvin));
-// unit!(derived: Fahrenheit, "°F", (5.0/9.0, Kelvin)); // offset handling left to conversion logic
+// https://www.chemeurope.com/en/encyclopedia/Temperature_conversion.html
+unit!(derived: DegreeCelsius, "°C", (1.0, 273.15, Kelvin)); // T(K) = 1.0 * T(°C) + 273.15
+unit!(derived: DegreeFahrenheit, "°F", (5.0 / 9.0, -32.0 * 5.0/9.0, DegreeCelsius)); // T(°C) = (T(°F) - 32) * 5/9 = 5/9 * T(°F) - (32 * 5/9)
+unit!(derived: DegreeRankine, "°R", (1.0, -459.67, DegreeFahrenheit)); // T(°F) = 1.0 * T(°R) - 459.67
+unit!(derived: DegreeReaumur, "°Ré", (1.25, 0.0, DegreeCelsius)); // Réaumur: T(°C) = 1.25 * T(°Ré)
+unit!(derived: DegreeDelisle, "°De", (-2.0 / 3.0, 100.0, DegreeCelsius)); // Delisle: T(°C) = (150 - T(°De)) * 2/3 = -2/3 * T(°De) + 100
+unit!(derived: DegreeNewton, "°N", (100.0 / 33.0, 0.0, DegreeCelsius)); // Newton: T(°C) = 100/33 * T(°N) 
+unit!(derived: DegreeRomer, "°Rø", (40.0 / 21.0, -7.5 * 40.0/21.0, DegreeCelsius)); // Rømer: T(°C) = (T(°Rø) - 7.5) * 40/21 = 40/21 * T(°Rø) - (7.5 * 40/21)
 
 // ===========================
 // AMOUNT OF SUBSTANCE
@@ -259,6 +264,15 @@ mod tests {
     verify_unit!(Kelvin, Temperature, 1.0);
     verify_unit!(Millikelvin, Temperature, 0.001);
     verify_unit!(Microkelvin, Temperature, 1e-6);
+
+    // Those are offset units, so test factor and offset (we test with absolute zero, freezing point / triple point / boiling point of water, body temperature)
+    verify_unit!(DegreeCelsius, Temperature; offset_tests [(0.0, -273.15), (273.15, 0.0), (273.16, 0.01), (308.705, 35.555), (373.15, 100.0)]);
+    verify_unit!(DegreeFahrenheit, Temperature; offset_tests [(0.0, -459.67), (273.15, 32.0), (273.16, 32.018), (308.705, 95.999), (373.15, 212.0)]);
+    verify_unit!(DegreeRankine, Temperature; offset_tests [(0.0, 0.0), (273.15, 491.67), (273.16, 491.688), (308.705, 555.669), (373.15, 671.67)]);
+    verify_unit!(DegreeReaumur, Temperature; offset_tests [(0.0, -218.52), (273.15, 0.0), (273.16, 0.008), (308.705, 28.444), (373.15, 80.0)]);
+    verify_unit!(DegreeDelisle, Temperature; offset_tests [(0.0, 559.725), (273.15, 150.0), (273.16, 149.985), (308.705, 96.6675), (373.15, 0.0)]);
+    verify_unit!(DegreeNewton, Temperature; offset_tests [(0.0, -90.1395), (273.15, 0.0), (273.16,  0.0033), (308.705, 11.73315), (373.15, 33.0)]);
+    verify_unit!(DegreeRomer, Temperature; offset_tests [(0.0, -135.90375), (273.15, 7.5), (273.16, 7.50525), (308.705, 26.166375), (373.15, 60.0)]);
 
     // AMOUNT OF SUBSTANCE
     verify_unit!(Mole, AmountOfSubstance, 1.0);

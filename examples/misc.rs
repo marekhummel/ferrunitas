@@ -15,11 +15,16 @@
 //! Run with: `cargo run --example misc`
 
 // For dimensional formatting
-use ferrunitas::Unit;
 use ferrunitas::common::{format_dims, format_unit_dims};
 use ferrunitas::system::*;
+use ferrunitas::{
+    Measure, Unit,
+    typenum_consts::{N1, P1},
+    unit,
+};
 
 fn dimensions() {
+    println!("=== Dimensional Introspection ===");
     // If curious, one can print out the dimensions of a quantity / unit
     println!("Force dimensions:           {}", format_dims::<Force>());
     println!("Acceleration dimensions:    {}", format_dims::<Acceleration>());
@@ -61,7 +66,30 @@ fn demonstrate_large_number_precision_issues() {
     println!("Expected = {:.0} bytes", 10u128.pow(21) + 1);
 }
 
+fn offest_limited_usage() {
+    println!("\n=== Offset Units Limited Usage ===");
+    // Offset units are limited in usage, as arithmetic operations do not make sense as well as compound units
+    // (e.g. adding two temperatures in Celsius is not physically meaningful)
+    let temp_c = DegreeCelsius::new(25.0);
+    let temp_f: Measure<DegreeFahrenheit> = temp_c.convert();
+    println!("{:.2} == {:.2}", temp_c, temp_f);
+
+    // All compiles, but beware that this makes sense to you as the user
+    let temp_c2 = DegreeCelsius::new(30.0);
+    let temp_f2 = DegreeFahrenheit::new(14.0);
+    let delta_temp = temp_c2 - temp_f2;
+    let delta_k = delta_temp.convert::<Kelvin>();
+    println!("Temperature difference: {:.2} K", delta_k.value());
+
+    // When used with compound units, the offset is lost, as we are only talking about temperature differences
+    unit!(compound: JoulePerFahrenheit, "J/°F", [(Joule, P1), (DegreeFahrenheit, N1)]);
+    let jpk = JoulePerKelvin::new(2.0);
+    let jpf = jpk.convert::<JoulePerFahrenheit>();
+    println!("{:.2} == {:.2}", jpk, jpf);
+}
+
 fn main() {
     dimensions();
     demonstrate_large_number_precision_issues();
+    offest_limited_usage();
 }

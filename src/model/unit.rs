@@ -42,6 +42,11 @@ use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityM
 /// assert_eq!(Kilometre::FACTOR, 1000.0); // 1000 metres per kilometre
 /// assert_eq!(Kilometre::ABBREV, "km");
 ///
+/// // Temperature scales are a bit special due to offsets
+/// assert_eq!(DegreeCelsius::FACTOR, 1.0);
+/// assert_eq!(DegreeCelsius::OFFSET, 273.15);
+/// assert_eq!(DegreeCelsius::ABBREV, "°C");
+///
 /// // Create measures using the unit's new() method
 /// let distance = Metre::new(100.0);
 /// let height = Foot::new(6.0);
@@ -73,6 +78,8 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     type Quantity: QuantityMarker + Dimensioned;
     /// The scaling factor to canonical base units.
     const FACTOR: f64;
+    /// The offset to canonical base units (for affine units like Celsius)
+    const OFFSET: f64;
     /// The abbreviation for this unit.
     const ABBREV: &'static str;
 
@@ -159,6 +166,11 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 ///
 /// // Some derived units can be prefixable
 /// unit!(derived: Tonne, "t", (1000, Kilogram); prefixable);
+///
+/// // Temperatures use offsets, however this is rather unusual. Providing an offset will limit the
+/// // unit from being used with prefixes, and it's strongly discouraged to use these as compound units,
+/// // as the offsets are lost (so only differences in temperature are meaningful then).
+/// unit!(derived: DegreeCelsius, "°C", (1.0, 273.15, Kelvin));
 /// ```
 ///
 /// ## 3. Compound Units (`compound:`)
@@ -268,21 +280,26 @@ macro_rules! unit {
     };
 
     (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr;) => {
-        $crate::__unit!($unit_name, $quantity, $factor, $abbrev);
+        $crate::__unit!($unit_name, $quantity, $factor, 0.0, $abbrev);
     };
 
     // Derived units based on other unit
     (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty); prefixable) => {
-        unit!(derived: $unit_name, $abbrev, ($factor, $base_unit));
+        unit!(derived: $unit_name, $abbrev, ($factor, 0.0, $base_unit));
 
         impl $crate::__model::Prefixable for $unit_name {}
     };
 
-    (derived: $unit_name:ident, $abbrev:literal, ($factor:expr, $base_unit:ty)) => {
+    (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty)) => {
+        unit!(derived: $unit_name, $abbrev, ($factor, 0.0, $base_unit));
+    };
+
+    (derived: $unit_name:ident, $abbrev:literal, ($factor:expr, $offset:expr, $base_unit:ty)) => {
         $crate::__unit!(
             $unit_name,
             <$base_unit as $crate::__model::Unit>::Quantity,
             ($factor as f64) * <$base_unit as $crate::__model::Unit>::FACTOR,
+            <$base_unit as $crate::__model::Unit>::OFFSET + (<$base_unit as $crate::__model::Unit>::FACTOR * $offset),
             $abbrev
         );
     };
@@ -312,6 +329,7 @@ macro_rules! unit {
             $alias,
             <$base_unit as $crate::__model::Unit>::Quantity,
             <$prefix as $crate::__model::Prefix>::FACTOR * <$base_unit as $crate::__model::Unit>::FACTOR,
+            0.0, // Units with offset are not prefixable
             const_format::concatcp!(
                 <$prefix as $crate::__model::Prefix>::SYMBOL,
                 <$base_unit as $crate::__model::Unit>::ABBREV
@@ -331,7 +349,7 @@ pub mod __inner_unit_macros {
     #[macro_export]
     #[doc(hidden)]
     macro_rules! __unit {
-        ($unit_name:ident, $quantity:ty, $factor:expr, $abbrev:expr) => {
+        ($unit_name:ident, $quantity:ty, $factor:expr, $offset:expr, $abbrev:expr) => {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
             /// Zero-sized marker struct representing a concrete unit.
             ///
@@ -342,6 +360,7 @@ pub mod __inner_unit_macros {
             impl $crate::__model::Unit for $unit_name {
                 type Quantity = $quantity;
                 const FACTOR: f64 = $factor;
+                const OFFSET: f64 = $offset;
                 const ABBREV: &'static str = $abbrev;
             }
 
@@ -363,6 +382,7 @@ pub mod __inner_unit_macros {
                 $unit_name,
                 $quantity,
                 $factor_acc,
+                0.0, // There are no offsets in compound units
                 $abbrev
             );
         };

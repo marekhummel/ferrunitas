@@ -175,7 +175,7 @@ cargo run --example misc
 ## Limitations / Notes
 * Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
 * Rounding / formatting of display values is a caller concern, however usual format specifiers are respected.
-
+* Offsets are supported for temperature scales, but are quite limited in usage besides simple conversion.
 
 ## Contributing
 

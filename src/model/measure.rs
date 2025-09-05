@@ -96,7 +96,7 @@ impl<U: Unit> Measure<U> {
     /// Construct from a quantity of the same dimension.
     ///
     /// Takes a dimensioned quantity and converts it to a measure with this specific unit.
-    /// The quantity's raw SI value is divided by the unit's conversion factor.
+    /// The quantity's raw SI value is divided by the unit's conversion factor and shifted by the unit's offset, if present.
     ///
     /// # Examples
     ///
@@ -115,12 +115,12 @@ impl<U: Unit> Measure<U> {
     /// assert!((feet.value() - 328.084).abs() < 0.001);  // ~328 feet
     /// ```
     pub fn from_q(q: U::Quantity) -> Self {
-        Self::new(q.raw_value() / U::FACTOR)
+        Self::new((q.raw_value() - U::OFFSET) / U::FACTOR)
     }
     /// Convert into a dimensioned quantity using `U`'s factor.
     ///
     /// Transforms this measure into a generic quantity of the same dimension.
-    /// The value is multiplied by the unit's conversion factor to get the SI base unit value.
+    /// The value is multiplied by the unit's conversion factor (and shifted by the unit's offset) to get the SI base unit value.
     /// Quantities are useful for dimensional arithmetic and generic calculations.
     ///
     /// # Examples
@@ -141,7 +141,7 @@ impl<U: Unit> Measure<U> {
     /// assert!((speed.value() - 0.6096).abs() < 0.0001);  // 10 ft / 5 s ≈ 0.6096 m/s
     /// ```
     pub fn into_q(self) -> U::Quantity {
-        U::Quantity::new(self.value * U::FACTOR)
+        U::Quantity::new(self.value * U::FACTOR + U::OFFSET)
     }
 
     /// Convert to another unit of the same dimension.

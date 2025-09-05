@@ -132,8 +132,8 @@ unit!(derived: Torr, "Torr", (1.0 / 760.0, Atmosphere));
 
 unit!(compound: MillimetreOfMercury, "mmHg", [(13595.1, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
 unit!(compound: InchOfMercury, "inHg", [(13595.1, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
-unit!(compound: MillimetreOfWater, "mmH2O", [(999.9720, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
-unit!(compound: InchOfWater, "inH2O", [(999.9720, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
+unit!(compound: MillimetreOfWater, "mmH2O", [(1000, KilogramPerCubicMetre, P1), (Millimetre, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
+unit!(compound: InchOfWater, "inH2O", [(1000, KilogramPerCubicMetre, P1), (Inch, P1), (constant STANDARD_GRAVITY, MetrePerSecondSquared, P1)]);
 
 // ===========================
 // ENERGY
@@ -210,7 +210,6 @@ unit!(compound: RadianPerSecondSquared, "rad/s²", [(Radian, P1), (Second, N2)])
 quantity!(Torque: M P1, L P2, T N2, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻²
 
 unit!(compound: NewtonMetre, "N·m", [(Newton, P1), (Metre, P1)]);
-unit!(compound: FootPound, "ft·lbf", [(Foot, P1), (PoundForce, P1)]);
 
 // ===========================
 // MOMENT OF INERTIA
@@ -287,14 +286,14 @@ mod tests {
     verify_unit!(USCup, Volume, 2.3659e-4);
     verify_unit!(USPint, Volume, 4.7318e-4);
     verify_unit!(USQuart, Volume, 9.4635e-4);
-    verify_unit!(Barrel, Volume, 0.159);
+    verify_unit!(Barrel, Volume, 0.15899);
     verify_unit!(BoardFoot, Volume, 2.3597e-3);
 
     // VELOCITY
     verify_unit!(MetrePerSecond, Velocity, 1.0);
-    verify_unit!(KilometrePerHour, Velocity, 0.2778);
-    verify_unit!(MilePerHour, Velocity, 0.4470);
-    verify_unit!(Knot, Velocity, 0.5144);
+    verify_unit!(KilometrePerHour, Velocity, 0.27777778);
+    verify_unit!(MilePerHour, Velocity, 0.44704);
+    verify_unit!(Knot, Velocity, 0.514444444);
 
     // ACCELERATION
     verify_unit!(MetrePerSecondSquared, Acceleration, 1.0);
@@ -330,7 +329,7 @@ mod tests {
     verify_unit!(Torr, Pressure, 133.322368);
     verify_unit!(MillimetreOfMercury, Pressure, 133.322_387_415);
     verify_unit!(MillimetreOfWater, Pressure, 9.80665);
-    verify_unit!(InchOfMercury, Pressure, 3.386389e3);
+    verify_unit!(InchOfMercury, Pressure, 3386.38864);
     verify_unit!(InchOfWater, Pressure, 2.490889e2);
     verify_unit!(PoundPerSquareInch, Pressure, 6.8947573e3);
     verify_unit!(PoundPerSquareFoot, Pressure, 4.788025899e1);
@@ -353,7 +352,7 @@ mod tests {
     verify_unit!(GigaElectronVolt, Energy, 1.602176634e-10);
     verify_unit!(BritishThermalUnit, Energy, 1.05505585e3);
     verify_unit!(Erg, Energy, 1e-7);
-    verify_unit!(FootPoundForce, Energy, 1.3558);
+    verify_unit!(FootPoundForce, Energy, 1.3558179);
     verify_unit!(Therm, Energy, 1.05505585262e8);
     verify_unit!(Quad, Energy, 1.05505585262e18);
 
@@ -383,7 +382,6 @@ mod tests {
 
     // TORQUE
     verify_unit!(NewtonMetre, Torque, 1.0);
-    verify_unit!(FootPound, Torque, 1.3558);
 
     // MOMENT OF INERTIA
     verify_unit!(KilogramSquareMetre, MomentOfInertia, 1.0);
