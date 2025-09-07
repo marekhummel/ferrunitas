@@ -28,7 +28,7 @@ where
     F: Unit<Quantity = Force>,
     L: Unit<Quantity = Length>,
 {
-    force.into_q() * distance.into_q()
+    force * distance
 }
 
 // Working with quantities and impl
@@ -36,7 +36,7 @@ fn calculate_power_from_work_and_time(
     work: Measure<impl Unit<Quantity = Energy>>,
     time: Measure<impl Unit<Quantity = Time>>,
 ) -> Power {
-    work.into_q() / time.into_q()
+    work / time
 }
 
 // Accepting any unit of that quantity but returning a specific unit
@@ -44,17 +44,15 @@ fn calculate_force(
     mass: Measure<impl Unit<Quantity = Mass>>,
     acceleration: Measure<impl Unit<Quantity = Acceleration>>,
 ) -> Measure<Newton> {
-    (mass.into_q() * acceleration.into_q()).as_measure()
+    (mass * acceleration).as_measure()
 }
 
-// Accepting any unit but computing with units requires more guards, as they can not be
-// attached to the generic Unit trait yet.
-fn calculate_velocity<L, T>(distance: Measure<L>, time: Measure<T>) -> Velocity
+// Accepting a combination of measures and quantities
+fn calculate_velocity<L>(distance: Measure<L>, time: Time) -> Measure<Knot>
 where
-    L: Unit<Quantity = Length>, // + std::ops::Div<T, Output = Velocity>,
-    T: Unit<Quantity = Time>,
+    L: Unit<Quantity = Length>,
 {
-    distance / time
+    (distance / time).as_measure()
 }
 
 // Working directly with quantities
@@ -96,13 +94,8 @@ fn main() {
     // Test velocity: v = d/t
     let distance = Metre::new(200.0);
     let time = Second::new(25.0);
-    let velocity = calculate_velocity(distance, time);
-    println!(
-        "Velocity of distance {} over time {}: {:.3}",
-        distance,
-        time,
-        velocity.as_measure::<MetrePerSecond>()
-    );
+    let knots = calculate_velocity(distance, time.into_q());
+    println!("Velocity of distance {} over time {}: {:.3}", distance, time, knots);
 
     // Test acceleration: a = v/t
     let velocity_start = MetrePerSecond::new(0.0);

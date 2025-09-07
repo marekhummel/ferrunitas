@@ -7,12 +7,14 @@
 //! - **Dimensional Introspection**: Viewing the dimensional signature of quantities and units
 //! - **Import Patterns**: Different ways to import and organize Ferrunitas types
 //! - **Debugging Tools**: Utilities for understanding and debugging dimensional types
+//! - **Quantity Tagging**: Examples of how quantity tags work with and without the feature
 //! - **Custom Definitions**: Quick examples of macro usage
 //!
 //! This is useful for understanding the internal structure of the type system
 //! and for debugging dimensional analysis issues.
 //!
 //! Run with: `cargo run --example misc`
+//! Run with quantity tagging: `cargo run --example misc --features="quantity_tags"`
 
 // For dimensional formatting
 use ferrunitas::common::{format_dims, format_unit_dims};
@@ -88,8 +90,50 @@ fn offest_limited_usage() {
     println!("{:.2} == {:.2}", jpk, jpf);
 }
 
+#[cfg(feature = "quantity_tags")]
+fn quantity_tags() {
+    // With quantity tags enabled, the type system can better track quantities with same dimensions.
+    // This can prevent accidental mixing of different physical concepts.
+    // Technically the area ratio is dimensionless, and so is the unit steradian. But to combine these
+    // units, now we have to specify that the division of two areas results in a solid angle.
+    let a = SquareMetre::new(1.0);
+    let b = SquareMetre::new(4.0);
+    let c = Steradian::new(1.0);
+    let result = (a / b).specify::<SolidAngle>() + c;
+    println!("{} / {} + {} = {}", a, b, c, result);
+
+    // Also, this prevents things like this (which is dimensionally correct, as both are unitless in this SI system)
+    let a = Bit::new(1.0);
+    let b = Radian::new(1.0);
+    // let result = a + b; // This does not compile, as Bit and Radian are different quantity tags
+    // let result = a.into_q() + b.into_q(); // Same reason
+    // This does work, but its questionable if this is what you want to do
+    let result = a.into_q().specify::<Dimensionless>() + b.into_q().specify::<Dimensionless>();
+    println!("{} + {} = {}", a, b, result);
+}
+
+#[cfg(not(feature = "quantity_tags"))]
+fn quantity_tags() {
+    // With quantity tags disabled, compatibility is based solely on dimensions.
+    let a = SquareMetre::new(1.0);
+    let b = SquareMetre::new(4.0);
+    let c = Steradian::new(1.0);
+    let result = (a / b) + c;
+    println!("{} / {} + {} = {}", a, b, c, result);
+
+    // Now all of these work too though.
+    let a = Bit::new(1.0);
+    let b = Radian::new(1.0);
+    let result1 = a + b;
+    let result2 = a.into_q() + b.into_q();
+    // .specify() is now irrelavant, therefore its not available anymore
+    // let result3 = a.into_q().specify::<Dimensionless>() + b.into_q().specify::<Dimensionless>();
+    println!("{} + {} = {} = {}", a, b, result1, result2);
+}
+
 fn main() {
     dimensions();
     demonstrate_large_number_precision_issues();
     offest_limited_usage();
+    quantity_tags();
 }

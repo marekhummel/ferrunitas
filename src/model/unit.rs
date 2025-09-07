@@ -7,7 +7,7 @@
 
 use std::fmt::Debug;
 
-use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityMarker};
+use crate::model::{measure::Measure, quantity::QuantityMarker};
 
 /// Core trait implemented by every concrete unit type.
 ///
@@ -75,7 +75,7 @@ use crate::model::{dimension::Dimensioned, measure::Measure, quantity::QuantityM
 /// ```
 pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     /// The associated quantity type for this unit.
-    type Quantity: QuantityMarker + Dimensioned;
+    type Quantity: QuantityMarker;
     /// The scaling factor to canonical base units.
     const FACTOR: f64;
     /// The offset to canonical base units (for affine units like Celsius)
@@ -196,6 +196,10 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 ///
 /// // With scalar factors
 /// unit!(compound: YardsPerMinute, "yd/min", [(3, Foot, P1), (60, Second, N1)]);
+///
+/// // With quantity tagging (requires `quantity_tags` feature)
+/// unit!(compound: BitPerSecond, "bit/s", [(Bit, P1), (Second, N1)]; marked DataRate);
+/// unit!(compound: RadianPerSecond, "rad/s", [(Radian, P1), (Second, N1)]; marked AngularVelocity);
 /// ```
 ///
 /// ## 4. Prefixed Units (`prefix:`)
@@ -220,6 +224,7 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 ///
 /// - **`prefixable`**: Allows the unit to be used with prefixes
 /// - **`factor = value`**: Override the conversion factor for base units
+/// - **`marked QuantityType`**: (compound units only) Associate with a specific tagged quantity type (requires `quantity_tags` feature)
 ///
 /// # Generated Code
 ///
@@ -280,12 +285,12 @@ macro_rules! unit {
     };
 
     (base_internal: $unit_name:ident, $abbrev:literal, $quantity:ty, $factor:expr;) => {
-        $crate::__unit!($unit_name, $quantity, $factor, 0.0, $abbrev);
+        $crate::__unit!($unit_name, $quantity, $factor, $abbrev);
     };
 
     // Derived units based on other unit
     (derived: $unit_name:ident,  $abbrev:literal, ($factor:expr, $base_unit:ty); prefixable) => {
-        unit!(derived: $unit_name, $abbrev, ($factor, 0.0, $base_unit));
+        unit!(derived: $unit_name, $abbrev, ($factor, $base_unit));
 
         impl $crate::__model::Prefixable for $unit_name {}
     };
@@ -305,18 +310,34 @@ macro_rules! unit {
     };
 
     // Compound unit
-    (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+]; prefixable) => {
-        unit!(compound: $unit_name, $abbrev, [$($components),+]);
+    (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+] $(; $($optionals:tt)*)? ) => {
+        unit!(compound_internal: $unit_name, $abbrev, (), [$($components),+]; $($($optionals)*)?);
+    };
+
+
+    (compound_internal: $unit_name:ident, $abbrev:literal, $name_tag:ty, [$($components:tt),+]; prefixable $(, $($optionals:tt)*)?) => {
+        unit!(compound_internal: $unit_name, $abbrev, $name_tag, [$($components),+]; $($($optionals)*)?);
 
         impl $crate::__model::Prefixable for $unit_name {}
     };
 
-    (compound: $unit_name:ident, $abbrev:literal, [$($components:tt),+] ) => {
+    (compound_internal: $unit_name:ident, $abbrev:literal, $name_tag:ty, [$($components:tt),+]; marked $quantity_for_tag:ty $(, $($optionals:tt)*)?) => {
+        unit!(compound_internal:
+            $unit_name,
+            $abbrev,
+            <$quantity_for_tag as $crate::__model::QuantityMarker>::Tag,
+            [$($components),+];
+            $($($optionals)*)?
+        );
+    };
+
+    (compound_internal: $unit_name:ident, $abbrev:literal, $quantity_for_tag:ty, [$($components:tt),+];) => {
         $crate::__compound_unit!(
             $unit_name,
             $abbrev,
+            $quantity_for_tag,
             [
-                $crate::__model::Quantity<$crate::__model::DimensionZero>,
+                $crate::__model::Quantity<$crate::__model::DimensionZero, ()>,
                 1.0;
                 $($components),+
             ]
@@ -329,7 +350,6 @@ macro_rules! unit {
             $alias,
             <$base_unit as $crate::__model::Unit>::Quantity,
             <$prefix as $crate::__model::Prefix>::FACTOR * <$base_unit as $crate::__model::Unit>::FACTOR,
-            0.0, // Units with offset are not prefixable
             const_format::concatcp!(
                 <$prefix as $crate::__model::Prefix>::SYMBOL,
                 <$base_unit as $crate::__model::Unit>::ABBREV
@@ -349,6 +369,12 @@ pub mod __inner_unit_macros {
     #[macro_export]
     #[doc(hidden)]
     macro_rules! __unit {
+        // No offset
+        ($unit_name:ident, $quantity:ty, $factor:expr, $abbrev:expr) => {
+            $crate::__unit!($unit_name, $quantity, $factor, 0.0, $abbrev);
+        };
+
+        // Default impl with offset
         ($unit_name:ident, $quantity:ty, $factor:expr, $offset:expr, $abbrev:expr) => {
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
             /// Zero-sized marker struct representing a concrete unit.
@@ -377,30 +403,33 @@ pub mod __inner_unit_macros {
     #[doc(hidden)]
     macro_rules! __compound_unit {
         // Base case
-        ($unit_name:ident, $abbrev:literal, [$quantity:ty, $factor_acc:expr;] ) => {
+        ($unit_name:ident, $abbrev:literal, $name_tag:ty, [$quantity:ty, $factor_acc:expr;] ) => {
             $crate::__unit!(
                 $unit_name,
-                $quantity,
+                $crate::__model::Quantity<
+                    <$quantity as $crate::__model::QuantityMarker>::DimensionVector,
+                    $name_tag
+                >,
                 $factor_acc,
-                0.0, // There are no offsets in compound units
                 $abbrev
             );
         };
 
         // Recursive cases
-        ($unit_name:ident, $abbrev:literal, [$quantity:ty, $factor_acc:expr; ($unit:ty, $exp:ty) $(, $components:tt)*] ) => {
+        ($unit_name:ident, $abbrev:literal, $name_tag:ty, [$quantity:ty, $factor_acc:expr; ($unit:ty, $exp:ty) $(, $components:tt)*] ) => {
             $crate::__compound_unit!(
                 $unit_name,
                 $abbrev,
+                $name_tag,
                 [$quantity, $factor_acc; (1.0, $unit, $exp) $(, $components)*]
             );
         };
 
-
-        ($unit_name:ident, $abbrev:literal, [$quantity:ty, $factor_acc:expr; ($scalar:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
+        ($unit_name:ident, $abbrev:literal, $name_tag:ty, [$quantity:ty, $factor_acc:expr; ($scalar:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
             $crate::__compound_unit!(
                 $unit_name,
                 $abbrev,
+                $name_tag,
                 [
                     <$quantity as std::ops::Mul<
                         <<$unit as $crate::__model::Unit>::Quantity as $crate::__model::TypePow<$exp>>::Output
@@ -413,13 +442,14 @@ pub mod __inner_unit_macros {
             );
         };
 
-        ($unit_name:ident, $abbrev:literal, [$quantity:ty, $factor_acc:expr; (constant $constant:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
+        ($unit_name:ident, $abbrev:literal, $quantity_for_tag:ty, [$quantity:ty, $factor_acc:expr; (constant $constant:expr, $unit:ty, $exp:ty) $(, $components:tt)*] ) => {
             $crate::__compound_unit!(
                 $unit_name,
                 $abbrev,
+                $quantity_for_tag,
                 [
                     <$quantity as std::ops::Mul<
-                        <<$unit as $crate::__model::Unit>::Quantity as $crate::model::dimension::TypePow<$exp>>::Output
+                        <<$unit as $crate::__model::Unit>::Quantity as $crate::__model::TypePow<$exp>>::Output
                     >>::Output,
                     $factor_acc * $crate::__model::__inner_unit_macros::__powi_const(
                         ($constant).value_const(), <$exp as typenum::ToInt<i32>>::INT
@@ -428,7 +458,6 @@ pub mod __inner_unit_macros {
                 ]
             );
         };
-
     }
 
     /// Const fn for integer exponentiation

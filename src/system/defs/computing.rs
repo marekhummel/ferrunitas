@@ -8,7 +8,7 @@ use typenum::*;
 // ===========================
 // DATA (DIMENSIONLESS)
 // ===========================
-quantity!(Information: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0); // Dimensionless
+quantity!(Information: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
 
 // Binary units
 unit!(base: Bit, "bit", Information; prefixable);
@@ -57,11 +57,11 @@ unit!(prefix: Yobibyte, Yobi, Byte);
 // ===========================
 // DATA THROUGHPUT / BANDWIDTH
 // ===========================
-quantity!(DataRate: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0); // Information per time
+quantity!(DataRate: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0; marked); // Information per time
 
 // Base units for data rates
-unit!(compound: BitPerSecond, "bit/s", [(Bit, P1), (Second, N1)]; prefixable);
-unit!(compound: BytePerSecond, "B/s", [(Byte, P1), (Second, N1)]; prefixable);
+unit!(compound: BitPerSecond, "bit/s", [(Bit, P1), (Second, N1)]; prefixable, marked DataRate);
+unit!(compound: BytePerSecond, "B/s", [(Byte, P1), (Second, N1)]; prefixable, marked DataRate);
 
 // Common bandwidth units with decimal prefixes
 unit!(prefix: KilobitPerSecond, Kilo, BitPerSecond);
@@ -88,7 +88,7 @@ unit!(prefix: TebibytePerSecond, Tebi, BytePerSecond);
 // ===========================
 // COMPUTATIONAL PERFORMANCE
 // ===========================
-quantity!(ComputationalRate: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0); // Operations per time (dimensionless/time)
+quantity!(ComputationalRate: M Z0, L Z0, T N1, I Z0, Th Z0, N Z0, J Z0; marked); // Operations per time (dimensionless/time)
 
 // Instructions per second
 unit!(base: InstructionPerSecond, "IPS", ComputationalRate; prefixable);
@@ -108,11 +108,11 @@ unit!(prefix: ExaFloatingPointOperationPerSecond, Exa, FloatingPointOperationPer
 // ===========================
 // RESOLUTION / PIXEL DENSITY
 // ===========================
-quantity!(PixelDensity: M Z0, L N1, T Z0, I Z0, Th Z0, N Z0, J Z0); // Pixels per area
+quantity!(PixelDensity: M Z0, L N1, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Pixels per area
 
-unit!(compound: PixelPerInch, "PPI", [(Inch, N1)]); // Pixels per inch
-unit!(compound: DotPerInch, "DPI", [(Inch, N1)]); // Dots per inch (printing)
-unit!(compound: PixelPerCentimetre, "PPCM", [(Centimetre, N1)]); // Pixels per cm
+unit!(compound: PixelPerInch, "PPI", [(Inch, N1)]; marked PixelDensity); // Pixels per inch
+unit!(compound: DotPerInch, "DPI", [(Inch, N1)]; marked PixelDensity); // Dots per inch (printing)
+unit!(compound: PixelPerCentimetre, "PPCM", [(Centimetre, N1)]; marked PixelDensity); // Pixels per cm
 
 #[cfg(test)]
 mod tests {

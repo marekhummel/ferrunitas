@@ -18,6 +18,10 @@ missing_docs = "warn"
 name = "ferrunitas"
 path = "src/lib.rs"
 
+[features]
+default = []
+quantity_tags = []
+
 [dependencies]
 const_format = "0.2.34"
 num-traits = "0.2.19"

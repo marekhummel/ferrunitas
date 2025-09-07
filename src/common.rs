@@ -6,6 +6,7 @@
 
 use crate::model::{
     dimension::{Dimension, Dimensioned},
+    quantity::QuantityMarker,
     unit::Unit,
 };
 
@@ -15,15 +16,15 @@ pub fn format_unit_dims<U: Unit>() -> String {
 }
 
 /// Format the dimension signature of a `Dimensioned` type (like quantities) as a human-readable string.
-pub fn format_dims<D: Dimensioned>() -> String {
+pub fn format_dims<Q: QuantityMarker>() -> String {
     let items: [(&str, i8); 7] = [
-        ("M", D::M::to_int()),
-        ("L", D::L::to_int()),
-        ("T", D::T::to_int()),
-        ("I", D::I::to_int()),
-        ("Θ", D::Th::to_int()),
-        ("N", D::N::to_int()),
-        ("J", D::J::to_int()),
+        ("M", <Q::DimensionVector as Dimensioned>::M::to_int()),
+        ("L", <Q::DimensionVector as Dimensioned>::L::to_int()),
+        ("T", <Q::DimensionVector as Dimensioned>::T::to_int()),
+        ("I", <Q::DimensionVector as Dimensioned>::I::to_int()),
+        ("Θ", <Q::DimensionVector as Dimensioned>::Th::to_int()),
+        ("N", <Q::DimensionVector as Dimensioned>::N::to_int()),
+        ("J", <Q::DimensionVector as Dimensioned>::J::to_int()),
     ];
 
     let mut dim_string = String::new();
@@ -35,6 +36,8 @@ pub fn format_dims<D: Dimensioned>() -> String {
     }
     if !dim_string.is_empty() {
         dim_string.pop();
+    } else {
+        dim_string.push('1');
     }
 
     dim_string

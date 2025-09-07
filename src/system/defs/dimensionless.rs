@@ -20,8 +20,8 @@ unit!(derived: PartsPerBillion, "ppb", (1e-9, One));
 // ===========================
 // PLANE ANGLE
 // ===========================
-quantity!(Angle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0); // Dimensionless
-unit!(derived: Radian, "rad", (1, One));
+quantity!(Angle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
+unit!(base: Radian, "rad", Angle);
 unit!(derived: Degree, "°", (std::f64::consts::PI / 180.0, Radian));
 unit!(derived: Gradian, "gon", (std::f64::consts::PI / 200.0, Radian));
 
@@ -32,13 +32,13 @@ unit!(derived: Arcsecond, "arcsec", (1.0 / 60.0, Arcminute));
 // ===========================
 // SOLID ANGLE
 // ===========================
-quantity!(SolidAngle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0); // Dimensionless
-unit!(compound: Steradian, "sr", [(Radian, P2)]);
+quantity!(SolidAngle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
+unit!(compound: Steradian, "sr", [(Radian, P2)]; marked SolidAngle);
 
 // ===========================
 // LOGARITHMIC RATIOS
 // ===========================
-quantity!(LogarithmicRatio: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0); // Dimensionless
+quantity!(LogarithmicRatio: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
 unit!(derived: Neper, "Np", (1, One));
 unit!(derived: Octave, "oct", (std::f64::consts::LN_2, Neper));
 unit!(derived: Bel, "B", (std::f64::consts::LN_10, Neper));

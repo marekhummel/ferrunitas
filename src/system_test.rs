@@ -3,9 +3,9 @@
 
 #![allow(dead_code, unused_variables)]
 
-use crate::model::macros::{prefix, quantity, unit};
 use crate::model::quantity::Quantity;
 use crate::model::unit::Unit;
+use crate::{prefix, quantity, unit};
 use typenum::*;
 
 // Prefixes

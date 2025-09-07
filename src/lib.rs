@@ -11,6 +11,7 @@
 //! * Seamless arithmetic on both concrete units (e.g. `Newton`) and generic
 //!   quantities (e.g. `Force`)
 //! * Prefix & compound unit support (kilo, milli, square, per, etc.)
+//! * Optional quantity tagging to distinguish semantically different but dimensionally identical quantities
 //!
 //! # Core Concepts
 //! * **Unit type**: A concrete label like `Kilogram`, `Metre`, `Newton` that
@@ -19,6 +20,9 @@
 //!   You obtain a quantity via `some_unit.into_q()` and it will be the result of
 //!   multiplication and division. They work best when converted back to measures
 //!   and as types for methods.
+//! * **Quantity Tags** (optional): When the `quantity_tags` feature is enabled,
+//!   quantities can carry additional type information to distinguish between
+//!   dimensionally identical but semantically different values (e.g., `Angle` vs `Information`).
 //! * **Prefixes / Compounds**: Generated via macros (e.g. `Millivolt`,
 //!   `SquareMetre`, `MetrePerSecond`). These are normal unit types.
 //! * **Conversion**: Convert a quantity back to a chosen unit type with
@@ -44,8 +48,29 @@
 //! assert_eq!(kg_again.value(), 5.0);
 //! ```
 //!
+//! # Quantity Tagging (Optional Feature)
+//! Enable with `--features="quantity_tags"` to distinguish between dimensionally
+//! equivalent but semantically different quantities:
+//!
+//! ```rust
+//! use ferrunitas::{system::*, Unit};
+//! // These are both dimensionless but represent different concepts
+//! let data = Bit::new(8.0);
+//! let angle = Radian::new(1.0);
+//!
+//! #[cfg(feature = "quantity_tags")]
+//! {
+//!     // With quantity_tags enabled, this won't compile:
+//!     // let invalid = data + angle;  // Error!
+//!
+//!     // Instead, explicitly specify the target quantity:
+//!     let result = data.into_q().specify::<Dimensionless>() +
+//!                  angle.into_q().specify::<Dimensionless>();
+//! }
+//! ```
+//!
 //! # Relevant imports
-//! ```ignore
+//! ```rust
 //! // For access to all definitions to units, quantities and prefixes
 //! use ferrunitas::system::*;
 //!
@@ -108,7 +133,7 @@ pub mod __model {
     pub use crate::model::{
         dimension::{DimensionVector, DimensionZero, TypePow},
         prefix::{Prefix, Prefixable},
-        quantity::Quantity,
+        quantity::{Quantity, QuantityMarker, QuantityTag},
         unit::{__inner_unit_macros, Unit},
     };
 }
@@ -119,5 +144,5 @@ pub use crate::model::unit::Unit;
 pub use typenum::consts as typenum_consts;
 
 // For manual testing, this may be used (keeps compiler overhead low)
-// pub mod system_test
+// pub mod system_test;
 // pub use crate::system_test as system;

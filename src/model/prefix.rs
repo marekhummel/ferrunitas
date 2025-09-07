@@ -43,7 +43,8 @@ pub trait Prefix {
 ///
 /// # Examples
 ///
-/// ```ignore
+/// ```ruff
+/// use ferrunitas::{prefix, unit, system::*, Unit};
 /// // In unit definitions:
 /// unit!(base: Metre, "m", Length; prefixable);  // Metre can have prefixes
 /// unit!(prefix: Kilometre, Kilo, Metre);        // Creates prefixed version
@@ -66,7 +67,7 @@ pub trait Prefixable {}
 /// # Arguments
 ///
 /// - `prefix_name`: The identifier for the new prefix type (e.g., `Kilo`, `Milli`)
-/// - `factor`: The multiplication factor as a number (e.g., `1000`, `0.001`, `1e-6`)  
+/// - `factor`: The multiplication factor as a number (e.g., `1000`, `0.001`, `1e-6`)
 /// - `symbol`: The prefix symbol as a string literal (e.g., `"k"`, `"m"`, `"μ"`)
 ///
 /// # Examples
@@ -82,7 +83,7 @@ pub trait Prefixable {}
 /// prefix!(Giga, 1e9, "G");      // 1,000,000,000
 /// prefix!(Tera, 1e12, "T");     // 1,000,000,000,000
 ///
-/// // Small scale prefixes  
+/// // Small scale prefixes
 /// prefix!(Milli, 1e-3, "m");    // 0.001
 /// prefix!(Micro, 1e-6, "μ");    // 0.000001
 /// prefix!(Nano, 1e-9, "n");     // 0.000000001
@@ -100,7 +101,7 @@ pub trait Prefixable {}
 ///
 /// // Custom prefixes for specialized applications
 /// prefix!(Dozen, 12, "dz");     // 12 items
-/// prefix!(Score, 20, "sc");     // 20 items  
+/// prefix!(Score, 20, "sc");     // 20 items
 /// prefix!(Hundred, 100, "h");   // 100 items
 /// prefix!(Gross, 144, "gr");    // 144 items (12 dozen)
 ///
@@ -133,13 +134,14 @@ pub trait Prefixable {}
 ///
 /// The macro generates a zero-sized struct that implements [`Prefix`]:
 ///
-/// ```ignore
+/// ```rust
+/// use ferrunitas::__model::Prefix;
 /// #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 /// pub struct YourPrefix;
 ///
 /// impl Prefix for YourPrefix {
-///     const FACTOR: f64 = your_factor;
-///     const SYMBOL: &'static str = "your_symbol";
+///     const FACTOR: f64 = 1.23; // your factor here
+///     const SYMBOL: &'static str = "abc"; // your symbol here
 /// }
 /// ```
 #[macro_export]

@@ -12,6 +12,7 @@ Current build and test state: ![Build + Test](https://github.com/marekhummel/fer
 - **Extensive unit system**: Complete SI base units, derived units, and common non-SI units
 - **Prefix support**: Metric prefixes (kilo, milli, etc.) with easy unit definition
 - **Custom unit definition**: Macros for defining your own units, quantities, and prefixes
+- **Quantity tagging** (optional): Distinguish between dimensionally equivalent but semantically different quantities (e.g., `Angle` vs `Information`)
 - **Zero-cost abstractions**: All dimensional checking happens at compile time
 
 ## Usage
@@ -120,6 +121,9 @@ use ferrunitas::{quantity, unit, prefix, typenum_consts::*};
 // Define a new quantity (7 SI base dimensions: M, L, T, I, Th, N, J)
 quantity!(MyLength: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
+// Define a new quantity with tagging (requires `quantity_tags` feature)
+quantity!(SpecialAngle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);
+
 // Define a new prefix
 prefix!(Magic, 42, "M");
 
@@ -127,6 +131,40 @@ prefix!(Magic, 42, "M");
 unit!(base: Elbow, "elbow", MyLength; prefixable);
 unit!(derived: Yard, "yd", (0.9144, Metre));
 unit!(prefix: Magicmetre, Magic, Metre);
+
+// Compound units with quantity tagging (requires `quantity_tags` feature)
+unit!(compound: MyAngleUnit, "mau", [(Radian, P1)]; marked SpecialAngle);
+```
+
+### Quantity Tagging (Optional Feature)
+
+When the `quantity_tags` feature is enabled, Ferrunitas can distinguish between quantities that are dimensionally identical but represent different physical concepts:
+
+```rust
+// Enable with: cargo build --features="quantity_tags"
+use ferrunitas::system::*;
+use ferrunitas::Unit;
+
+// These are both dimensionless, but represent different concepts
+let data = Bit::new(8.0);
+let angle = Radian::new(1.0);
+
+// Without quantity_tags: these can be added directly
+// With quantity_tags: compilation error - different quantity types!
+// let invalid = data + angle;  // Error with quantity_tags enabled
+
+// Instead, you need to explicitly specify the target quantity:
+let combined = data.into_q().specify::<Dimensionless>() +
+               angle.into_q().specify::<Dimensionless>();
+
+// This helps prevent mixing semantically different values
+let area1 = SquareMetre::new(4.0);
+let area2 = SquareMetre::new(1.0);
+let solid_angle = Steradian::new(0.5);
+
+// Without tags: this works (both are dimensionless ratios)
+// With tags: need to specify the result type
+let result = (area1 / area2).specify::<SolidAngle>() + solid_angle;
 ```
 
 ### Function Signatures
@@ -160,7 +198,7 @@ The `examples/` directory contains comprehensive usage examples:
 - **`basics.rs`** - Core concepts: measures, quantities, conversions, and arithmetic
 - **`functions.rs`** - Different patterns for writing functions with dimensional types
 - **`advanced.rs`** - Custom unit definitions using macros
-- **`misc.rs`** - Dimensional introspection and debugging utilities
+- **`misc.rs`** - Dimensional introspection, debugging utilities, and quantity tagging demonstration
 
 Run examples with:
 ```bash
@@ -168,6 +206,9 @@ cargo run --example basics
 cargo run --example functions
 cargo run --example advanced
 cargo run --example misc
+
+# To see quantity tagging in action:
+cargo run --example misc --features="quantity_tags"
 ```
 
 

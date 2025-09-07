@@ -26,6 +26,9 @@ quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
 quantity!(Velocity: [(Length, P1), (Time, N1)]);
 
+// With quantity tagging (same dimensions as Velocity, but distinct type)
+quantity!(Velocity2: M Z0, L P1, T N1, I Z0, Th Z0, N Z0, J Z0; marked);
+
 // ===== PREFIXES =====
 // New prefixes can be set to create prefixed units more easily later
 prefix!(Milli, 1e-3, "m");
@@ -58,6 +61,11 @@ unit!(compound: KilometrePerHour, "km/h", [(Kilometre, P1), (Hour, N1)]);
 
 // If a multiple of a unit is not given, you can provide a factor instead:
 unit!(compound: YardsPerMinute, "yd/min", [(3, Foot, P1), (60, Second, N1)]);
+
+// Custom units for tagged quantities (requires `quantity_tags` feature). Base, derived and prefixed units inherit the tag.
+// While compound units require an extra annotation. For more see misc.rs.
+unit!(base: MetrePerSecond2, "m/s", Velocity2);
+unit!(compound: KilometrePerHour2, "km/h", [(Kilometre, P1), (Hour, N1)]; marked Velocity2);
 
 fn main() {
     // Working with those units works just like the other examples

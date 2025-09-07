@@ -4,7 +4,7 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::model::dimension::Dimensioned;
-use crate::model::quantity::{Quantity, QuantityMarker};
+use crate::model::quantity::{Quantity, QuantityMarker, QuantityTag};
 use crate::model::unit::Unit;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -243,14 +243,15 @@ where
 }
 
 /// Addition - with another quantity
-impl<U, D> Add<Quantity<D>> for Measure<U>
+impl<U, D, T> Add<Quantity<D, T>> for Measure<U>
 where
-    U: Unit<Quantity = Quantity<D>>,
+    U: Unit<Quantity = Quantity<D, T>>,
     D: Dimensioned + Add<Output = D>,
+    T: QuantityTag,
 {
     type Output = Self;
 
-    fn add(self, rhs: Quantity<D>) -> Self::Output {
+    fn add(self, rhs: Quantity<D, T>) -> Self::Output {
         Self::from_q(self.into_q() + rhs)
     }
 }
@@ -268,12 +269,13 @@ where
 }
 
 /// Assigned Addition - with another quantity
-impl<U, D> AddAssign<Quantity<D>> for Measure<U>
+impl<U, D, T> AddAssign<Quantity<D, T>> for Measure<U>
 where
-    U: Unit<Quantity = Quantity<D>>,
+    U: Unit<Quantity = Quantity<D, T>>,
     D: Dimensioned + Add<Output = D>,
+    T: QuantityTag,
 {
-    fn add_assign(&mut self, rhs: Quantity<D>) {
+    fn add_assign(&mut self, rhs: Quantity<D, T>) {
         self.value += rhs.as_measure::<U>().value();
     }
 }
@@ -293,14 +295,15 @@ where
 }
 
 /// Subtraction - with another quantity
-impl<U, D> Sub<Quantity<D>> for Measure<U>
+impl<U, D, T> Sub<Quantity<D, T>> for Measure<U>
 where
-    U: Unit<Quantity = Quantity<D>>,
+    U: Unit<Quantity = Quantity<D, T>>,
     D: Dimensioned + Sub<Output = D>,
+    T: QuantityTag,
 {
     type Output = Self;
 
-    fn sub(self, rhs: Quantity<D>) -> Self::Output {
+    fn sub(self, rhs: Quantity<D, T>) -> Self::Output {
         Self::from_q(self.into_q() - rhs)
     }
 }
@@ -318,12 +321,13 @@ where
 }
 
 /// Assigned Subtraction - with another quantity
-impl<U, D> SubAssign<Quantity<D>> for Measure<U>
+impl<U, D, T> SubAssign<Quantity<D, T>> for Measure<U>
 where
-    U: Unit<Quantity = Quantity<D>>,
+    U: Unit<Quantity = Quantity<D, T>>,
     D: Dimensioned + Sub<Output = D>,
+    T: QuantityTag,
 {
-    fn sub_assign(&mut self, rhs: Quantity<D>) {
+    fn sub_assign(&mut self, rhs: Quantity<D, T>) {
         self.value -= rhs.as_measure::<U>().value();
     }
 }
@@ -341,16 +345,18 @@ where
 }
 
 /// Multiplication - with another quantity
-impl<U, D1, D2> Mul<Quantity<D2>> for Measure<U>
+impl<U, D1, D2, T1, T2> Mul<Quantity<D2, T2>> for Measure<U>
 where
-    U: Unit<Quantity = Quantity<D1>>,
+    U: Unit<Quantity = Quantity<D1, T1>>,
     D1: Dimensioned + Mul<D2>,
     D2: Dimensioned,
+    T1: QuantityTag,
+    T2: QuantityTag,
     <D1 as Mul<D2>>::Output: Dimensioned,
 {
-    type Output = <Quantity<D1> as Mul<Quantity<D2>>>::Output;
+    type Output = <Quantity<D1, T1> as Mul<Quantity<D2, T2>>>::Output;
 
-    fn mul(self, rhs: Quantity<D2>) -> Self::Output {
+    fn mul(self, rhs: Quantity<D2, T2>) -> Self::Output {
         self.into_q() * rhs
     }
 }
@@ -368,16 +374,18 @@ where
 }
 
 /// Division - with another quantity
-impl<U, D1, D2> Div<Quantity<D2>> for Measure<U>
+impl<U, D1, D2, T1, T2> Div<Quantity<D2, T2>> for Measure<U>
 where
-    U: Unit<Quantity = Quantity<D1>>,
+    U: Unit<Quantity = Quantity<D1, T1>>,
     D1: Dimensioned + Div<D2>,
     D2: Dimensioned,
+    T1: QuantityTag,
+    T2: QuantityTag,
     <D1 as Div<D2>>::Output: Dimensioned,
 {
-    type Output = <Quantity<D1> as Div<Quantity<D2>>>::Output;
+    type Output = <Quantity<D1, T1> as Div<Quantity<D2, T2>>>::Output;
 
-    fn div(self, rhs: Quantity<D2>) -> Self::Output {
+    fn div(self, rhs: Quantity<D2, T2>) -> Self::Output {
         self.into_q() / rhs
     }
 }
