@@ -19,7 +19,7 @@ jobs:
       run: cargo build --verbose
 
 
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
