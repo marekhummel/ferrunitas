@@ -395,6 +395,8 @@ pub mod __inner_unit_macros {
                     write!(f, "{}", <$unit_name as $crate::__model::Unit>::ABBREV)
                 }
             }
+
+            $crate::__unit_times_number!($unit_name, [i32, f64]);
         };
     }
 
@@ -457,6 +459,23 @@ pub mod __inner_unit_macros {
                     $($components),*
                 ]
             );
+        };
+    }
+
+    /// Implement multiplication of unit by number for QOL instantiation of measures.
+    #[doc(hidden)]
+    #[macro_export]
+    macro_rules! __unit_times_number {
+        ($unit:ty, [$($numeric_type:ty),*]) => {
+            $(
+                impl std::ops::Mul<$unit> for $numeric_type {
+                    type Output = $crate::Measure<$unit>;
+
+                    fn  mul(self, _rhs: $unit) -> Self::Output {
+                        <$unit as $crate::__model::Unit>::new(self)
+                    }
+                }
+            )*
         };
     }
 

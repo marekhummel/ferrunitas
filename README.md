@@ -25,7 +25,7 @@ use ferrunitas::{Measure, Unit};
 
 fn main() {
     // Create measures with specific units
-    let distance = Metre::new(100.0);
+    let distance = 100 * Metre;
     let time = Second::new(10.0);
 
     // Convert between compatible units

@@ -34,11 +34,11 @@
 //! use ferrunitas::{system::*, Measure, Unit};
 //!
 //! // Construct concrete units
-//! let m = Kilogram::new(5.0);              // 5 kg
+//! let m = 5 * Kilogram;                    // 5 kg
 //! let a = MetrePerSecondSquared::new(2.0); // 2 m/s²
 //!
 //! // Multiply → force (unit × unit -> compound quantity)
-//! let f_q = m * a + Millinewton::new(20.0);                // A quantity of type Force
+//! let f_q = m * a + Millinewton::new(20.0);   // A quantity of type Force
 //! let f: Measure<Newton> = f_q.as_measure();  // Represent it as Newtons
 //! assert_eq!(f.value(), 10.02);
 //!
@@ -48,26 +48,6 @@
 //! assert_eq!(kg_again.value(), 5.0);
 //! ```
 //!
-//! # Quantity Tagging (Optional Feature)
-//! Enable with `--features="quantity_tags"` to distinguish between dimensionally
-//! equivalent but semantically different quantities:
-//!
-//! ```rust
-//! use ferrunitas::{system::*, Unit};
-//! // These are both dimensionless but represent different concepts
-//! let data = Bit::new(8.0);
-//! let angle = Radian::new(1.0);
-//!
-//! #[cfg(feature = "quantity_tags")]
-//! {
-//!     // With quantity_tags enabled, this won't compile:
-//!     // let invalid = data + angle;  // Error!
-//!
-//!     // Instead, explicitly specify the target quantity:
-//!     let result = data.into_q().specify::<Dimensionless>() +
-//!                  angle.into_q().specify::<Dimensionless>();
-//! }
-//! ```
 //!
 //! # Relevant imports
 //! ```rust
@@ -85,20 +65,6 @@
 //! use ferrunitas::{prefix, quantity, unit};
 //! ```
 //!
-//! # Equality & Ordering
-//! * Concrete unit types (`Kilogram`, `Gram`) are **not** directly comparable to
-//!   each other if their Rust types differ. Convert both to a quantity (or the
-//!   same concrete unit) first. Use `.is_equal_to()` for comparisons.
-//! * Quantities of the same dimension implement `PartialEq` / `PartialOrd`.
-//!
-//! # Arithmetic Overview
-//! | Operation | Works On | Result |
-//! |-----------|----------|--------|
-//! | `+ -`     | Same dimension (unit or quantity) | Same dimension |
-//! | `* /`     | Any compatible dimensions | New derived dimension |
-//! | `* f64` / `f64 *` | Scale value | Same dimension |
-//! | `/ f64`   | Scale value | Same dimension |
-//!
 //! # Limitations / Notes
 //! * Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
 //! * Rounding / formatting of display values is a caller concern, usual format specifiers are respected.
@@ -108,16 +74,6 @@
 //! New units, prefixes, or compound relationships can be created using
 //! the provided macros (`unit!`, etc.). The results work just like all the
 //! predefined macros.
-//!
-//! # Minimum Example (copy/paste)
-//! ```rust
-//! use ferrunitas::{system::{Kilometre, Knot, Second, Yard}, Unit};
-//! let a1 = Kilometre::new(1.2);
-//! let a2 = Yard::new(233.0);
-//! let b = Second::new(3400.0);
-//! let speed = ((a1 + a2) / b).as_measure::<Knot>();
-//! println!("{:.2}", speed);
-//! ```
 
 // Make all definitions and the common functions public
 /// Common helper functions & utilities shared across units / quantities.

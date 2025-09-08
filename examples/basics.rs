@@ -25,9 +25,9 @@ fn units_measures_and_quantities() {
     println!();
 
     // -- Measures
-    // To express units with a value, use measures
+    // To express units with a value, use measures. Either of these ways works.
     let l1: Measure<Foot> = Foot::new(402);
-    let l2: Measure<Centimetre> = Centimetre::new(30);
+    let l2: Measure<Centimetre> = 30 * Centimetre;
     let l3: Measure<Inch> = Measure::new(6);
     let l_sum: Measure<Foot> = l1 + l2 + l3;
     println!("1st Measure in Foot: {}", l1);
@@ -43,6 +43,15 @@ fn units_measures_and_quantities() {
     let v2: Length = l2.into_q();
     // Quantities have no unit and only an inner value, which is meaningless outside the lib.
     println!("Two measures as quantities: {} and {}", v1, v2);
+    println!();
+
+    // -- Caveat
+    // Complex units can also be created by multiplying units themselves, but
+    // the result is a quantity (see below in `computation_units()`),
+    // which might look counter-intuitive at first.
+    let speed: Measure<MetrePerSecond> = MetrePerSecond::new(10.0); // This is a unit
+    let speed2: Velocity = 10.0 * Metre / Second; // This is a quantity
+    println!("Speed as unit: {} and as quantity: {}", speed, speed2);
     println!();
 }
 

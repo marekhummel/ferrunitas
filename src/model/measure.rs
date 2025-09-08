@@ -332,6 +332,18 @@ where
     }
 }
 
+/// Multiplication - just with unit assumes measure of 1.0
+impl<U1: Unit, U2: Unit> Mul<U2> for Measure<U1>
+where
+    U1::Quantity: Mul<U2::Quantity>,
+{
+    type Output = <U1::Quantity as Mul<U2::Quantity>>::Output;
+
+    fn mul(self, _rhs: U2) -> Self::Output {
+        self.into_q() * U2::new(1.0).into_q()
+    }
+}
+
 /// Multiplication - works with any unit but result is quantity
 impl<U1: Unit, U2: Unit> Mul<Measure<U2>> for Measure<U1>
 where
@@ -358,6 +370,18 @@ where
 
     fn mul(self, rhs: Quantity<D2, T2>) -> Self::Output {
         self.into_q() * rhs
+    }
+}
+
+/// Division - just with unit assumes measure of 1.0
+impl<U1: Unit, U2: Unit> Div<U2> for Measure<U1>
+where
+    U1::Quantity: Div<U2::Quantity>,
+{
+    type Output = <U1::Quantity as Div<U2::Quantity>>::Output;
+
+    fn div(self, _rhs: U2) -> Self::Output {
+        self.into_q() / U2::new(1.0).into_q()
     }
 }
 
