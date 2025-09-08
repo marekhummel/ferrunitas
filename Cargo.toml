@@ -1,12 +1,16 @@
 [package]
 name = "ferrunitas"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
+authors = ["Marek Hummel <marek.hummel3@gmail.com>"]
 description = "A type-safe unit conversion library with compile-time dimensional analysis"
 license = "Apache-2.0"
+repository = "https://github.com/marekhummel/ferrunitas"
+documentation = "https://docs.rs/ferrunitas"
+readme = "README.md"
 keywords = ["units", "conversion", "measurement", "SI", "dimensional-analysis"]
 categories = ["science", "data-structures", "mathematics", "value-formatting"]
-repository = "https://github.com/marekhummel/ferrunitas"
+exclude = ["/.github/", "system_test.rs"]
 
 [profile.release]
 lto = "fat"

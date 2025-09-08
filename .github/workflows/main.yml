@@ -11,12 +11,22 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Build
       run: cargo build --verbose
+
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
     - name: Run tests
       run: cargo test --verbose && cargo test --verbose --all-features
+    - name: Check code formatting
+      run: cargo fmt -- --check
+    - name: Check code linting
+      run: cargo clippy -- -D warnings
