@@ -45,7 +45,7 @@ impl QuantityTag for () {}
 ///
 /// - [`Measure<Unit>`] = Value with specific unit (e.g., "5 meters", "10 kilograms")
 /// - [`Quantity<Dimension>`] = Value with dimension only (e.g., "length", "mass")
-/// - Convert between them using [`as_measure()`] and [`into_q()`]
+/// - Convert between them using [`Quantity::as_measure()`] and [`Measure::into_q()`]
 ///
 /// # Examples
 ///

@@ -3,11 +3,11 @@
 
 /// Trait for SI prefixes
 ///
-/// Defines the interface for all prefix types created by the [`prefix!`] macro.
+/// Defines the interface for all prefix types created by the [`crate::prefix!`] macro.
 /// Prefixes provide a scaling factor and symbol that can be combined with
 /// base units to create scaled versions (like kilogram = kilo + gram).
 ///
-/// This trait is automatically implemented by the [`prefix!`] macro and should
+/// This trait is automatically implemented by the [`crate::prefix!`] macro and should
 /// not be implemented manually in most cases.
 ///
 /// # Examples

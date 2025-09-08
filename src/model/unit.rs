@@ -16,7 +16,7 @@ use crate::model::{measure::Measure, quantity::QuantityMarker};
 /// a zero-sized marker type that carries compile-time information about its
 /// associated quantity, conversion factor, and display symbol.
 ///
-/// Units are typically created using the [`unit!`] macro rather than implementing
+/// Units are typically created using the [`crate::unit!`] macro rather than implementing
 /// this trait manually. The trait provides the scaffolding for type-safe arithmetic
 /// and conversions between different units of the same dimension.
 ///
@@ -232,7 +232,7 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
 /// - A zero-sized struct representing the unit
 /// - Implementation of the [`Unit`] trait with proper constants
 /// - Implementation of `Display` for the unit symbol
-/// - Optional implementation of [`Prefixable`] if specified
+/// - Optional implementation of trait to mark it as compatible with prefixes if specified
 ///
 /// # Examples
 ///
