@@ -97,6 +97,8 @@ pub mod __model {
 // Export some modules / types on crate level for easy access
 pub use crate::model::measure::Measure;
 pub use crate::model::unit::Unit;
+
+/// Re-export typenum consts for easy access in macros
 pub use typenum::consts as typenum_consts;
 
 // For manual testing, this may be used (keeps compiler overhead low)

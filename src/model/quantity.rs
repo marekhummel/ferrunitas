@@ -151,10 +151,10 @@ pub trait QuantityMarker:
 /// ```rust
 /// use ferrunitas::{quantity, typenum_consts::*};
 ///
-/// // These are both dimensionless but represent different concepts
-/// quantity!(Angle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);       // [1] (angles)
-/// quantity!(Information: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);  // [1] (data)
-/// quantity!(SolidAngle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);   // [1] (solid angles)
+/// // These are all dimensionless but represent different concepts
+/// quantity!(Angle:       M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);   // [1] (angles)
+/// quantity!(Information: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);   // [1] (data)
+/// quantity!(SolidAngle:  M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);   // [1] (solid angles)
 ///
 /// // With quantity tagging, these become distinct types even though they're dimensionally identical
 /// ```

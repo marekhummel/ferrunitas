@@ -1,8 +1,20 @@
 # Ferrunitas - Type-Safe Unit Conversion Library
 
-A Rust library for compile-time dimensional analysis and unit conversions. Ferrunitas provides type safety for physical quantities and prevents dimensional errors at compile time through Rust's powerful type system.
+[![Github Actions](https://img.shields.io/github/actions/workflow/status/marekhummel/ferrunitas/main.yml?branch=main)](https://github.com/marekhummel/ferrunitas/actions)
+[![Dependencies](https://deps.rs/repo/github/marekhummel/ferrunitas/status.svg)](https://deps.rs/repo/github/marekhummel/ferrunitas)
+[![Codecov.io](https://img.shields.io/codecov/c/github/marekhummel/ferrunitas/main)](https://codecov.io/gh/marekhummel/ferrunitas)
 
-Current build and test state: ![Build + Test](https://github.com/marekhummel/ferrunitas/actions/workflows/main.yml/badge.svg)
+[![MSRV](https://img.shields.io/badge/rustc-1.85.0%2B-orange.svg)](https://rustup.rs/)
+[![Crates.io](https://img.shields.io/crates/v/ferrunitas.svg)](https://crates.io/crates/ferrunitas)
+[![License](https://img.shields.io/crates/l/ferrunitas.svg)](https://crates.io/crates/ferrunitas)
+[![Documentation](https://img.shields.io/badge/documentation-docs.rs-blue.svg)](https://docs.rs/ferrunitas)
+
+
+
+A Rust library for compile-time dimensional analysis and unit conversions. Ferrunitas provides type safety for physical quantities and prevents dimensional errors at compile time through Rust's powerful type system.
+The name "Ferrunitas" combines the Latin "ferrum" (iron, referencing Rust) and "unitas" (oneness, unity).
+Refer to [this document](https://www.bipm.org/documents/20126/41483022/SI-Brochure-9-EN.pdf) for the base information of the implementation.
+
 
 ## Features
 
