@@ -390,4 +390,34 @@ mod std_operations_tests {
         let expected = MetrePerSecond::new(5.0).into_q();
         assert_eq!(speed, expected);
     }
+
+    // ===========================
+    // QUANTITY POW TESTS
+    // ===========================
+
+    #[test]
+    fn test_quantity_pow() {
+        use ferrunitas::__model::TypePow;
+        use typenum::*;
+
+        // Test squaring a length quantity: L^1 -> L^2
+        let length = Metre::new(4.0).into_q();
+        let area = TypePow::<P2>::pow(length);
+        assert_eq!(format! {"{:.1}", area}, "16.0 [L^2]");
+
+        // Test cubing a length quantity: L^1 -> L^3
+        let side_length = Metre::new(3.0).into_q();
+        let volume = TypePow::<P3>::pow(side_length);
+        assert_eq!(format! {"{:.1}", volume}, "27.0 [L^3]");
+
+        // Test negative power: T^1 -> T^-2 (inverse time squared)
+        let time = Second::new(2.0).into_q();
+        let inverse_time_squared = TypePow::<N2>::pow(time);
+        assert_eq!(format! {"{:.2}", inverse_time_squared}, "0.25 [T^-2]");
+
+        // Test with velocity: (L^1 T^-1)^2 -> L^2 T^-2 (energy-like dimensions)
+        let velocity = MetrePerSecond::new(5.0).into_q();
+        let velocity_squared = TypePow::<P2>::pow(velocity);
+        assert_eq!(format! {"{:.1}", velocity_squared}, "25.0 [L^2·T^-2]");
+    }
 }

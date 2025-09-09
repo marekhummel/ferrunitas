@@ -487,44 +487,6 @@ pub mod __inner_unit_macros {
     ///
     /// This is a compile-time implementation of exponentiation that handles
     /// both positive and negative exponents correctly.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use ferrunitas::__model::__inner_unit_macros::__powi_const;
-    ///
-    /// // Positive exponents
-    /// const SQUARE: f64 = __powi_const(2.0, 2);
-    /// const CUBE: f64 = __powi_const(3.0, 3);
-    /// const FOURTH_POWER: f64 = __powi_const(10.0, 4);
-    ///
-    /// assert_eq!(SQUARE, 4.0);        // 2^2 = 4
-    /// assert_eq!(CUBE, 27.0);         // 3^3 = 27
-    /// assert_eq!(FOURTH_POWER, 10000.0); // 10^4 = 10000
-    ///
-    /// // Zero exponent (any base to power 0 equals 1)
-    /// const ZERO_EXP: f64 = __powi_const(42.0, 0);
-    /// assert_eq!(ZERO_EXP, 1.0);
-    ///
-    /// // Negative exponents (reciprocals)
-    /// const NEG_SQUARE: f64 = __powi_const(2.0, -2);
-    /// const NEG_CUBE: f64 = __powi_const(4.0, -3);
-    ///
-    /// assert_eq!(NEG_SQUARE, 0.25);   // 2^-2 = 1/4 = 0.25
-    /// assert_eq!(NEG_CUBE, 1.0/64.0); // 4^-3 = 1/64
-    ///
-    /// // Edge cases
-    /// const ONE_TO_POWER: f64 = __powi_const(1.0, 100);
-    /// const FIRST_POWER: f64 = __powi_const(5.0, 1);
-    ///
-    /// assert_eq!(ONE_TO_POWER, 1.0);  // 1^100 = 1
-    /// assert_eq!(FIRST_POWER, 5.0);   // 5^1 = 5
-    ///
-    /// // Used in compound unit factor calculations
-    /// // For example, m/s² would use: metres_factor * __powi_const(seconds_factor, -2)
-    /// const ACCELERATION_FACTOR: f64 = 1.0 * __powi_const(1.0, -2); // m * s^-2
-    /// assert_eq!(ACCELERATION_FACTOR, 1.0);
-    /// ```
     #[doc(hidden)]
     pub const fn __powi_const(mut base: f64, mut exp: i32) -> f64 {
         if exp == 0 {
@@ -693,5 +655,39 @@ mod tests {
         assert_eq!(factor, 1.0);
         assert_eq!(offset, 273.15);
         assert_eq!(abbrev, "°C");
+    }
+
+    #[test]
+    fn test_custom_powi_function() {
+        use super::__inner_unit_macros::__powi_const;
+
+        // Positive exponents
+        let square: f64 = __powi_const(2.0, 2);
+        let cube: f64 = __powi_const(3.0, 3);
+        let fourth_power: f64 = __powi_const(10.0, 4);
+        assert_eq!(square, 4.0); // 2^2 = 4
+        assert_eq!(cube, 27.0); // 3^3 = 27
+        assert_eq!(fourth_power, 10000.0); // 10^4 = 10000
+
+        // Zero exponent (any base to power 0 equals 1)
+        let zero_exp: f64 = __powi_const(42.0, 0);
+        assert_eq!(zero_exp, 1.0);
+
+        // Negative exponents (reciprocals)
+        let neg_square: f64 = __powi_const(2.0, -2);
+        let neg_cube: f64 = __powi_const(4.0, -3);
+        assert_eq!(neg_square, 0.25); // 2^-2 = 1/4 = 0.25
+        assert_eq!(neg_cube, 1.0 / 64.0); // 4^-3 = 1/64
+
+        // Edge cases
+        let one_to_power: f64 = __powi_const(1.0, 100);
+        let first_power: f64 = __powi_const(5.0, 1);
+        assert_eq!(one_to_power, 1.0); // 1^100 = 1
+        assert_eq!(first_power, 5.0); // 5^1 = 5
+
+        // Used in compound unit factor calculations
+        // For example, m/s² would use: metres_factor * __powi_const(seconds_factor, -2)
+        let acceleration_factor: f64 = 1.0 * __powi_const(1.0, -2); // m * s^-2
+        assert_eq!(acceleration_factor, 1.0);
     }
 }

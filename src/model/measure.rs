@@ -603,57 +603,27 @@ mod tests {
     #[test]
     fn test_const_functions_equivalence() {
         // Test that const functions return the same values as their non-const equivalents
+        // Use let instead of const to avoid const-fold optimization
 
         // Test new_const vs new
-        const CONST_MEASURE: Measure<Metre> = Measure::new_const(42.5);
+        let const_measure: Measure<Metre> = Measure::new_const(42.5);
         let regular_measure = Metre::new(42.5);
 
-        assert_eq!(CONST_MEASURE.value(), regular_measure.value());
-        assert_eq!(CONST_MEASURE, regular_measure);
+        assert_eq!(const_measure.value(), regular_measure.value());
+        assert_eq!(const_measure, regular_measure);
 
         // Test value_const vs value
-        const CONST_VALUE: f64 = CONST_MEASURE.value_const();
+        let const_value: f64 = const_measure.value_const();
         let regular_value = regular_measure.value();
 
-        assert_eq!(CONST_VALUE, regular_value);
-        assert_eq!(CONST_VALUE, 42.5);
+        assert_eq!(const_value, regular_value);
+        assert_eq!(const_value, 42.5);
 
         // Test with different unit and value
-        const CONST_MASS: Measure<Kilogram> = Measure::new_const(123.456);
+        let const_mass: Measure<Kilogram> = Measure::new_const(123.456);
         let regular_mass = Kilogram::new(123.456);
 
-        assert_eq!(CONST_MASS.value_const(), regular_mass.value());
-        assert_eq!(CONST_MASS, regular_mass);
-    }
-
-    #[test]
-    fn test_new_const_speed_of_light_example() {
-        // Example moved from new_const documentation
-        const SPEED_OF_LIGHT: Measure<MetrePerSecond> = Measure::new_const(299_792_458.0);
-
-        // Verify the constant was created correctly
-        assert_eq!(SPEED_OF_LIGHT.value(), 299_792_458.0);
-
-        // Verify it's equivalent to creating with regular new
-        let regular_speed = MetrePerSecond::new(299_792_458.0);
-        assert_eq!(SPEED_OF_LIGHT, regular_speed);
-    }
-
-    #[test]
-    fn test_value_const_distance_example() {
-        // Example moved from value_const documentation
-        const DISTANCE: Measure<Metre> = Measure::new_const(42.0);
-        const VALUE: f64 = DISTANCE.value_const();
-
-        // Verify the constant value extraction
-        assert_eq!(VALUE, 42.0);
-
-        // Verify it matches regular value() method
-        assert_eq!(VALUE, DISTANCE.value());
-
-        // Verify it's equivalent to creating with regular new
-        let regular_distance = Metre::new(42.0);
-        assert_eq!(DISTANCE, regular_distance);
-        assert_eq!(VALUE, regular_distance.value());
+        assert_eq!(const_mass.value_const(), regular_mass.value());
+        assert_eq!(const_mass, regular_mass);
     }
 }

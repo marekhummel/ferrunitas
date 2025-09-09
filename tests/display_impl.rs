@@ -152,17 +152,13 @@ fn test_display_zero_and_negative_values() {
     assert_eq!(format!("{}", negative_velocity), "-25.5 m/s");
 }
 
-#[cfg(feature = "quantity_tags")]
 #[test]
+#[cfg(feature = "quantity_tags")]
 fn test_display_with_quantity_tags() {
     // Test that measures with different unit types display their unit symbols correctly
     // even when they might be dimensionally similar
-
-    // Test basic dimensionless quantities (if available)
     let ratio = Metre::new(100.0).into_q() / Metre::new(50.0).into_q();
-    // Dimensionless quantities should display without units or with appropriate symbol
-    let ratio_str = format!("{}", ratio);
-    assert!(ratio_str.contains("2") || ratio_str == "2");
+    assert_eq!(format!("{}", ratio.specify::<Angle>()), "2 [1] as Angle");
 
     // Test that different units maintain their distinct display
     let metres = Metre::new(1.0);
