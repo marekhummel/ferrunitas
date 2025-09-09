@@ -6,7 +6,7 @@
 
 [![MSRV](https://img.shields.io/badge/rustc-1.85.0%2B-orange.svg)](https://rustup.rs/)
 [![Crates.io](https://img.shields.io/crates/v/ferrunitas.svg)](https://crates.io/crates/ferrunitas)
-[![License](https://img.shields.io/crates/l/ferrunitas.svg)](https://crates.io/crates/ferrunitas)
+[![License](https://img.shields.io/crates/l/ferrunitas.svg)](https://github.com/marekhummel/ferrunitas?tab=Apache-2.0-1-ov-file#readme)
 [![Documentation](https://img.shields.io/badge/documentation-docs.rs-blue.svg)](https://docs.rs/ferrunitas)
 
 

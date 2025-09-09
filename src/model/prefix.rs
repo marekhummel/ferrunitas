@@ -157,3 +157,80 @@ macro_rules! prefix {
         }
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Create test prefixes to verify derived traits
+    prefix!(TestKilo, 1000, "k");
+    prefix!(TestMilli, 0.001, "m");
+    prefix!(TestCustom, 42.5, "test");
+
+    #[test]
+    fn test_prefix_constants() {
+        // Test that the Prefix trait constants are correctly set
+        assert_eq!(TestKilo::FACTOR, 1000.0);
+        assert_eq!(TestKilo::SYMBOL, "k");
+
+        assert_eq!(TestMilli::FACTOR, 0.001);
+        assert_eq!(TestMilli::SYMBOL, "m");
+
+        assert_eq!(TestCustom::FACTOR, 42.5);
+        assert_eq!(TestCustom::SYMBOL, "test");
+    }
+
+    #[test]
+    #[allow(clippy::clone_on_copy)]
+    fn test_clone_trait() {
+        // Test that Clone is properly derived
+        let original = TestKilo;
+        let cloned = original.clone();
+        assert_eq!(original, cloned);
+
+        // Test with different prefix
+        let original_milli = TestMilli;
+        let cloned_milli = original_milli.clone();
+        assert_eq!(original_milli, cloned_milli);
+    }
+
+    #[test]
+    fn test_copy_trait() {
+        // Test that Copy is properly derived (automatic via assignment)
+        let original = TestKilo;
+        let copied = original; // This is a copy, not a move
+
+        // Both should still be usable (proving Copy works)
+        assert_eq!(original, TestKilo);
+        assert_eq!(copied, TestKilo);
+        assert_eq!(original, copied);
+    }
+
+    #[test]
+    fn test_partial_eq_ord_trait() {
+        // Test that PartialEq is properly derived
+        let kilo1 = TestKilo;
+        let kilo2 = TestKilo;
+
+        // Same prefix types should be equal
+        assert_eq!(kilo1, kilo2);
+        assert!(kilo1 == kilo2);
+        assert!(kilo1 <= kilo2);
+        assert!(kilo1 >= kilo2);
+    }
+
+    #[test]
+    fn test_zero_sized_type() {
+        // Test that prefix types are zero-sized (no memory overhead)
+        use std::mem;
+
+        assert_eq!(mem::size_of::<TestKilo>(), 0);
+        assert_eq!(mem::size_of::<TestMilli>(), 0);
+        assert_eq!(mem::size_of::<TestCustom>(), 0);
+
+        // Test alignment
+        assert_eq!(mem::align_of::<TestKilo>(), 1);
+        assert_eq!(mem::align_of::<TestMilli>(), 1);
+        assert_eq!(mem::align_of::<TestCustom>(), 1);
+    }
+}

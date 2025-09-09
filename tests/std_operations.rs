@@ -157,18 +157,30 @@ mod std_operations_tests {
 
     #[test]
     fn test_scalar_mul_lhs() {
+        // Test scalar * measure
         let scalar = 3.0;
         let force = Newton::new(5.0);
         let result = scalar * force;
         assert_eq!(result, Newton::new(15.0));
+
+        // Test scalar * quantity
+        let force_quantity = force.into_q();
+        let result_quantity = scalar * force_quantity;
+        assert_eq!(result_quantity, Newton::new(15.0).into_q());
     }
 
     #[test]
     fn test_scalar_mul_rhs() {
+        // Test measure * scalar
         let volume = Litre::new(2.0);
         let scalar = 4.0;
         let result = volume * scalar;
         assert_eq!(result, Litre::new(8.0));
+
+        // Test quantity * scalar
+        let volume_quantity = volume.into_q();
+        let result_quantity = volume_quantity * scalar;
+        assert_eq!(result_quantity, Litre::new(8.0).into_q());
     }
 
     // ===========================
@@ -177,9 +189,15 @@ mod std_operations_tests {
 
     #[test]
     fn test_scalar_mul_assign() {
+        // Test measure *= scalar
         let mut pressure = Pascal::new(100.0);
         pressure *= 2.5;
         assert_eq!(pressure, Pascal::new(250.0));
+
+        // Test quantity *= scalar
+        let mut pressure_quantity = Pascal::new(100.0).into_q();
+        pressure_quantity *= 2.5;
+        assert_eq!(pressure_quantity, Pascal::new(250.0).into_q());
     }
 
     // ===========================
@@ -236,19 +254,30 @@ mod std_operations_tests {
 
     #[test]
     fn test_scalar_div_lhs() {
+        // Test scalar / measure
         let scalar = 20.0;
         let velocity = Metre::new(4.0);
         let result = scalar / velocity;
-
         assert_eq!(result, ReciprocalMetre::new(5.0).into_q());
+
+        // Test scalar / quantity
+        let velocity_quantity = velocity.into_q();
+        let result_quantity = scalar / velocity_quantity;
+        assert_eq!(result_quantity, ReciprocalMetre::new(5.0).into_q());
     }
 
     #[test]
     fn test_scalar_div_rhs() {
+        // Test measure / scalar
         let energy = Joule::new(100.0);
         let scalar = 5.0;
         let result = energy / scalar;
         assert_eq!(result, Joule::new(20.0));
+
+        // Test quantity / scalar
+        let energy_quantity = energy.into_q();
+        let result_quantity = energy_quantity / scalar;
+        assert_eq!(result_quantity, Joule::new(20.0).into_q());
     }
 
     // ===========================
@@ -257,9 +286,15 @@ mod std_operations_tests {
 
     #[test]
     fn test_scalar_div_assign() {
+        // Test measure /= scalar
         let mut frequency = Hertz::new(1000.0);
         frequency /= 10.0;
         assert_eq!(frequency, Hertz::new(100.0));
+
+        // Test quantity /= scalar
+        let mut frequency_quantity = Hertz::new(1000.0).into_q();
+        frequency_quantity /= 10.0;
+        assert_eq!(frequency_quantity, Hertz::new(100.0).into_q());
     }
 
     // ===========================
@@ -308,5 +343,51 @@ mod std_operations_tests {
         let mass_quantity = Kilogram::new(5.0).into_q();
         let acceleration = force_quantity / mass_quantity;
         assert_eq!(acceleration, MetrePerSecondSquared::new(2.0).into_q());
+    }
+
+    // ===========================
+    // UNIT × NUMERIC TESTS
+    // ===========================
+
+    #[test]
+    fn test_unit_mul_i32() {
+        let result = 5 * Metre;
+        assert_eq!(result, Metre::new(5.0));
+    }
+
+    #[test]
+    fn test_unit_mul_f64() {
+        let result = 3.5 * Kilogram;
+        assert_eq!(result, Kilogram::new(3.5));
+    }
+
+    // ===========================
+    // MEASURE × UNIT TESTS
+    // ===========================
+
+    #[test]
+    fn test_measure_mul_unit() {
+        // Test measure × unit (assumes unit measure of 1.0)
+        let mass = Kilogram::new(5.0);
+        let force = mass * MetrePerSecondSquared;
+        let expected = Newton::new(5.0).into_q();
+        assert_eq!(force, expected);
+    }
+
+    #[test]
+    fn test_measure_div_unit() {
+        // Test measure ÷ unit (assumes unit measure of 1.0)
+        let force = Newton::new(5.0);
+        let mass = force / MetrePerSecondSquared;
+        let expected = Kilogram::new(5.0).into_q();
+        assert_eq!(mass, expected);
+    }
+
+    #[test]
+    fn test_measure_mul_div_unit() {
+        // Test measure × unit (assumes unit measure of 1.0)
+        let speed = 5 * Metre / Second; // Creates a quantity with dimensions [L * T]
+        let expected = MetrePerSecond::new(5.0).into_q();
+        assert_eq!(speed, expected);
     }
 }

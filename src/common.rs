@@ -141,6 +141,11 @@ pub(crate) use verify_unit;
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::model::dimension::*;
+    use crate::model::quantity::Quantity;
+    use typenum::*;
+
     #[test]
     fn test_assert_almost_equal_default_epsilon() {
         assert_almost_equal!(1.0, 1.0, "Test 1");
@@ -157,5 +162,178 @@ mod tests {
     #[should_panic]
     fn test_assert_almost_equal_should_panic() {
         assert_almost_equal!(1.0, 2.0, 0.1, 1e-7, "Test 5");
+    }
+
+    #[test]
+    fn test_format_dims_single_dimensions() {
+        // Test all 7 individual dimensions with positive exponents
+
+        // Mass: M^1
+        type Mass = Quantity<DimensionVector<P1, Z0, Z0, Z0, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<Mass>(), "M^1");
+
+        // Length: L^1
+        type Length = Quantity<DimensionVector<Z0, P1, Z0, Z0, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<Length>(), "L^1");
+
+        // Time: T^1
+        type Time = Quantity<DimensionVector<Z0, Z0, P1, Z0, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<Time>(), "T^1");
+
+        // Electric Current: I^1
+        type ElectricCurrent = Quantity<DimensionVector<Z0, Z0, Z0, P1, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<ElectricCurrent>(), "I^1");
+
+        // Thermodynamic Temperature: Θ^1
+        type Temperature = Quantity<DimensionVector<Z0, Z0, Z0, Z0, P1, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<Temperature>(), "Θ^1");
+
+        // Amount of Substance: N^1
+        type AmountOfSubstance = Quantity<DimensionVector<Z0, Z0, Z0, Z0, Z0, P1, Z0>, ()>;
+        assert_eq!(format_dims::<AmountOfSubstance>(), "N^1");
+
+        // Luminous Intensity: J^1
+        type LuminousIntensity = Quantity<DimensionVector<Z0, Z0, Z0, Z0, Z0, Z0, P1>, ()>;
+        assert_eq!(format_dims::<LuminousIntensity>(), "J^1");
+    }
+
+    #[test]
+    fn test_format_dims_different_exponents() {
+        // Test single dimensions with negative exponents
+
+        // I^-1 (Inverse Electric Current)
+        type InverseCurrent = Quantity<DimensionVector<Z0, Z0, Z0, N1, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<InverseCurrent>(), "I^-1");
+
+        // Θ^-2 (Inverse Temperature Squared)
+        type InverseTempSquared = Quantity<DimensionVector<Z0, Z0, Z0, Z0, N2, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<InverseTempSquared>(), "Θ^-2");
+
+        // N^-3 (Inverse Amount of Substance Cubed)
+        type InverseSubstanceCubed = Quantity<DimensionVector<Z0, Z0, Z0, Z0, Z0, N3, Z0>, ()>;
+        assert_eq!(format_dims::<InverseSubstanceCubed>(), "N^-3");
+
+        // I^2 (Electric Current Squared)
+        type CurrentSquared = Quantity<DimensionVector<Z0, Z0, Z0, P2, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<CurrentSquared>(), "I^2");
+
+        // Θ^3 (Temperature Cubed)
+        type TemperatureCubed = Quantity<DimensionVector<Z0, Z0, Z0, Z0, P3, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<TemperatureCubed>(), "Θ^3");
+
+        // J^4 (Luminous Intensity to Fourth Power)
+        type IntensityFourthPower = Quantity<DimensionVector<Z0, Z0, Z0, Z0, Z0, Z0, P4>, ()>;
+        assert_eq!(format_dims::<IntensityFourthPower>(), "J^4");
+    }
+
+    #[test]
+    fn test_format_dims_compound_dimensions() {
+        // Test combinations of multiple dimensions
+
+        // Electric Resistance: M^1·L^2·T^-3·I^-2 (Ohm)
+        type ElectricResistance = Quantity<DimensionVector<P1, P2, N3, N2, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<ElectricResistance>(), "M^1·L^2·T^-3·I^-2");
+
+        // Heat Capacity: M^1·L^2·T^-2·Θ^-1
+        type HeatCapacity = Quantity<DimensionVector<P1, P2, N2, Z0, N1, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<HeatCapacity>(), "M^1·L^2·T^-2·Θ^-1");
+
+        // Molar Volume: L^3·N^-1
+        type MolarVolume = Quantity<DimensionVector<Z0, P3, Z0, Z0, Z0, N1, Z0>, ()>;
+        assert_eq!(format_dims::<MolarVolume>(), "L^3·N^-1");
+
+        // Luminous Flux: J^1 (already covered in single dims, but shows steradian context)
+        type LuminousFlux = Quantity<DimensionVector<Z0, Z0, Z0, Z0, Z0, Z0, P1>, ()>;
+        assert_eq!(format_dims::<LuminousFlux>(), "J^1");
+
+        // Electric Field: M^1·L^1·T^-3·I^-1
+        type ElectricField = Quantity<DimensionVector<P1, P1, N3, N1, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<ElectricField>(), "M^1·L^1·T^-3·I^-1");
+
+        // Magnetic Field: M^1·T^-2·I^-1
+        type MagneticField = Quantity<DimensionVector<P1, Z0, N2, N1, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<MagneticField>(), "M^1·T^-2·I^-1");
+
+        // Catalytic Activity: N^1·T^-1 (amount per time)
+        type CatalyticActivity = Quantity<DimensionVector<Z0, Z0, N1, Z0, Z0, P1, Z0>, ()>;
+        assert_eq!(format_dims::<CatalyticActivity>(), "T^-1·N^1");
+
+        // All dimensions involved: M^1·L^2·T^-1·I^1·Θ^1·N^-1·J^2
+        type ComplexQuantity = Quantity<DimensionVector<P1, P2, N1, P1, P1, N1, P2>, ()>;
+        assert_eq!(
+            format_dims::<ComplexQuantity>(),
+            "M^1·L^2·T^-1·I^1·Θ^1·N^-1·J^2"
+        );
+    }
+
+    #[test]
+    fn test_format_dims_dimensionless() {
+        // Test dimensionless quantity (all exponents are zero)
+        type Dimensionless = Quantity<DimensionVector<Z0, Z0, Z0, Z0, Z0, Z0, Z0>, ()>;
+        assert_eq!(format_dims::<Dimensionless>(), "1");
+
+        // Also test with DimensionZero alias
+        use crate::model::dimension::DimensionZero;
+        type AlsoDimensionless = Quantity<DimensionZero, ()>;
+        assert_eq!(format_dims::<AlsoDimensionless>(), "1");
+    }
+
+    #[test]
+    fn test_format_unit_dims_coherence() {
+        // Test that format_unit_dims produces the same output as format_dims
+        // for the unit's associated quantity
+
+        use crate::system::*;
+        fn verify_format<U: Unit, Q: QuantityMarker>() {
+            assert_eq!(format_unit_dims::<U>(), format_dims::<Q>());
+        }
+
+        // Basic units
+        verify_format::<Metre, Length>();
+        verify_format::<Kilogram, Mass>();
+        verify_format::<Second, Time>();
+        verify_format::<Kelvin, Temperature>();
+        verify_format::<Ampere, ElectricCurrent>();
+        verify_format::<Mole, AmountOfSubstance>();
+        verify_format::<Candela, LuminousIntensity>();
+
+        // Derived units
+        verify_format::<Newton, Force>();
+        verify_format::<Pascal, Pressure>();
+        verify_format::<Joule, Energy>();
+        verify_format::<Watt, Power>();
+
+        // Compound units
+        verify_format::<MetrePerSecond, Velocity>();
+        verify_format::<MetrePerSecondSquared, Acceleration>();
+
+        // Prefixed units should have same dimensions as base units
+        verify_format::<Kilometre, Length>();
+        verify_format::<Centimetre, Length>();
+        verify_format::<Gram, Mass>();
+
+        // Imperial units
+        verify_format::<Foot, Length>();
+        verify_format::<Pound, Mass>();
+    }
+
+    #[test]
+    fn test_format_unit_dims_specific_outputs() {
+        use crate::system::*;
+
+        // Test specific expected outputs for common units
+        assert_eq!(format_unit_dims::<Metre>(), "L^1");
+        assert_eq!(format_unit_dims::<Kilogram>(), "M^1");
+        assert_eq!(format_unit_dims::<Second>(), "T^1");
+        assert_eq!(format_unit_dims::<Newton>(), "M^1·L^1·T^-2");
+        assert_eq!(format_unit_dims::<Pascal>(), "M^1·L^-1·T^-2");
+        assert_eq!(format_unit_dims::<Joule>(), "M^1·L^2·T^-2");
+        assert_eq!(format_unit_dims::<Watt>(), "M^1·L^2·T^-3");
+        assert_eq!(format_unit_dims::<MetrePerSecond>(), "L^1·T^-1");
+        assert_eq!(format_unit_dims::<MetrePerSecondSquared>(), "L^1·T^-2");
+
+        // Test dimensionless units if any exist
+        assert_eq!(format_unit_dims::<Radian>(), "1");
+        assert_eq!(format_unit_dims::<Steradian>(), "1");
     }
 }

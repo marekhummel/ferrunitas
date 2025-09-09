@@ -307,3 +307,193 @@ where
         Self::Output::default()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use typenum::{N1, N2, N3, P1, P2, P3, Z0};
+
+    // Helper function to verify dimension vector exponents
+    #[allow(clippy::too_many_arguments)]
+    fn assert_dimensions<M, L, T, I, Th, N, J>(
+        _: DimensionVector<M, L, T, I, Th, N, J>,
+        expected_m: i8,
+        expected_l: i8,
+        expected_t: i8,
+        expected_i: i8,
+        expected_th: i8,
+        expected_n: i8,
+        expected_j: i8,
+    ) where
+        M: Dimension,
+        L: Dimension,
+        T: Dimension,
+        I: Dimension,
+        Th: Dimension,
+        N: Dimension,
+        J: Dimension,
+    {
+        assert_eq!(<M as Dimension>::to_int(), expected_m);
+        assert_eq!(<L as Dimension>::to_int(), expected_l);
+        assert_eq!(<T as Dimension>::to_int(), expected_t);
+        assert_eq!(<I as Dimension>::to_int(), expected_i);
+        assert_eq!(<Th as Dimension>::to_int(), expected_th);
+        assert_eq!(<N as Dimension>::to_int(), expected_n);
+        assert_eq!(<J as Dimension>::to_int(), expected_j);
+    }
+
+    #[test]
+    fn test_dimension_trait() {
+        // Test dimension exponent conversion to integers
+        assert_eq!(<Z0 as Dimension>::to_int(), 0);
+        assert_eq!(<P1 as Dimension>::to_int(), 1);
+        assert_eq!(<P2 as Dimension>::to_int(), 2);
+        assert_eq!(<N1 as Dimension>::to_int(), -1);
+        assert_eq!(<N2 as Dimension>::to_int(), -2);
+        assert_eq!(<P3 as Dimension>::to_int(), 3);
+        assert_eq!(<N3 as Dimension>::to_int(), -3);
+    }
+
+    #[test]
+    fn test_addition_same_dimensions() {
+        // [M L T^-1 I^2 Th^-1 N^3 J^-2] + [M L T^-1 I^2 Th^-1 N^3 J^-2] = [M L T^-1 I^2 Th^-1 N^3 J^-2]
+        let dim1 = DimensionVector::<P1, P1, N1, P2, N1, P3, N2>::default();
+        let dim2 = DimensionVector::<P1, P1, N1, P2, N1, P3, N2>::default();
+        let result = dim1 + dim2;
+        assert_dimensions(result, 1, 1, -1, 2, -1, 3, -2);
+    }
+
+    #[test]
+    fn test_subtraction_same_dimensions() {
+        // [M^2 L^-3 T^1 I^-1 Th^2 N^-2 J^3] - [M^2 L^-3 T^1 I^-1 Th^2 N^-2 J^3] = [M^2 L^-3 T^1 I^-1 Th^2 N^-2 J^3]
+        let dim1 = DimensionVector::<P2, N3, P1, N1, P2, N2, P3>::default();
+        let dim2 = DimensionVector::<P2, N3, P1, N1, P2, N2, P3>::default();
+        let result = dim1 - dim2;
+        assert_dimensions(result, 2, -3, 1, -1, 2, -2, 3);
+    }
+
+    #[test]
+    fn test_multiplication_adds_dimensions() {
+        // [M^1 L^0 T^0 I^0 Th^0 N^0 J^0] × [L^1 T^-2 I^0 Th^0 N^0 J^0] = [M^1 L^1 T^-2 I^0 Th^0 N^0 J^0]
+        let dim1 = DimensionVector::<P1, Z0, Z0, Z0, Z0, Z0, Z0>::default();
+        let dim2 = DimensionVector::<Z0, P1, N2, Z0, Z0, Z0, Z0>::default();
+        let result = dim1 * dim2;
+        assert_dimensions(result, 1, 1, -2, 0, 0, 0, 0);
+
+        // [M^2 L^-1 T^3 I^-2 Th^1 N^-3 J^2] × [M^-1 L^2 T^-1 I^1 Th^0 N^1 J^-1]
+        // = [M^1 L^1 T^2 I^-1 Th^1 N^-2 J^1]
+        let dim3 = DimensionVector::<P2, N1, P3, N2, P1, N3, P2>::default();
+        let dim4 = DimensionVector::<N1, P2, N1, P1, Z0, P1, N1>::default();
+        let result2 = dim3 * dim4;
+        assert_dimensions(result2, 1, 1, 2, -1, 1, -2, 1);
+    }
+
+    #[test]
+    fn test_division_subtracts_dimensions() {
+        // [M^0 L^1 T^0 I^0 Th^0 N^0 J^0] ÷ [M^0 L^0 T^1 I^0 Th^0 N^0 J^0] = [M^0 L^1 T^-1 I^0 Th^0 N^0 J^0]
+        let dim1 = DimensionVector::<Z0, P1, Z0, Z0, Z0, Z0, Z0>::default();
+        let dim2 = DimensionVector::<Z0, Z0, P1, Z0, Z0, Z0, Z0>::default();
+        let result = dim1 / dim2;
+        assert_dimensions(result, 0, 1, -1, 0, 0, 0, 0);
+
+        // [M^3 L^-2 T^1 I^2 Th^-1 N^0 J^3] ÷ [M^1 L^1 T^-1 I^-1 Th^2 N^-1 J^1]
+        // = [M^2 L^-3 T^2 I^3 Th^-3 N^1 J^2]
+        let dim3 = DimensionVector::<P3, N2, P1, P2, N1, Z0, P3>::default();
+        let dim4 = DimensionVector::<P1, P1, N1, N1, P2, N1, P1>::default();
+        let result2 = dim3 / dim4;
+        assert_dimensions(result2, 2, -3, 2, 3, -3, 1, 2);
+    }
+
+    #[test]
+    fn test_inverse_negates_dimensions() {
+        // 1/[M^0 L^0 T^1 I^0 Th^0 N^0 J^0] = [M^0 L^0 T^-1 I^0 Th^0 N^0 J^0]
+        let dim1 = DimensionVector::<Z0, Z0, P1, Z0, Z0, Z0, Z0>::default();
+        let result = dim1.inv();
+        assert_dimensions(result, 0, 0, -1, 0, 0, 0, 0);
+
+        // 1/[M^2 L^-1 T^3 I^-2 Th^1 N^-3 J^2] = [M^-2 L^1 T^-3 I^2 Th^-1 N^3 J^-2]
+        let dim2 = DimensionVector::<P2, N1, P3, N2, P1, N3, P2>::default();
+        let result2 = dim2.inv();
+        assert_dimensions(result2, -2, 1, -3, 2, -1, 3, -2);
+    }
+
+    #[test]
+    fn test_exponentiation() {
+        // [M^0 L^1 T^0 I^0 Th^0 N^0 J^0]^2 = [M^0 L^2 T^0 I^0 Th^0 N^0 J^0]
+        let dim1 = DimensionVector::<Z0, P1, Z0, Z0, P2, N2, Z0>::default();
+        let res1 = TypePow::<P2>::pow(dim1);
+        assert_dimensions(res1, 0, 2, 0, 0, 4, -4, 0);
+
+        // [M^0 L^1 T^0 I^0 Th^0 N^0 J^0]^3 = [M^0 L^3 T^0 I^0 Th^0 N^0 J^0]
+        let dim2 = DimensionVector::<Z0, P1, N1, Z0, P2, P3, Z0>::default();
+        let res2 = TypePow::<P3>::pow(dim2);
+        assert_dimensions(res2, 0, 3, -3, 0, 6, 9, 0);
+
+        // [M^0 L^0 T^1 I^0 Th^0 N^0 J^0]^(-1) = [M^0 L^0 T^-1 I^0 Th^0 N^0 J^0]
+        let dim3 = DimensionVector::<Z0, Z0, P1, Z0, N2, Z0, N3>::default();
+        let res3 = TypePow::<N1>::pow(dim3);
+        assert_dimensions(res3, 0, 0, -1, 0, 2, 0, 3);
+
+        // [M^1 L^-1 T^2 I^-1 Th^1 N^-1 J^1]^2 = [M^2 L^-2 T^4 I^-2 Th^2 N^-2 J^2]
+        let dim4 = DimensionVector::<P1, N1, P2, N1, P1, N1, P1>::default();
+        let res4 = TypePow::<P2>::pow(dim4);
+        assert_dimensions(res4, 2, -2, 4, -2, 2, -2, 2);
+    }
+
+    #[test]
+    fn test_dimensionless_operations() {
+        // [1] + [1] = [1]
+        let result_add = DimensionZero::default() + DimensionZero::default();
+        assert_dimensions(result_add, 0, 0, 0, 0, 0, 0, 0);
+
+        // [1] × [M L T^-1] = [M L T^-1]
+        let dim1 = DimensionVector::<P1, P1, N1, N2, P2, P2, Z0>::default();
+        let result_mul = DimensionZero::default() * dim1;
+        assert_dimensions(result_mul, 1, 1, -1, -2, 2, 2, 0);
+
+        // [M] ÷ [M] = [1] (ratio of same dimension)
+        let dim2 = DimensionVector::<P1, N2, N4, Z0, Z0, P2, P4>::default();
+        let dim3 = DimensionVector::<P1, N2, N4, Z0, Z0, P2, P4>::default();
+        let ratio = dim2 / dim3;
+        assert_dimensions(ratio, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    #[test]
+    fn test_default_trait() {
+        // Test that Default trait creates dimension vectors with all zero exponents
+        let default_dim = DimensionVector::<Z0, Z0, Z0, Z0, Z0, Z0, Z0>::default();
+        assert_dimensions(default_dim, 0, 0, 0, 0, 0, 0, 0);
+
+        // Verify the actual instance is created (PhantomData should be default)
+        assert_eq!(
+            default_dim,
+            DimensionVector::<Z0, Z0, Z0, Z0, Z0, Z0, Z0> {
+                _phantom: std::marker::PhantomData
+            }
+        );
+
+        // Test that Default works for various dimension combinations
+        let complex_default = DimensionVector::<P2, N1, P3, N2, P1, N3, P2>::default();
+        assert_dimensions(complex_default, 2, -1, 3, -2, 1, -3, 2);
+
+        // Verify the actual instance for complex dimensions
+        assert_eq!(
+            complex_default,
+            DimensionVector::<P2, N1, P3, N2, P1, N3, P2> {
+                _phantom: std::marker::PhantomData
+            }
+        );
+
+        // Test DimensionZero default
+        let dimensionless_default = DimensionZero::default();
+        assert_dimensions(dimensionless_default, 0, 0, 0, 0, 0, 0, 0);
+
+        // Verify the actual instance for DimensionZero
+        assert_eq!(
+            dimensionless_default,
+            DimensionZero {
+                _phantom: std::marker::PhantomData
+            }
+        );
+    }
+}

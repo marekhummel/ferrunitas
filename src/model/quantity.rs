@@ -654,3 +654,108 @@ where
         Self::Output::new(self.value.powi(Exp::INT))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::system::*;
+
+    #[test]
+    fn test_quantity_creation_and_raw_value() {
+        // Test creating quantities and accessing raw values
+        let length = Length::new(100.0);
+        let mass = Mass::new(5.0);
+        let time = Time::new(10.0);
+
+        // Raw values should be in SI base units
+        assert_eq!(length.raw_value(), 100.0); // metres
+        assert_eq!(mass.raw_value(), 5.0); // kilograms
+        assert_eq!(time.raw_value(), 10.0); // seconds
+    }
+
+    #[test]
+    fn test_from_method() {
+        // Test creating quantities from different units using from() method
+        let length1 = Length::from::<Metre>(100.0);
+        let length2 = Length::from::<Centimetre>(10000.0);
+        let length3 = Length::from::<Kilometre>(0.1);
+
+        // All should represent the same physical quantity (100 metres)
+        assert_eq!(length1.raw_value(), 100.0);
+        assert_eq!(length2.raw_value(), 100.0); // 10000 cm = 100 m
+        assert_eq!(length3.raw_value(), 100.0); // 0.1 km = 100 m
+
+        // Test with mass
+        let mass1 = Mass::from::<Kilogram>(2.0);
+        let mass2 = Mass::from::<Gram>(2000.0);
+
+        assert_eq!(mass1.raw_value(), 2.0);
+        assert_eq!(mass2.raw_value(), 2.0); // 2000 g = 2 kg
+    }
+
+    #[test]
+    fn test_as_measure() {
+        // Test converting quantities to measures
+        let length = Metre::new(1000.0).into_q();
+
+        let metres = length.as_measure::<Metre>();
+        let kilometres = length.as_measure::<Kilometre>();
+        let centimetres = length.as_measure::<Centimetre>();
+
+        assert_eq!(metres.value(), 1000.0);
+        assert_eq!(kilometres.value(), 1.0); // 1000 m = 1 km
+        assert_eq!(centimetres.value(), 100000.0); // 1000 m = 100000 cm
+
+        // Test with mass
+        let mass = Kilogram::new(5.0).into_q();
+        let kg_measure = mass.as_measure::<Kilogram>();
+        let g_measure = mass.as_measure::<Gram>();
+
+        assert_eq!(kg_measure.value(), 5.0);
+        assert_eq!(g_measure.value(), 5000.0); // 5 kg = 5000 g
+    }
+
+    #[test]
+    fn test_convert_static_method() {
+        // Test the static convert method for unit conversions
+        let feet = Length::convert::<Metre, Foot>(100.0);
+        assert!((feet.value() - 328.084).abs() < 0.001); // 100 m ≈ 328.084 ft
+
+        let pounds = Mass::convert::<Kilogram, Pound>(1.0);
+        assert!((pounds.value() - 2.205).abs() < 0.01); // 1 kg ≈ 2.205 lb
+
+        let minutes = Time::convert::<Second, Minute>(3600.0);
+        assert_eq!(minutes.value(), 60.0); // 3600 s = 60 min
+    }
+
+    #[test]
+    #[allow(clippy::clone_on_copy)]
+    fn test_derived_traits() {
+        let quantity1 = Length::new(42.0);
+        let quantity2 = Length::new(42.0);
+        let quantity3 = Length::new(24.0);
+
+        // Test Debug
+        let debug_output = format!("{:?}", quantity1);
+        assert!(debug_output.contains("Quantity"));
+        assert!(debug_output.contains("42"));
+
+        // Test Clone
+        let cloned = quantity1.clone();
+        assert_eq!(quantity1.raw_value(), cloned.raw_value());
+
+        // Test Copy (automatic via assignment)
+        let copied = quantity1;
+        assert_eq!(quantity1.raw_value(), copied.raw_value());
+
+        // Test PartialEq
+        assert_eq!(quantity1, quantity2);
+        assert_ne!(quantity1, quantity3);
+
+        // Test PartialOrd
+        assert!(quantity1 == quantity2);
+        assert!(quantity1 != quantity3);
+        assert!(quantity3 < quantity1);
+        assert!(quantity1 > quantity3);
+    }
+}

@@ -205,6 +205,10 @@ impl<U: Unit> Measure<U> {
 
     // --------------------
 
+    /// Const version of [`new`](Self::new) for compile-time measure creation.
+    ///
+    /// Creates a new measure from a value at compile time. This is useful for defining
+    /// const measures or in const contexts where the regular `new` method cannot be used.
     pub(crate) const fn new_const(value: f64) -> Self {
         Self {
             value,
@@ -212,6 +216,10 @@ impl<U: Unit> Measure<U> {
         }
     }
 
+    /// Const version of [`value`](Self::value) for compile-time value access.
+    ///
+    /// Returns the raw numeric value at compile time. This is useful in const contexts
+    /// where the regular `value` method cannot be used.
     pub(crate) const fn value_const(&self) -> f64 {
         self.value
     }
@@ -464,5 +472,188 @@ where
 impl<U: Unit> DivAssign<f64> for Measure<U> {
     fn div_assign(&mut self, scalar: f64) {
         self.value /= scalar;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::system::*;
+
+    #[test]
+    fn test_new_and_value() {
+        // Test basic construction and value access
+        let distance = Measure::<Metre>::new(100.5);
+        assert_eq!(distance.value(), 100.5);
+
+        let mass = Measure::<Kilogram>::new(5); // Test with integer
+        assert_eq!(mass.value(), 5.0);
+
+        let time = Measure::<Second>::new(2.34);
+        assert_eq!(time.value(), 2.34);
+
+        // Test with negative values
+        let temperature = Measure::<Kelvin>::new(-273.15);
+        assert_eq!(temperature.value(), -273.15);
+    }
+
+    #[test]
+    fn test_from_q_and_into_q() {
+        // Test round-trip conversion: measure -> quantity -> measure
+        let original = Metre::new(100.0);
+        let quantity = original.into_q();
+        let restored = Measure::<Metre>::from_q(quantity);
+
+        assert_eq!(original.value(), restored.value());
+        assert_eq!(original, restored);
+
+        // Test other direction
+        let mass_quantity = Mass::new(2.5);
+        let mass_kg = Measure::<Kilogram>::from_q(mass_quantity);
+        let mass_restored = mass_kg.into_q();
+        assert_eq!(mass_quantity.raw_value(), mass_restored.raw_value());
+
+        // Test conversion through different unit
+        let mass_g = Measure::<Gram>::from_q(mass_quantity);
+        assert_eq!(mass_g.value(), 2500.0); // 2.5 kg = 2500 g
+    }
+
+    #[test]
+    fn test_convert() {
+        // Test unit conversions
+        let metres = Metre::new(1000.0);
+
+        // Convert to kilometres
+        let kilometres: Measure<Kilometre> = metres.convert();
+        assert_eq!(kilometres.value(), 1.0); // 1000 m = 1 km
+
+        // Convert to centimetres
+        let centimetres: Measure<Centimetre> = metres.convert();
+        assert_eq!(centimetres.value(), 100000.0); // 1000 m = 100000 cm
+
+        // Test with mass units
+        let kilograms = Kilogram::new(2.0);
+        let grams: Measure<Gram> = kilograms.convert();
+        assert_eq!(grams.value(), 2000.0); // 2 kg = 2000 g
+
+        // Test with time units
+        let minutes = Minute::new(2.0);
+        let seconds: Measure<Second> = minutes.convert();
+        assert_eq!(seconds.value(), 120.0); // 2 min = 120 s
+    }
+
+    #[test]
+    fn test_is_equal_to() {
+        // Test equality across different units of same dimension
+        let metre = Metre::new(1.0);
+        let centimetres = Centimetre::new(100.0);
+        let millimetres = Millimetre::new(1000.0);
+        let kilometre = Kilometre::new(0.001);
+
+        // Test equality
+        assert!(metre.is_equal_to(&centimetres)); // 1 m = 100 cm
+        assert!(metre.is_equal_to(&millimetres)); // 1 m = 1000 mm
+        assert!(metre.is_equal_to(&kilometre)); // 1 m = 0.001 km
+
+        // Test symmetry
+        assert!(centimetres.is_equal_to(&metre));
+        assert!(kilometre.is_equal_to(&metre));
+
+        // Test inequality
+        let different_metre = Metre::new(2.0);
+        assert!(!metre.is_equal_to(&different_metre));
+
+        // Test with mass units
+        let kilogram = Kilogram::new(1.0);
+        let grams = Gram::new(1000.0);
+        assert!(kilogram.is_equal_to(&grams)); // 1 kg = 1000 g
+    }
+
+    #[test]
+    #[allow(clippy::clone_on_copy)]
+    fn test_derived_traits() {
+        let measure1 = Metre::new(42.0);
+        let measure2 = Metre::new(42.0);
+        let measure3 = Metre::new(24.0);
+
+        // Test Debug
+        let debug_output = format!("{:?}", measure1);
+        assert!(debug_output.contains("Measure"));
+        assert!(debug_output.contains("42"));
+
+        // Test Clone
+        let cloned = measure1.clone();
+        assert_eq!(measure1, cloned);
+
+        // Test Copy (automatic via assignment)
+        let copied = measure1;
+        assert_eq!(measure1, copied);
+
+        // Test PartialEq
+        assert_eq!(measure1, measure2);
+        assert_ne!(measure1, measure3);
+
+        // Test PartialOrd
+        assert!(measure1 == measure2);
+        assert!(measure1 != measure3);
+        assert!(measure3 < measure1);
+        assert!(measure1 > measure3);
+    }
+
+    #[test]
+    fn test_const_functions_equivalence() {
+        // Test that const functions return the same values as their non-const equivalents
+
+        // Test new_const vs new
+        const CONST_MEASURE: Measure<Metre> = Measure::new_const(42.5);
+        let regular_measure = Metre::new(42.5);
+
+        assert_eq!(CONST_MEASURE.value(), regular_measure.value());
+        assert_eq!(CONST_MEASURE, regular_measure);
+
+        // Test value_const vs value
+        const CONST_VALUE: f64 = CONST_MEASURE.value_const();
+        let regular_value = regular_measure.value();
+
+        assert_eq!(CONST_VALUE, regular_value);
+        assert_eq!(CONST_VALUE, 42.5);
+
+        // Test with different unit and value
+        const CONST_MASS: Measure<Kilogram> = Measure::new_const(123.456);
+        let regular_mass = Kilogram::new(123.456);
+
+        assert_eq!(CONST_MASS.value_const(), regular_mass.value());
+        assert_eq!(CONST_MASS, regular_mass);
+    }
+
+    #[test]
+    fn test_new_const_speed_of_light_example() {
+        // Example moved from new_const documentation
+        const SPEED_OF_LIGHT: Measure<MetrePerSecond> = Measure::new_const(299_792_458.0);
+
+        // Verify the constant was created correctly
+        assert_eq!(SPEED_OF_LIGHT.value(), 299_792_458.0);
+
+        // Verify it's equivalent to creating with regular new
+        let regular_speed = MetrePerSecond::new(299_792_458.0);
+        assert_eq!(SPEED_OF_LIGHT, regular_speed);
+    }
+
+    #[test]
+    fn test_value_const_distance_example() {
+        // Example moved from value_const documentation
+        const DISTANCE: Measure<Metre> = Measure::new_const(42.0);
+        const VALUE: f64 = DISTANCE.value_const();
+
+        // Verify the constant value extraction
+        assert_eq!(VALUE, 42.0);
+
+        // Verify it matches regular value() method
+        assert_eq!(VALUE, DISTANCE.value());
+
+        // Verify it's equivalent to creating with regular new
+        let regular_distance = Metre::new(42.0);
+        assert_eq!(DISTANCE, regular_distance);
+        assert_eq!(VALUE, regular_distance.value());
     }
 }

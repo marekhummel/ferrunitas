@@ -471,7 +471,7 @@ pub mod __inner_unit_macros {
                 impl std::ops::Mul<$unit> for $numeric_type {
                     type Output = $crate::Measure<$unit>;
 
-                    fn  mul(self, _rhs: $unit) -> Self::Output {
+                    fn mul(self, _rhs: $unit) -> Self::Output {
                         <$unit as $crate::__model::Unit>::new(self)
                     }
                 }
@@ -487,6 +487,44 @@ pub mod __inner_unit_macros {
     ///
     /// This is a compile-time implementation of exponentiation that handles
     /// both positive and negative exponents correctly.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use ferrunitas::__model::__inner_unit_macros::__powi_const;
+    ///
+    /// // Positive exponents
+    /// const SQUARE: f64 = __powi_const(2.0, 2);
+    /// const CUBE: f64 = __powi_const(3.0, 3);
+    /// const FOURTH_POWER: f64 = __powi_const(10.0, 4);
+    ///
+    /// assert_eq!(SQUARE, 4.0);        // 2^2 = 4
+    /// assert_eq!(CUBE, 27.0);         // 3^3 = 27
+    /// assert_eq!(FOURTH_POWER, 10000.0); // 10^4 = 10000
+    ///
+    /// // Zero exponent (any base to power 0 equals 1)
+    /// const ZERO_EXP: f64 = __powi_const(42.0, 0);
+    /// assert_eq!(ZERO_EXP, 1.0);
+    ///
+    /// // Negative exponents (reciprocals)
+    /// const NEG_SQUARE: f64 = __powi_const(2.0, -2);
+    /// const NEG_CUBE: f64 = __powi_const(4.0, -3);
+    ///
+    /// assert_eq!(NEG_SQUARE, 0.25);   // 2^-2 = 1/4 = 0.25
+    /// assert_eq!(NEG_CUBE, 1.0/64.0); // 4^-3 = 1/64
+    ///
+    /// // Edge cases
+    /// const ONE_TO_POWER: f64 = __powi_const(1.0, 100);
+    /// const FIRST_POWER: f64 = __powi_const(5.0, 1);
+    ///
+    /// assert_eq!(ONE_TO_POWER, 1.0);  // 1^100 = 1
+    /// assert_eq!(FIRST_POWER, 5.0);   // 5^1 = 5
+    ///
+    /// // Used in compound unit factor calculations
+    /// // For example, m/s² would use: metres_factor * __powi_const(seconds_factor, -2)
+    /// const ACCELERATION_FACTOR: f64 = 1.0 * __powi_const(1.0, -2); // m * s^-2
+    /// assert_eq!(ACCELERATION_FACTOR, 1.0);
+    /// ```
     #[doc(hidden)]
     pub const fn __powi_const(mut base: f64, mut exp: i32) -> f64 {
         if exp == 0 {
@@ -506,5 +544,154 @@ pub mod __inner_unit_macros {
             e >>= 1;
         }
         if neg { 1.0 / acc } else { acc }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::system::*;
+
+    #[test]
+    #[allow(clippy::clone_on_copy)]
+    fn test_unit_derived_traits() {
+        // Test Debug trait
+        let metre = Metre;
+        let debug_output = format!("{:?}", metre);
+        assert_eq!(debug_output, "Metre");
+
+        let kilogram = Kilogram;
+        let kg_debug = format!("{:?}", kilogram);
+        assert_eq!(kg_debug, "Kilogram");
+
+        // Test Clone trait
+        let original_unit = Second;
+        let cloned_unit = original_unit.clone();
+        assert_eq!(original_unit, cloned_unit);
+
+        // Test Copy trait (automatic via assignment)
+        let original = Newton;
+        let copied = original; // Copy occurs here
+        assert_eq!(original, copied);
+        // Original is still usable after copy
+        let _another_copy = original;
+
+        // Test PartialEq trait
+        let metre1 = Metre;
+        let metre2 = Metre;
+
+        assert_eq!(metre1, metre2);
+        // Note: Can't compare different unit types due to type safety
+
+        // Test with different instances of same type
+        let second1 = Second;
+        let second2 = Second;
+        assert_eq!(second1, second2);
+
+        // Test PartialOrd trait
+        // Since units are zero-sized and of same type, they should be equal
+        assert!(metre1 == metre2);
+        assert!(metre1 <= metre2);
+        assert!(metre1 >= metre2);
+    }
+
+    #[test]
+    fn test_unit_constants() {
+        // Test FACTOR constants for base units
+        assert_eq!(Metre::FACTOR, 1.0);
+        assert_eq!(Kilogram::FACTOR, 1.0);
+        assert_eq!(Second::FACTOR, 1.0);
+
+        // Test FACTOR constants for prefixed units
+        assert_eq!(Kilometre::FACTOR, 1000.0);
+        assert_eq!(Centimetre::FACTOR, 0.01);
+        assert_eq!(Millimetre::FACTOR, 0.001);
+        assert_eq!(Gram::FACTOR, 0.001); // Gram is 1/1000 of kilogram
+
+        // Test FACTOR constants for derived units
+        assert_eq!(Foot::FACTOR, 0.3048);
+        assert!((Inch::FACTOR - 0.0254).abs() < 1e-10); // 2.54 cm = 0.0254 m
+
+        // Test OFFSET constants (should be 0.0 for most units)
+        assert_eq!(Metre::OFFSET, 0.0);
+        assert_eq!(Kilogram::OFFSET, 0.0);
+        assert_eq!(Second::OFFSET, 0.0);
+        assert_eq!(Foot::OFFSET, 0.0);
+
+        // Temperature units have offsets
+        assert_eq!(DegreeCelsius::OFFSET, 273.15);
+
+        // Test ABBREV constants
+        assert_eq!(Metre::ABBREV, "m");
+        assert_eq!(Kilogram::ABBREV, "kg");
+        assert_eq!(Second::ABBREV, "s");
+        assert_eq!(Newton::ABBREV, "N");
+        assert_eq!(DegreeCelsius::ABBREV, "°C");
+    }
+
+    #[test]
+    fn test_unit_new_method() {
+        // Test creating measures with different numeric types
+        let distance_f64 = Metre::new(100.0);
+        let distance_i32 = Metre::new(100);
+        let distance_u32 = Metre::new(100_u32);
+
+        assert_eq!(distance_f64.value(), 100.0);
+        assert_eq!(distance_i32.value(), 100.0);
+        assert_eq!(distance_u32.value(), 100.0);
+
+        // Test with different unit types
+        let mass = Kilogram::new(5.5);
+        let time = Second::new(10);
+        let force = Newton::new(50.0);
+
+        assert_eq!(mass.value(), 5.5);
+        assert_eq!(time.value(), 10.0);
+        assert_eq!(force.value(), 50.0);
+
+        // Test return type is correct Measure<Unit>
+        let _: Measure<Metre> = Metre::new(1.0);
+        let _: Measure<Kilogram> = Kilogram::new(1.0);
+        let _: Measure<Second> = Second::new(1.0);
+    }
+
+    #[test]
+    fn test_zero_sized_units() {
+        // Verify units are zero-sized (important for performance)
+        use std::mem;
+
+        assert_eq!(mem::size_of::<Metre>(), 0);
+        assert_eq!(mem::size_of::<Kilogram>(), 0);
+        assert_eq!(mem::size_of::<Second>(), 0);
+        assert_eq!(mem::size_of::<Newton>(), 0);
+        assert_eq!(mem::size_of::<Pascal>(), 0);
+
+        // Zero-sized types should have same alignment
+        assert_eq!(mem::align_of::<Metre>(), 1);
+        assert_eq!(mem::align_of::<Kilogram>(), 1);
+        assert_eq!(mem::align_of::<Second>(), 1);
+    }
+
+    #[test]
+    fn test_unit_trait_implementation() {
+        // Test that units properly implement the Unit trait
+        fn test_unit_trait<U: Unit>(_unit: U) -> (f64, f64, &'static str) {
+            (U::FACTOR, U::OFFSET, U::ABBREV)
+        }
+
+        let (factor, offset, abbrev) = test_unit_trait(Metre);
+        assert_eq!(factor, 1.0);
+        assert_eq!(offset, 0.0);
+        assert_eq!(abbrev, "m");
+
+        let (factor, offset, abbrev) = test_unit_trait(Kilometre);
+        assert_eq!(factor, 1000.0);
+        assert_eq!(offset, 0.0);
+        assert_eq!(abbrev, "km");
+
+        let (factor, offset, abbrev) = test_unit_trait(DegreeCelsius);
+        assert_eq!(factor, 1.0);
+        assert_eq!(offset, 273.15);
+        assert_eq!(abbrev, "°C");
     }
 }
