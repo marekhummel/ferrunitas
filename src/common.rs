@@ -3,8 +3,10 @@
 //! Provides formatting helpers for dimensional signatures plus internal test
 //! macros (`verify_unit!`, `assert_almost_equal!`) used across unit definition
 //! files. Not typically needed by downstream users directly.
+//!
 
 use crate::model::{dimension::Dimensioned, quantity::QuantityMarker, unit::Unit};
+use alloc::{format, string::String};
 
 /// Format the underlying quantity dimensions for a given unit type.
 pub fn format_unit_dims<U: Unit>() -> String {
@@ -80,7 +82,7 @@ macro_rules! verify_unit {
             #[test]
             fn [<test_ $unit:lower _ $quantity:lower _quantity>]() {
                 use $crate::model::unit::{Unit};
-                use std::any::TypeId;
+                use core::any::TypeId;
 
                 // Runtime type assertion - check that TypeIds are identical
                 let unit_quantity_type_id = TypeId::of::<<$unit as Unit>::Quantity>();

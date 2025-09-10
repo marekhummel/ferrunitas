@@ -1,7 +1,8 @@
 //! Strongly typed value bound to a specific unit (`Measure<U>` runtime wrapper).
 //! Main way to interact with unit-coupled values, and all arithmetic operations are implemented here.
 
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use core::marker::PhantomData;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::model::dimension::Dimensioned;
 use crate::model::quantity::{Quantity, QuantityMarker, QuantityTag};
@@ -48,7 +49,7 @@ use crate::model::unit::Unit;
 /// ```
 pub struct Measure<U: Unit> {
     value: f64,
-    _phantom: std::marker::PhantomData<U>,
+    _phantom: PhantomData<U>,
 }
 
 impl<U: Unit> Measure<U> {
@@ -69,7 +70,7 @@ impl<U: Unit> Measure<U> {
     pub fn new(value: impl Into<f64>) -> Self {
         Self {
             value: value.into(),
-            _phantom: std::marker::PhantomData,
+            _phantom: PhantomData,
         }
     }
 
@@ -212,7 +213,7 @@ impl<U: Unit> Measure<U> {
     pub(crate) const fn new_const(value: f64) -> Self {
         Self {
             value,
-            _phantom: std::marker::PhantomData,
+            _phantom: PhantomData,
         }
     }
 
@@ -225,9 +226,9 @@ impl<U: Unit> Measure<U> {
     }
 }
 
-impl<U: Unit> std::fmt::Display for Measure<U> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(&self.value, f)?;
+impl<U: Unit> core::fmt::Display for Measure<U> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::fmt::Display::fmt(&self.value, f)?;
         write!(f, " {}", U::ABBREV)
     }
 }
@@ -479,6 +480,7 @@ impl<U: Unit> DivAssign<f64> for Measure<U> {
 mod tests {
     use super::*;
     use crate::system::*;
+    use alloc::format;
 
     #[test]
     fn test_new_and_value() {

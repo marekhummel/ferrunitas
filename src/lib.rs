@@ -79,6 +79,10 @@
 //! the provided macros (`unit!`, etc.). The results work just like all the
 //! predefined macros.
 
+// No standard library support
+#![no_std]
+extern crate alloc;
+
 // Make all definitions and the common functions public
 /// Common helper functions & utilities shared across units / quantities.
 pub mod common;

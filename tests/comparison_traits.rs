@@ -75,8 +75,8 @@ mod comparison_traits_tests {
         let _length: Length = Metre::new(5.0).into_q();
 
         assert_ne!(
-            std::any::type_name::<Mass>(),
-            std::any::type_name::<Length>()
+            core::any::type_name::<Mass>(),
+            core::any::type_name::<Length>()
         );
     }
 
@@ -106,7 +106,7 @@ mod comparison_traits_tests {
         let mass2 = Kilogram::new(5.0);
         assert!(mass1 <= mass2);
         assert!(mass1 >= mass2);
-        assert_eq!(mass1.partial_cmp(&mass2), Some(std::cmp::Ordering::Equal));
+        assert_eq!(mass1.partial_cmp(&mass2), Some(core::cmp::Ordering::Equal));
     }
 
     #[test]
@@ -135,7 +135,7 @@ mod comparison_traits_tests {
         let q2 = mass2.into_q();
         assert!(q1 <= q2);
         assert!(q1 >= q2);
-        assert_eq!(q1.partial_cmp(&q2), Some(std::cmp::Ordering::Equal));
+        assert_eq!(q1.partial_cmp(&q2), Some(core::cmp::Ordering::Equal));
     }
 
     // ===========================
@@ -164,7 +164,7 @@ mod comparison_traits_tests {
         let mass2: Mass = Kilogram::new(5.0).into_q();
         assert!(mass1 <= mass2);
         assert!(mass1 >= mass2);
-        assert_eq!(mass1.partial_cmp(&mass2), Some(std::cmp::Ordering::Equal));
+        assert_eq!(mass1.partial_cmp(&mass2), Some(core::cmp::Ordering::Equal));
     }
 
     #[test]
@@ -181,7 +181,7 @@ mod comparison_traits_tests {
         let mass2: Mass = Gram::new(3000.0).into_q(); // 3 kg
         assert!(mass1 <= mass2);
         assert!(mass1 >= mass2);
-        assert_eq!(mass1.partial_cmp(&mass2), Some(std::cmp::Ordering::Equal));
+        assert_eq!(mass1.partial_cmp(&mass2), Some(core::cmp::Ordering::Equal));
     }
 
     #[test]

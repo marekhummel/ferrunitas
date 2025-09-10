@@ -5,7 +5,7 @@
 //! quantity, conversion factor, and display symbol. The primary interface is the
 //! [`unit!`] macro, which can create four different types of units:
 
-use std::fmt::Debug;
+use core::fmt::Debug;
 
 use crate::model::{measure::Measure, quantity::QuantityMarker};
 
@@ -390,8 +390,8 @@ pub mod __inner_unit_macros {
                 const ABBREV: &'static str = $abbrev;
             }
 
-            impl std::fmt::Display for $unit_name {
-                fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            impl core::fmt::Display for $unit_name {
+                fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
                     write!(f, "{}", <$unit_name as $crate::__model::Unit>::ABBREV)
                 }
             }
@@ -433,7 +433,7 @@ pub mod __inner_unit_macros {
                 $abbrev,
                 $name_tag,
                 [
-                    <$quantity as std::ops::Mul<
+                    <$quantity as core::ops::Mul<
                         <<$unit as $crate::__model::Unit>::Quantity as $crate::__model::TypePow<$exp>>::Output
                     >>::Output,
                     $factor_acc * $crate::__model::__inner_unit_macros::__powi_const(
@@ -450,7 +450,7 @@ pub mod __inner_unit_macros {
                 $abbrev,
                 $quantity_for_tag,
                 [
-                    <$quantity as std::ops::Mul<
+                    <$quantity as core::ops::Mul<
                         <<$unit as $crate::__model::Unit>::Quantity as $crate::__model::TypePow<$exp>>::Output
                     >>::Output,
                     $factor_acc * $crate::__model::__inner_unit_macros::__powi_const(
@@ -468,7 +468,7 @@ pub mod __inner_unit_macros {
     macro_rules! __unit_times_number {
         ($unit:ty, [$($numeric_type:ty),*]) => {
             $(
-                impl std::ops::Mul<$unit> for $numeric_type {
+                impl core::ops::Mul<$unit> for $numeric_type {
                     type Output = $crate::Measure<$unit>;
 
                     fn mul(self, _rhs: $unit) -> Self::Output {

@@ -23,7 +23,7 @@ jobs:
         run: test "v$(toml get -r Cargo.toml package.version)" = "${{ github.ref_name }}"
 
       - name: Run tests (just to be sure)
-        run: cargo test --verbose && cargo test --all-features --verbose
+        run: cargo test --no-default-features --verbose && cargo test --all-features --verbose
 
       - name: Publish to crates.io
         run: cargo publish

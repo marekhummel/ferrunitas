@@ -22,11 +22,11 @@ unit!(derived: PartsPerBillion, "ppb", (1e-9, One));
 // ===========================
 quantity!(Angle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
 unit!(base: Radian, "rad", Angle);
-unit!(derived: Degree, "°", (std::f64::consts::PI / 180.0, Radian));
-unit!(derived: Gradian, "gon", (std::f64::consts::PI / 200.0, Radian));
+unit!(derived: Degree, "°", (core::f64::consts::PI / 180.0, Radian));
+unit!(derived: Gradian, "gon", (core::f64::consts::PI / 200.0, Radian));
 
-unit!(derived: Turn, "tr", (2.0 * std::f64::consts::PI, Radian));
-unit!(derived: Arcminute, "arcmin", (std::f64::consts::PI / 10800.0, Radian));
+unit!(derived: Turn, "tr", (2.0 * core::f64::consts::PI, Radian));
+unit!(derived: Arcminute, "arcmin", (core::f64::consts::PI / 10800.0, Radian));
 unit!(derived: Arcsecond, "arcsec", (1.0 / 60.0, Arcminute));
 
 // ===========================
@@ -40,8 +40,8 @@ unit!(compound: Steradian, "sr", [(Radian, P2)]; marked SolidAngle);
 // ===========================
 quantity!(LogarithmicRatio: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
 unit!(base: Neper, "Np", LogarithmicRatio);
-unit!(derived: Octave, "oct", (std::f64::consts::LN_2, Neper));
-unit!(derived: Bel, "B", (std::f64::consts::LN_10, Neper));
+unit!(derived: Octave, "oct", (core::f64::consts::LN_2, Neper));
+unit!(derived: Bel, "B", (core::f64::consts::LN_10, Neper));
 unit!(prefix: Decibel, Deci, Bel);
 
 // ==============================================================================
@@ -62,7 +62,7 @@ mod tests {
     verify_unit!(Radian, Angle, 1.0);
     verify_unit!(Degree, Angle, 0.017453292519943295);
     verify_unit!(Gradian, Angle, 0.015707963267948967);
-    verify_unit!(Turn, Angle, std::f64::consts::TAU);
+    verify_unit!(Turn, Angle, core::f64::consts::TAU);
     verify_unit!(Arcminute, Angle, 0.0002908882086657216);
     verify_unit!(Arcsecond, Angle, 4.84813681109536e-6);
 
@@ -71,7 +71,7 @@ mod tests {
 
     // LOGARITHMIC RATIOS
     verify_unit!(Neper, LogarithmicRatio, 1.0);
-    verify_unit!(Octave, LogarithmicRatio, std::f64::consts::LN_2);
-    verify_unit!(Bel, LogarithmicRatio, std::f64::consts::LN_10);
+    verify_unit!(Octave, LogarithmicRatio, core::f64::consts::LN_2);
+    verify_unit!(Bel, LogarithmicRatio, core::f64::consts::LN_10);
     verify_unit!(Decibel, LogarithmicRatio, 0.23025850929940457);
 }

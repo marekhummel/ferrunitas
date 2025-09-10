@@ -1,4 +1,5 @@
 //! Support for (de)serialization of `Quantity` with Serde.
+use alloc::format;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -64,7 +65,7 @@ impl<U: Unit> Serialize for Measure<U> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let rtm = RuntimeMeasure {
             value: self.value(),
-            unit: std::any::type_name::<U>(),
+            unit: core::any::type_name::<U>(),
         };
         rtm.serialize(serializer)
     }
@@ -74,7 +75,7 @@ impl<U: Unit> Serialize for Measure<U> {
 impl<'de, U: Unit> Deserialize<'de> for Measure<U> {
     fn deserialize<DS: Deserializer<'de>>(deserializer: DS) -> Result<Self, DS::Error> {
         let rtm = RuntimeMeasure::deserialize(deserializer)?;
-        let expected = std::any::type_name::<U>();
+        let expected = core::any::type_name::<U>();
 
         if rtm.unit != expected {
             return Err(DS::Error::custom(format!(

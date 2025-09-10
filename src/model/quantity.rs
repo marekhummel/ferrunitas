@@ -2,14 +2,14 @@
 //! Quantity supports all arithmetics with measures. Apart from that quantities can
 //! be created with the `quantity!` macro and implement some traits useful for type-safety.
 
-use std::fmt::{self, Debug};
-use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use core::fmt::{self, Debug};
+use core::marker::PhantomData;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::model::dimension::{Dimensioned, TypePow};
 use crate::model::measure::Measure;
 use crate::model::unit::Unit;
-use num_traits::Inv;
+use num_traits::{Inv, float::FloatCore};
 use typenum::{Integer, NonZero, ToInt};
 
 /// Optional tag type implemented by quantities to distinguish between different
@@ -18,7 +18,7 @@ use typenum::{Integer, NonZero, ToInt};
 pub trait QuantityTag: Debug + Clone + Copy + PartialOrd + PartialEq {
     /// Converts the type name into a readable string, removing the full module path and "Tag" suffix.
     fn name() -> &'static str {
-        let mut tag_name = std::any::type_name::<Self>();
+        let mut tag_name = core::any::type_name::<Self>();
         tag_name = tag_name.rsplit_once("::").map_or(tag_name, |(_, n)| n);
         tag_name = tag_name.strip_suffix("Tag").unwrap_or(tag_name);
         tag_name
@@ -258,7 +258,7 @@ macro_rules! quantity {
     ($comp_quantity:ident: $quantity_acc:ty; ($quantity:ty, $exp:ty) $(, ($quantities:ty, $exps:ty))*) => {
         quantity!(
             $comp_quantity:
-            <$quantity_acc as std::ops::Mul<
+            <$quantity_acc as core::ops::Mul<
                 <$quantity as $crate::__model::TypePow<$exp>>::Output
             >>::Output;
             $(($quantities, $exps)),*
@@ -427,7 +427,7 @@ impl<D: Dimensioned, T: QuantityTag> QuantityMarker for Quantity<D, T> {
 /// Display of quantity
 impl<D: Dimensioned, T: QuantityTag> fmt::Display for Quantity<D, T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        std::fmt::Display::fmt(&self.value, f)?;
+        core::fmt::Display::fmt(&self.value, f)?;
 
         let dim_string = crate::common::format_dims::<Self>();
         write!(f, " [{}]", dim_string)?;
@@ -657,7 +657,7 @@ where
     type Output = Quantity<<D as TypePow<Exp>>::Output, ()>;
 
     fn pow(self) -> Self::Output {
-        Self::Output::new(self.value.powi(Exp::INT))
+        Self::Output::new(FloatCore::powi(self.value, Exp::INT))
     }
 }
 

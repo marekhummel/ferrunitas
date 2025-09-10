@@ -1,9 +1,9 @@
 //! Dimensional type system primitives (exponent vectors & compile-time ops).
 //! Most notably it contains the DimensionVector type, which represents a vector of the SI base dimensions.
 
-use std::fmt::Debug;
-use std::marker::PhantomData;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use core::fmt::Debug;
+use core::marker::PhantomData;
+use core::ops::{Add, Div, Mul, Neg, Sub};
 
 use num_traits::Inv;
 use typenum::*;

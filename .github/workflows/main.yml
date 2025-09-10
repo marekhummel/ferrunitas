@@ -30,7 +30,10 @@ jobs:
         run: cargo build --all-features --verbose
 
       - name: Cargo test
-        run: cargo test --verbose && cargo test --all-features --verbose
+        run: |
+          cargo test --no-default-features --verbose
+          cargo test --no-default-features --features serde --verbose
+          cargo test --all-features --verbose
 
 
   # Lint & format

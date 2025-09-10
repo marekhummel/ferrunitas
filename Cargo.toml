@@ -24,7 +24,8 @@ name = "ferrunitas"
 path = "src/lib.rs"
 
 [features]
-default = []
+default = ["std"]
+std = ["num-traits/std", "serde?/std"]
 quantity_tags = []
 serde = ["dep:serde"]
 
@@ -34,10 +35,11 @@ required-features = ["serde"]
 
 [dependencies]
 const_format = "0.2.34"
-num-traits = "0.2.19"
+num-traits = { version = "0.2.19", default-features = false }
 typenum = "1.18.0"
 paste = "1.0"
-serde = { version = "1.0", features = ["derive"], optional = true }
+serde = { version = "1.0", default-features = false, features = ["derive"], optional = true }
+
 
 [dev-dependencies]
 serde_json = "1.0.143"

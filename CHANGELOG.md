@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added multiple unit tests for better code coverage.
 - Updated github workflow to push on tags.
 - Added support for serde via a feature.
+- Added support for no_std.
 
 ### Changed
 -
