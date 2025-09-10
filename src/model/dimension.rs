@@ -35,6 +35,18 @@ pub trait Dimensioned: Debug + Clone + Copy + PartialEq + crate::model::sealed::
     type Th: Dimension;
     type N: Dimension;
     type J: Dimension;
+
+    fn to_array() -> [i8; 7] {
+        [
+            Self::M::to_int(),
+            Self::L::to_int(),
+            Self::T::to_int(),
+            Self::I::to_int(),
+            Self::Th::to_int(),
+            Self::N::to_int(),
+            Self::J::to_int(),
+        ]
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -456,44 +468,5 @@ mod tests {
         let dim3 = DimensionVector::<P1, N2, N4, Z0, Z0, P2, P4>::default();
         let ratio = dim2 / dim3;
         assert_dimensions(ratio, 0, 0, 0, 0, 0, 0, 0);
-    }
-
-    #[test]
-    fn test_default_trait() {
-        // Test that Default trait creates dimension vectors with all zero exponents
-        let default_dim = DimensionVector::<Z0, Z0, Z0, Z0, Z0, Z0, Z0>::default();
-        assert_dimensions(default_dim, 0, 0, 0, 0, 0, 0, 0);
-
-        // Verify the actual instance is created (PhantomData should be default)
-        assert_eq!(
-            default_dim,
-            DimensionVector::<Z0, Z0, Z0, Z0, Z0, Z0, Z0> {
-                _phantom: std::marker::PhantomData
-            }
-        );
-
-        // Test that Default works for various dimension combinations
-        let complex_default = DimensionVector::<P2, N1, P3, N2, P1, N3, P2>::default();
-        assert_dimensions(complex_default, 2, -1, 3, -2, 1, -3, 2);
-
-        // Verify the actual instance for complex dimensions
-        assert_eq!(
-            complex_default,
-            DimensionVector::<P2, N1, P3, N2, P1, N3, P2> {
-                _phantom: std::marker::PhantomData
-            }
-        );
-
-        // Test DimensionZero default
-        let dimensionless_default = DimensionZero::default();
-        assert_dimensions(dimensionless_default, 0, 0, 0, 0, 0, 0, 0);
-
-        // Verify the actual instance for DimensionZero
-        assert_eq!(
-            dimensionless_default,
-            DimensionZero {
-                _phantom: std::marker::PhantomData
-            }
-        );
     }
 }

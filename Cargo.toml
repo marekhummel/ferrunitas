@@ -26,9 +26,18 @@ path = "src/lib.rs"
 [features]
 default = []
 quantity_tags = []
+serde = ["dep:serde"]
+
+[[example]]
+name = "serialization"
+required-features = ["serde"]
 
 [dependencies]
 const_format = "0.2.34"
 num-traits = "0.2.19"
 typenum = "1.18.0"
 paste = "1.0"
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[dev-dependencies]
+serde_json = "1.0.143"

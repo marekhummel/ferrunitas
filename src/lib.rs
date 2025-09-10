@@ -1,5 +1,9 @@
 //! Ferrunitas – Type‑safe physical quantities & units
 //!
+//! [![Github](https://img.shields.io/badge/github-501daf?style=for-the-badge&labelColor=555555&logo=github)](https://github.com/marekhummel/ferrunitas)&emsp;
+//! [![Crates.io](https://img.shields.io/badge/crates.io-d5a72a?style=for-the-badge&labelColor=555555&logo=rust)](https://crates.io/crates/ferrunitas)&emsp;
+//! [![Documentation](https://img.shields.io/badge/docs.rs-415749?style=for-the-badge&labelColor=555555&logo=docs.rs)](https://docs.rs/ferrunitas)
+//!
 //! Ferrunitas lets you express physical formulas with compile‑time dimensional
 //! analysis. Using incompatible units results in a compile error
 //! instead of a runtime surprise. Values are stored as raw `f64`, while *types*

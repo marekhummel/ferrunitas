@@ -15,7 +15,15 @@ use typenum::{Integer, NonZero, ToInt};
 /// Optional tag type implemented by quantities to distinguish between different
 /// physical quantities with the same dimensions (e.g., Information (Bit), Angle (Radians) etc.).
 /// Quantities use only the unit-type () for this, if the feature flag `quantity_tags` is not enabled.
-pub trait QuantityTag: Debug + Clone + Copy + PartialOrd + PartialEq {}
+pub trait QuantityTag: Debug + Clone + Copy + PartialOrd + PartialEq {
+    /// Converts the type name into a readable string, removing the full module path and "Tag" suffix.
+    fn name() -> &'static str {
+        let mut tag_name = std::any::type_name::<Self>();
+        tag_name = tag_name.rsplit_once("::").map_or(tag_name, |(_, n)| n);
+        tag_name = tag_name.strip_suffix("Tag").unwrap_or(tag_name);
+        tag_name
+    }
+}
 impl QuantityTag for () {}
 
 /// Dimensioned magnitude independent of a concrete display unit.
@@ -424,10 +432,8 @@ impl<D: Dimensioned, T: QuantityTag> fmt::Display for Quantity<D, T> {
         let dim_string = crate::common::format_dims::<Self>();
         write!(f, " [{}]", dim_string)?;
 
-        let mut tag_name = std::any::type_name::<T>();
+        let tag_name = T::name();
         if tag_name != "()" {
-            tag_name = tag_name.rsplit_once("::").unwrap().1;
-            tag_name = tag_name.strip_suffix("Tag").unwrap();
             write!(f, " as {}", tag_name)?;
         }
         Ok(())

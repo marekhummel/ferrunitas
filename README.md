@@ -9,7 +9,6 @@
 [![Documentation](https://img.shields.io/badge/documentation-docs.rs-blue.svg?style=for-the-badge)](https://docs.rs/ferrunitas)
 
 
-
 A Rust library for compile-time dimensional analysis and unit conversions. Ferrunitas provides type safety for physical quantities and prevents dimensional errors at compile time through Rust's powerful type system.
 The name "Ferrunitas" combines the Latin "ferrum" (iron, referencing Rust) and "unitas" (oneness, unity).
 Refer to [this document](https://www.bipm.org/documents/20126/41483022/SI-Brochure-9-EN.pdf) for the base information of the implementation.
@@ -77,7 +76,7 @@ Ferrunitas offers two main ways to work with physical values (they are compatitb
 **Measures** - Values with specific units:
 ```rust
 let mass = Kilogram::new(5.0);        // Measure<Kilogram>
-let length = Foot::new(10.0);         // Measure<Foot>
+let length = 10 * Foot;               // Measure<Foot>
 let sum = mass + Gram::new(500.0);    // Addition works across compatible units
 ```
 
@@ -111,7 +110,7 @@ let cubic_cm_oneline = Volume::convert::<Litre, CubicCentimetre>(30.64);
 // All operations are dimensionally checked at compile time
 let mass = Kilogram::new(2.0);
 let acceleration = MetrePerSecondSquared::new(9.81);
-let force: Force = mass * acceleration;  // F = ma
+let force: Force = mass * acceleration;  // F = m·a
 
 let distance = Metre::new(5.0);
 let work: Energy = force * distance;     // W = F·d
@@ -120,6 +119,30 @@ let time = Second::new(2.0);
 let power: Power = work / time;          // P = W/t
 
 println!("Power: {:.2}", power.as_measure::<Watt>());
+```
+
+### Function Signatures
+
+Ferrunitas provides flexible function signatures for different use cases:
+
+```rust
+// Accept specific units
+fn kinetic_energy(mass: Measure<Gram>, velocity: Measure<MetrePerSecond>) -> Measure<Joule> {
+    (0.5 * mass * velocity * velocity).as_measure()
+}
+
+// Accept any unit of a quantity type
+fn calculate_force(
+    mass: Measure<impl Unit<Quantity = Mass>>,
+    acceleration: Measure<impl Unit<Quantity = Acceleration>>,
+) -> Measure<Newton> {
+    (mass * acceleration).as_measure()
+}
+
+// Work directly with quantities
+fn calculate_acceleration(velocity_change: Velocity, time: Time) -> Acceleration {
+    velocity_change / time
+}
 ```
 
 ### Custom Units and Quantities
@@ -177,28 +200,26 @@ let solid_angle = Steradian::new(0.5);
 let result = (area1 / area2).specify::<SolidAngle>() + solid_angle;
 ```
 
-### Function Signatures
+### Serialization with Serde (Optional Feature)
 
-Ferrunitas provides flexible function signatures for different use cases:
+Ferrunitas supports serialization and deserialization of both quantities and measures using Serde, if the `serde` feature is enabled:
 
 ```rust
-// Accept specific units
-fn kinetic_energy(mass: Measure<Gram>, velocity: Measure<MetrePerSecond>) -> Measure<Joule> {
-    (0.5 * mass * velocity * velocity).as_measure()
-}
+use ferrunitas::{Measure, system::*};
+use serde_json;
 
-// Accept any unit of a quantity type
-fn calculate_force(
-    mass: Measure<impl Unit<Quantity = Mass>>,
-    acceleration: Measure<impl Unit<Quantity = Acceleration>>,
-) -> Measure<Newton> {
-    (mass.into_q() * acceleration.into_q()).as_measure()
-}
+// Serialize a measure with specific unit
+let potential = 5.5 * Volt;
+let json_measure = serde_json::to_string(&potential).unwrap();
+let json_quantity = serde_json::to_string(&potential.into_q()).unwrap();
+// Result M: {"value":5.5,"unit":"ferrunitas::system::defs::electromagnetism::Volt"}
+// Result Q: {"value":5.5,"dimensional_vector":[1,1,-3,-1,0,0,0],"tag":"()"}
 
-// Work directly with quantities
-fn calculate_acceleration(velocity_change: Velocity, time: Time) -> Acceleration {
-    velocity_change / time
-}
+// Deserialize back to the same measure type
+let restored_measure: Measure<Volt> = serde_json::from_str(&json_measure).unwrap();
+let restored_quantity: Potential = serde_json::from_str(&json_quantity).unwrap();
+assert_eq!(potential, restored_measure);
+assert_eq!(potential.into_q(), restored_quantity);
 ```
 
 ## Examples
@@ -208,6 +229,7 @@ The [`examples/` directory](examples/) contains comprehensive usage examples:
 - **`basics.rs`** - Core concepts: measures, quantities, conversions, and arithmetic
 - **`functions.rs`** - Different patterns for writing functions with dimensional types
 - **`advanced.rs`** - Custom unit definitions using macros
+- **`serde_example.rs`** - Serialization and deserialization with Serde
 - **`misc.rs`** - Dimensional introspection, debugging utilities, and quantity tagging demonstration
 
 Run examples with:
@@ -217,7 +239,8 @@ cargo run --example functions
 cargo run --example advanced
 cargo run --example misc
 
-# To see quantity tagging in action:
+# Features
+cargo run --example serialization --features="serde"
 cargo run --example misc --features="quantity_tags"
 ```
 

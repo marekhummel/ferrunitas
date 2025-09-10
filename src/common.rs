@@ -4,11 +4,7 @@
 //! macros (`verify_unit!`, `assert_almost_equal!`) used across unit definition
 //! files. Not typically needed by downstream users directly.
 
-use crate::model::{
-    dimension::{Dimension, Dimensioned},
-    quantity::QuantityMarker,
-    unit::Unit,
-};
+use crate::model::{dimension::Dimensioned, quantity::QuantityMarker, unit::Unit};
 
 /// Format the underlying quantity dimensions for a given unit type.
 pub fn format_unit_dims<U: Unit>() -> String {
@@ -17,15 +13,7 @@ pub fn format_unit_dims<U: Unit>() -> String {
 
 /// Format the dimension signature of a `Dimensioned` type (like quantities) as a human-readable string.
 pub fn format_dims<Q: QuantityMarker>() -> String {
-    let items: [(&str, i8); 7] = [
-        ("M", <Q::DimensionVector as Dimensioned>::M::to_int()),
-        ("L", <Q::DimensionVector as Dimensioned>::L::to_int()),
-        ("T", <Q::DimensionVector as Dimensioned>::T::to_int()),
-        ("I", <Q::DimensionVector as Dimensioned>::I::to_int()),
-        ("Θ", <Q::DimensionVector as Dimensioned>::Th::to_int()),
-        ("N", <Q::DimensionVector as Dimensioned>::N::to_int()),
-        ("J", <Q::DimensionVector as Dimensioned>::J::to_int()),
-    ];
+    let items = "MLTIΘNJ".chars().zip(Q::DimensionVector::to_array());
 
     let mut dim_string = String::new();
     for (dim, exp) in items {
