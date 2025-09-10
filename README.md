@@ -1,13 +1,12 @@
 # Ferrunitas - Type-Safe Unit Conversion Library
 
-[![Github Actions](https://img.shields.io/github/actions/workflow/status/marekhummel/ferrunitas/main.yml?branch=main)](https://github.com/marekhummel/ferrunitas/actions)
-[![Dependencies](https://deps.rs/repo/github/marekhummel/ferrunitas/status.svg)](https://deps.rs/repo/github/marekhummel/ferrunitas)
-[![Codecov.io](https://img.shields.io/codecov/c/github/marekhummel/ferrunitas/main)](https://codecov.io/gh/marekhummel/ferrunitas)
-
-[![MSRV](https://img.shields.io/badge/rustc-1.85.0%2B-orange.svg)](https://rustup.rs/)
-[![Crates.io](https://img.shields.io/crates/v/ferrunitas.svg)](https://crates.io/crates/ferrunitas)
-[![License](https://img.shields.io/crates/l/ferrunitas.svg)](https://github.com/marekhummel/ferrunitas?tab=Apache-2.0-1-ov-file#readme)
-[![Documentation](https://img.shields.io/badge/documentation-docs.rs-blue.svg)](https://docs.rs/ferrunitas)
+[![Github Actions](https://img.shields.io/github/actions/workflow/status/marekhummel/ferrunitas/main.yml?branch=main&style=for-the-badge)](https://github.com/marekhummel/ferrunitas/actions)&emsp;
+[![Dependencies](https://deps.rs/repo/github/marekhummel/ferrunitas/status.svg?style=for-the-badge)](https://deps.rs/repo/github/marekhummel/ferrunitas)&emsp;
+[![Codecov.io](https://img.shields.io/codecov/c/github/marekhummel/ferrunitas/main?style=for-the-badge)](https://codecov.io/gh/marekhummel/ferrunitas)\
+[![MSRV](https://img.shields.io/badge/rustc-1.85.0%2B-orange.svg?style=for-the-badge)](https://rustup.rs/)&emsp;
+[![Crates.io](https://img.shields.io/crates/v/ferrunitas.svg?style=for-the-badge)](https://crates.io/crates/ferrunitas)&emsp;
+[![License](https://img.shields.io/crates/l/ferrunitas.svg?style=for-the-badge)](https://github.com/marekhummel/ferrunitas?tab=Apache-2.0-1-ov-file#readme)&emsp;
+[![Documentation](https://img.shields.io/badge/documentation-docs.rs-blue.svg?style=for-the-badge)](https://docs.rs/ferrunitas)
 
 
 
@@ -133,7 +132,7 @@ use ferrunitas::{quantity, unit, prefix, typenum_consts::*};
 // Define a new quantity (7 SI base dimensions: M, L, T, I, Th, N, J)
 quantity!(MyLength: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
-// Define a new quantity with tagging (requires `quantity_tags` feature)
+// Define a new quantity with tagging (requires `quantity_tags` feature to have any effect)
 quantity!(SpecialAngle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked);
 
 // Define a new prefix
@@ -144,7 +143,7 @@ unit!(base: Elbow, "elbow", MyLength; prefixable);
 unit!(derived: Yard, "yd", (0.9144, Metre));
 unit!(prefix: Magicmetre, Magic, Metre);
 
-// Compound units with quantity tagging (requires `quantity_tags` feature)
+// Compound units with quantity tagging (requires `quantity_tags` feature to have any effect)
 unit!(compound: MyAngleUnit, "mau", [(Radian, P1)]; marked SpecialAngle);
 ```
 
@@ -174,8 +173,7 @@ let area1 = SquareMetre::new(4.0);
 let area2 = SquareMetre::new(1.0);
 let solid_angle = Steradian::new(0.5);
 
-// Without tags: this works (both are dimensionless ratios)
-// With tags: need to specify the result type
+// With tags: Need to specify the result type, so that they can be added
 let result = (area1 / area2).specify::<SolidAngle>() + solid_angle;
 ```
 
@@ -205,7 +203,7 @@ fn calculate_acceleration(velocity_change: Velocity, time: Time) -> Acceleration
 
 ## Examples
 
-The `examples/` directory contains comprehensive usage examples:
+The [`examples/` directory](examples/) contains comprehensive usage examples:
 
 - **`basics.rs`** - Core concepts: measures, quantities, conversions, and arithmetic
 - **`functions.rs`** - Different patterns for writing functions with dimensional types
