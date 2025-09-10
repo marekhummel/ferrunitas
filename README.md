@@ -24,6 +24,7 @@ Refer to [this document](https://www.bipm.org/documents/20126/41483022/SI-Brochu
 - **Custom unit definition**: Macros for defining your own units, quantities, and prefixes
 - **Quantity tagging** (optional): Distinguish between dimensionally equivalent but semantically different quantities (e.g., `Angle` vs `Information`)
 - **Zero-cost abstractions**: All dimensional checking happens at compile time
+- **Default no_std support**: No std usage is necessary, if the feature is used its just for propagation to dependencies.
 
 ## Usage
 

@@ -35,6 +35,13 @@ jobs:
           cargo test --no-default-features --features serde --verbose
           cargo test --all-features --verbose
 
+      - name: Install no_std_check
+        run: cargo install cargo-no-std-check
+        if: ${{ matrix.rust == "nightly" }}
+
+      - name: Check no_std compatibility
+        run: cargo no-std-check --no-default-features
+        if: ${{ matrix.rust == "nightly" }}
 
   # Lint & format
   lint:
