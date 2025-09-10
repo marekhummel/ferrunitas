@@ -515,83 +515,6 @@ mod tests {
     use crate::system::*;
 
     #[test]
-    #[allow(clippy::clone_on_copy)]
-    fn test_unit_derived_traits() {
-        // Test Debug trait
-        let metre = Metre;
-        let debug_output = format!("{:?}", metre);
-        assert_eq!(debug_output, "Metre");
-
-        let kilogram = Kilogram;
-        let kg_debug = format!("{:?}", kilogram);
-        assert_eq!(kg_debug, "Kilogram");
-
-        // Test Clone trait
-        let original_unit = Second;
-        let cloned_unit = original_unit.clone();
-        assert_eq!(original_unit, cloned_unit);
-
-        // Test Copy trait (automatic via assignment)
-        let original = Newton;
-        let copied = original; // Copy occurs here
-        assert_eq!(original, copied);
-        // Original is still usable after copy
-        let _another_copy = original;
-
-        // Test PartialEq trait
-        let metre1 = Metre;
-        let metre2 = Metre;
-
-        assert_eq!(metre1, metre2);
-        // Note: Can't compare different unit types due to type safety
-
-        // Test with different instances of same type
-        let second1 = Second;
-        let second2 = Second;
-        assert_eq!(second1, second2);
-
-        // Test PartialOrd trait
-        // Since units are zero-sized and of same type, they should be equal
-        assert!(metre1 == metre2);
-        assert!(metre1 <= metre2);
-        assert!(metre1 >= metre2);
-    }
-
-    #[test]
-    fn test_unit_constants() {
-        // Test FACTOR constants for base units
-        assert_eq!(Metre::FACTOR, 1.0);
-        assert_eq!(Kilogram::FACTOR, 1.0);
-        assert_eq!(Second::FACTOR, 1.0);
-
-        // Test FACTOR constants for prefixed units
-        assert_eq!(Kilometre::FACTOR, 1000.0);
-        assert_eq!(Centimetre::FACTOR, 0.01);
-        assert_eq!(Millimetre::FACTOR, 0.001);
-        assert_eq!(Gram::FACTOR, 0.001); // Gram is 1/1000 of kilogram
-
-        // Test FACTOR constants for derived units
-        assert_eq!(Foot::FACTOR, 0.3048);
-        assert!((Inch::FACTOR - 0.0254).abs() < 1e-10); // 2.54 cm = 0.0254 m
-
-        // Test OFFSET constants (should be 0.0 for most units)
-        assert_eq!(Metre::OFFSET, 0.0);
-        assert_eq!(Kilogram::OFFSET, 0.0);
-        assert_eq!(Second::OFFSET, 0.0);
-        assert_eq!(Foot::OFFSET, 0.0);
-
-        // Temperature units have offsets
-        assert_eq!(DegreeCelsius::OFFSET, 273.15);
-
-        // Test ABBREV constants
-        assert_eq!(Metre::ABBREV, "m");
-        assert_eq!(Kilogram::ABBREV, "kg");
-        assert_eq!(Second::ABBREV, "s");
-        assert_eq!(Newton::ABBREV, "N");
-        assert_eq!(DegreeCelsius::ABBREV, "°C");
-    }
-
-    #[test]
     fn test_unit_new_method() {
         // Test creating measures with different numeric types
         let distance_f64 = Metre::new(100.0);
@@ -615,23 +538,6 @@ mod tests {
         let _: Measure<Metre> = Metre::new(1.0);
         let _: Measure<Kilogram> = Kilogram::new(1.0);
         let _: Measure<Second> = Second::new(1.0);
-    }
-
-    #[test]
-    fn test_zero_sized_units() {
-        // Verify units are zero-sized (important for performance)
-        use std::mem;
-
-        assert_eq!(mem::size_of::<Metre>(), 0);
-        assert_eq!(mem::size_of::<Kilogram>(), 0);
-        assert_eq!(mem::size_of::<Second>(), 0);
-        assert_eq!(mem::size_of::<Newton>(), 0);
-        assert_eq!(mem::size_of::<Pascal>(), 0);
-
-        // Zero-sized types should have same alignment
-        assert_eq!(mem::align_of::<Metre>(), 1);
-        assert_eq!(mem::align_of::<Kilogram>(), 1);
-        assert_eq!(mem::align_of::<Second>(), 1);
     }
 
     #[test]

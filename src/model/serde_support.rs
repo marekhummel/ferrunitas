@@ -59,6 +59,7 @@ impl<'de, D: Dimensioned, Tag: QuantityTag> Deserialize<'de> for Quantity<D, Tag
     }
 }
 
+/// Implement Serialize for any Measure
 impl<U: Unit> Serialize for Measure<U> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let rtm = RuntimeMeasure {
@@ -69,6 +70,7 @@ impl<U: Unit> Serialize for Measure<U> {
     }
 }
 
+/// Implement Deserialize for any Measure
 impl<'de, U: Unit> Deserialize<'de> for Measure<U> {
     fn deserialize<DS: Deserializer<'de>>(deserializer: DS) -> Result<Self, DS::Error> {
         let rtm = RuntimeMeasure::deserialize(deserializer)?;

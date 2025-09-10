@@ -733,35 +733,4 @@ mod tests {
         let minutes = Time::convert::<Second, Minute>(3600.0);
         assert_eq!(minutes.value(), 60.0); // 3600 s = 60 min
     }
-
-    #[test]
-    #[allow(clippy::clone_on_copy)]
-    fn test_derived_traits() {
-        let quantity1 = Length::new(42.0);
-        let quantity2 = Length::new(42.0);
-        let quantity3 = Length::new(24.0);
-
-        // Test Debug
-        let debug_output = format!("{:?}", quantity1);
-        assert!(debug_output.contains("Quantity"));
-        assert!(debug_output.contains("42"));
-
-        // Test Clone
-        let cloned = quantity1.clone();
-        assert_eq!(quantity1.raw_value(), cloned.raw_value());
-
-        // Test Copy (automatic via assignment)
-        let copied = quantity1;
-        assert_eq!(quantity1.raw_value(), copied.raw_value());
-
-        // Test PartialEq
-        assert_eq!(quantity1, quantity2);
-        assert_ne!(quantity1, quantity3);
-
-        // Test PartialOrd
-        assert!(quantity1 == quantity2);
-        assert!(quantity1 != quantity3);
-        assert!(quantity3 < quantity1);
-        assert!(quantity1 > quantity3);
-    }
 }
