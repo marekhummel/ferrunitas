@@ -49,9 +49,9 @@ fn units_measures_and_quantities() {
     // Complex units can also be created by multiplying units themselves, but
     // the result is a quantity (see below in `computation_units()`),
     // which might look counter-intuitive at first.
-    let speed: Measure<MetrePerSecond> = MetrePerSecond::new(10.0); // This is a unit
-    let speed2: Velocity = 10.0 * Metre / Second; // This is a quantity
-    println!("Speed as unit: {} and as quantity: {}", speed, speed2);
+    let acc: Measure<MetrePerSecondSquared> = MetrePerSecondSquared::new(10.0); // This is a unit
+    let acc2: Acceleration = 10.0 * Metre / (Second * Second); // This is a quantity
+    println!("Acceleration as unit: {} and as quantity: {}", acc, acc2);
     println!();
 }
 

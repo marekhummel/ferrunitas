@@ -330,7 +330,7 @@ mod tests {
         assert_eq!(format_unit_dims::<MetrePerSecond>(), "L^1·T^-1");
         assert_eq!(format_unit_dims::<MetrePerSecondSquared>(), "L^1·T^-2");
 
-        // Test dimensionless units if any exist
+        // Test dimensionless units
         assert_eq!(format_unit_dims::<Radian>(), "1");
         assert_eq!(format_unit_dims::<Steradian>(), "1");
     }

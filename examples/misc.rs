@@ -137,9 +137,4 @@ fn main() {
     demonstrate_large_number_precision_issues();
     offest_limited_usage();
     quantity_tags();
-
-    let x: f64 = 2.0 * 1000.0 * 0.001 / 0.001;
-    println!("Sanity check f64: {}\n", x);
-    let y: f32 = 2.0 * 1000.0 * 0.001 / 0.001;
-    println!("Sanity check f32: {}\n", y);
 }

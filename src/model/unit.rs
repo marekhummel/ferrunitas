@@ -399,6 +399,18 @@ pub mod __inner_unit_macros {
                 }
             }
 
+            impl<U: $crate::__model::Unit> core::ops::Mul<U> for $unit_name
+            where
+                $quantity: core::ops::Mul<U::Quantity>,
+            {
+                type Output =
+                    <$crate::Measure<$unit_name> as core::ops::Mul<$crate::Measure<U>>>::Output;
+
+                fn mul(self, _rhs: U) -> Self::Output {
+                    $crate::Measure::<$unit_name>::new(1.0) * $crate::Measure::<U>::new(1.0)
+                }
+            }
+
             #[cfg(feature = "f64")]
             $crate::__unit_times_number!($unit_name, [i32, f64]);
 

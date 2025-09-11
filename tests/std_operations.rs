@@ -402,9 +402,9 @@ mod std_operations_tests {
     #[test]
     fn test_measure_mul_div_unit() {
         // Test measure × unit (assumes unit measure of 1.0)
-        let speed = 5 * Metre / Second; // Creates a quantity with dimensions [L * T]
-        let expected = MetrePerSecond::new(5.0).into_q();
-        assert_eq!(speed, expected);
+        let acc = 5 * Metre / (Second * Second); // Creates a quantity with dimensions [L * T^-2]
+        let expected = MetrePerSecondSquared::new(5.0).into_q();
+        assert_eq!(acc, expected);
     }
 
     // ===========================
