@@ -92,7 +92,7 @@ extern crate alloc;
     not(any(feature = "f32", feature = "f64")),
     all(feature = "f32", feature = "f64")
 ))]
-compile_error!("Either feature 'f32' or 'f64' must be enabled for internal storage type.");
+compile_error!("Either feature 'f32' xor 'f64' must be enabled for internal storage type.");
 
 #[cfg(feature = "f64")]
 #[doc(hidden)]
