@@ -12,12 +12,12 @@ env:
 jobs:
   # Check build on multiple toolchains
   build:
-    name: Build & Test (stable / beta / nightly / MSRV)
+    name: Build & Test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        rust: [1.85.0, stable, beta, nightly]
+        rust: [1.85.0, stable, beta, nightly] # We test MSRV + stable + beta + nightly
         features: ["--no-default-features", "--no-default-features --features serde", "--all-features"]
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
 
       - name: Cargo build
-        run: cargo build --all-features --verbose
+        run: cargo build --release ${{ matrix.features }} --verbose
 
       - name: Cargo test
         run: |

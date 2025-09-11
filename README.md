@@ -7,6 +7,7 @@
 [![Crates.io](https://img.shields.io/crates/v/ferrunitas.svg?style=for-the-badge)](https://crates.io/crates/ferrunitas)&emsp;
 [![License](https://img.shields.io/crates/l/ferrunitas.svg?style=for-the-badge)](https://github.com/marekhummel/ferrunitas?tab=Apache-2.0-1-ov-file#readme)&emsp;
 [![Documentation](https://img.shields.io/badge/documentation-docs.rs-blue.svg?style=for-the-badge)](https://docs.rs/ferrunitas)
+<!-- [![Downloads](https://img.shields.io/crates/d/ferrunitas.svg?style=for-the-badge)](https://crates.io/crates/ferrunitas) -->
 
 
 A Rust library for compile-time dimensional analysis and unit conversions. Ferrunitas provides type safety for physical quantities and prevents dimensional errors at compile time through Rust's powerful type system.
