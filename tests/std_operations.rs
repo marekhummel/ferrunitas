@@ -350,14 +350,30 @@ mod std_operations_tests {
     // ===========================
 
     #[test]
+    #[cfg(feature = "f64")]
     fn test_unit_mul_i32() {
         let result = 5 * Metre;
         assert_eq!(result, Metre::new(5.0));
     }
 
     #[test]
+    #[cfg(feature = "f64")]
     fn test_unit_mul_f64() {
         let result = 3.5 * Kilogram;
+        assert_eq!(result, Kilogram::new(3.5));
+    }
+
+    #[test]
+    #[cfg(feature = "f32")]
+    fn test_unit_mul_i16() {
+        let result = 5i16 * Metre;
+        assert_eq!(result, Metre::new(5.0));
+    }
+
+    #[test]
+    #[cfg(feature = "f32")]
+    fn test_unit_mul_f32() {
+        let result = 3.5f32 * Kilogram;
         assert_eq!(result, Kilogram::new(3.5));
     }
 

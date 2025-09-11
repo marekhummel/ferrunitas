@@ -39,6 +39,7 @@ fn dimensions() {
 
 fn demonstrate_large_number_precision_issues() {
     // IEEE 754 double precision (f64) has limitations with very large numbers.
+    // For f32 this is the same story, but with even less large numbers.
     // This affects conversions and arithmetic with big prefixes.
     println!("\n=== Large Number Precision Caveats ===");
 
@@ -136,4 +137,9 @@ fn main() {
     demonstrate_large_number_precision_issues();
     offest_limited_usage();
     quantity_tags();
+
+    let x: f64 = 2.0 * 1000.0 * 0.001 / 0.001;
+    println!("Sanity check f64: {}\n", x);
+    let y: f32 = 2.0 * 1000.0 * 0.001 / 0.001;
+    println!("Sanity check f32: {}\n", y);
 }

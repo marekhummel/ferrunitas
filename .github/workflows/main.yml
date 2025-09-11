@@ -18,7 +18,13 @@ jobs:
       fail-fast: false
       matrix:
         rust: [1.85.0, stable, beta, nightly] # We test MSRV + stable + beta + nightly
-        features: ["--no-default-features", "--no-default-features --features serde", "--all-features"]
+        features: [
+          "--no-default-features", # no_std
+          "--no-default-features --features \"serde approx\"", # no_std with external crates
+          "--features \"std serde quantity_tags approx\"" # all features
+        ]
+        real: ["--features f64", "--features f32"]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -28,17 +34,17 @@ jobs:
           toolchain: ${{ matrix.rust }}
 
       - name: Cargo build
-        run: cargo build --release ${{ matrix.features }} --verbose
+        run: cargo build --release ${{ matrix.features }} ${{ matrix.real }} --verbose
 
       - name: Cargo test
-        run: cargo test ${{ matrix.features }} --verbose
+        run: cargo test ${{ matrix.features }} ${{ matrix.real }} --verbose
 
       - name: Install no_std_check
         run: cargo install cargo-no-std-check
         if: matrix.rust == 'nightly' && matrix.features == '--no-default-features'
 
       - name: Check no_std compatibility
-        run: cargo no-std-check --no-default-features
+        run: cargo no-std-check --no-default-features ${{ matrix.real }}
         if: matrix.rust == 'nightly' && matrix.features == '--no-default-features'
 
   # Lint & format

@@ -86,53 +86,56 @@ mod comparison_traits_tests {
 
     #[test]
     fn test_measure_ord_same_measure_less_than() {
-        let mass1 = Kilogram::new(3.0);
-        let mass2 = Kilogram::new(5.0);
-        assert!(mass1 < mass2);
-        assert!(mass1 <= mass2);
+        let length1 = Kilometre::new(3.0);
+        let length2 = Kilometre::new(5.0);
+        assert!(length1 < length2);
+        assert!(length1 <= length2);
     }
 
     #[test]
     fn test_measure_ord_same_measure_greater_than() {
-        let mass1 = Kilogram::new(7.0);
-        let mass2 = Kilogram::new(5.0);
-        assert!(mass1 > mass2);
-        assert!(mass1 >= mass2);
+        let length1 = Kilometre::new(7.0);
+        let length2 = Kilometre::new(5.0);
+        assert!(length1 > length2);
+        assert!(length1 >= length2);
     }
 
     #[test]
     fn test_measure_ord_same_measure_equal() {
-        let mass1 = Kilogram::new(5.0);
-        let mass2 = Kilogram::new(5.0);
-        assert!(mass1 <= mass2);
-        assert!(mass1 >= mass2);
-        assert_eq!(mass1.partial_cmp(&mass2), Some(core::cmp::Ordering::Equal));
+        let length1 = Kilometre::new(5.0);
+        let length2 = Kilometre::new(5.0);
+        assert!(length1 <= length2);
+        assert!(length1 >= length2);
+        assert_eq!(
+            length1.partial_cmp(&length2),
+            Some(core::cmp::Ordering::Equal)
+        );
     }
 
     #[test]
     fn test_measure_ord_different_measures_same_quantity() {
-        let mass1 = Kilogram::new(2.0);
-        let mass2 = Gram::new(2500.0); // 2.5 kg
-        assert!(mass1.into_q() < mass2.into_q()); // 2 kg < 2.5 kg
-        assert!(mass2.into_q() > mass1.into_q()); // 2.5 kg > 2 kg
+        let length1 = Kilometre::new(2.0);
+        let length2 = Metre::new(2500.0); // 2.5 km
+        assert!(length1.into_q() < length2.into_q()); // 2 km < 2.5 km
+        assert!(length2.into_q() > length1.into_q()); // 2.5 km > 2 km
     }
 
     /// ```compile_fail
     /// use crate::measures::*;
     ///
     /// fn bad_eq() {
-    ///     let mass1 = Kilogram::new(5.0);
-    ///     let mass2 = Gram::new(5.0);
-    ///     assert!(mass1 < mass2); // should NOT compile
+    ///     let length1 = Kilometre::new(5.0);
+    ///     let length2 = Metre::new(5.0);
+    ///     assert!(length1 < length2); // should NOT compile
     /// }
     /// ```
 
     #[test]
     fn test_measure_ord_different_measures_equal_when_converted() {
-        let mass1 = Kilogram::new(3.0);
-        let mass2 = Gram::new(3000.0); // 3 kg
-        let q1 = mass1.into_q();
-        let q2 = mass2.into_q();
+        let length1 = Kilometre::new(3.0);
+        let length2 = Metre::new(3000.0); // 3 km
+        let q1 = length1.into_q();
+        let q2 = length2.into_q();
         assert!(q1 <= q2);
         assert!(q1 >= q2);
         assert_eq!(q1.partial_cmp(&q2), Some(core::cmp::Ordering::Equal));
@@ -144,44 +147,50 @@ mod comparison_traits_tests {
 
     #[test]
     fn test_quantity_ord_less_than() {
-        let mass1: Mass = Kilogram::new(3.0).into_q();
-        let mass2: Mass = Kilogram::new(5.0).into_q();
-        assert!(mass1 < mass2);
-        assert!(mass1 <= mass2);
+        let length1: Length = Kilometre::new(3.0).into_q();
+        let length2: Length = Kilometre::new(5.0).into_q();
+        assert!(length1 < length2);
+        assert!(length1 <= length2);
     }
 
     #[test]
     fn test_quantity_ord_greater_than() {
-        let mass1: Mass = Kilogram::new(7.0).into_q();
-        let mass2: Mass = Kilogram::new(5.0).into_q();
-        assert!(mass1 > mass2);
-        assert!(mass1 >= mass2);
+        let length1: Length = Kilometre::new(7.0).into_q();
+        let length2: Length = Kilometre::new(5.0).into_q();
+        assert!(length1 > length2);
+        assert!(length1 >= length2);
     }
 
     #[test]
     fn test_quantity_ord_equal() {
-        let mass1: Mass = Kilogram::new(5.0).into_q();
-        let mass2: Mass = Kilogram::new(5.0).into_q();
-        assert!(mass1 <= mass2);
-        assert!(mass1 >= mass2);
-        assert_eq!(mass1.partial_cmp(&mass2), Some(core::cmp::Ordering::Equal));
+        let length1: Length = Kilometre::new(5.0).into_q();
+        let length2: Length = Kilometre::new(5.0).into_q();
+        assert!(length1 <= length2);
+        assert!(length1 >= length2);
+        assert_eq!(
+            length1.partial_cmp(&length2),
+            Some(core::cmp::Ordering::Equal)
+        );
     }
 
     #[test]
     fn test_quantity_ord_from_different_measures() {
-        let mass1: Mass = Kilogram::new(2.0).into_q();
-        let mass2: Mass = Gram::new(2500.0).into_q(); // 2.5 kg
-        assert!(mass1 < mass2);
-        assert!(mass2 > mass1);
+        let length1: Length = Kilometre::new(2.0).into_q();
+        let length2: Length = Metre::new(2500.0).into_q(); // 2.5 km
+        assert!(length1 < length2);
+        assert!(length2 > length1);
     }
 
     #[test]
     fn test_quantity_ord_from_different_measures_equal_values() {
-        let mass1: Mass = Kilogram::new(3.0).into_q();
-        let mass2: Mass = Gram::new(3000.0).into_q(); // 3 kg
-        assert!(mass1 <= mass2);
-        assert!(mass1 >= mass2);
-        assert_eq!(mass1.partial_cmp(&mass2), Some(core::cmp::Ordering::Equal));
+        let length1: Length = Kilometre::new(3.0).into_q();
+        let length2: Length = Metre::new(3000.0).into_q(); // 3 km
+        assert!(length1 <= length2);
+        assert!(length1 >= length2);
+        assert_eq!(
+            length1.partial_cmp(&length2),
+            Some(core::cmp::Ordering::Equal)
+        );
     }
 
     #[test]

@@ -41,13 +41,13 @@ fn test_unit_display() {
 #[test]
 fn test_measure_display() {
     // Test basic measures with integer values
-    let distance = Metre::new(100);
+    let distance = 100 * Metre;
     assert_eq!(format!("{}", distance), "100 m");
 
-    let mass = Kilogram::new(5);
+    let mass = Kilogram::new(5i16);
     assert_eq!(format!("{}", mass), "5 kg");
 
-    let time = Second::new(10);
+    let time = Second::new(10i16);
     assert_eq!(format!("{}", time), "10 s");
 
     // Test measures with decimal values
@@ -122,8 +122,8 @@ fn test_quantity_display() {
 #[test]
 fn test_display_with_different_precisions() {
     // Test formatting with different decimal precisions
-    let precise_value = Metre::new(1.23456789);
-    assert_eq!(format!("{}", precise_value), "1.23456789 m");
+    let precise_value = Metre::new(1.2345678);
+    assert_eq!(format!("{}", precise_value), "1.2345678 m");
     assert_eq!(format!("{:.2}", precise_value), "1.23 m");
     assert_eq!(format!("{:.5}", precise_value), "1.23457 m");
 
@@ -141,7 +141,7 @@ fn test_display_zero_and_negative_values() {
     let zero_distance = Metre::new(0.0);
     assert_eq!(format!("{}", zero_distance), "0 m");
 
-    let zero_mass = Kilogram::new(0);
+    let zero_mass = Kilogram::new(0i16);
     assert_eq!(format!("{}", zero_mass), "0 kg");
 
     // Test negative values

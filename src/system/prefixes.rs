@@ -49,8 +49,8 @@ mod tests {
 
     #[test]
     fn accuracy_binary_prefixes() {
-        // Works, because even if the number itself exceeds the mantissa size for f64 (53bits)
-        // powers of two are just stored in the exponent.
+        // Works, because even if the number itself exceeds the mantissa size for f64 (53bits) / f32 (24bits),
+        // powers of two are just stored in the exponent (up to 1024 (f64) / 128 (f32)).
         assert_eq!(Kibi::FACTOR as u128, 1u128 << 10);
         assert_eq!(Mebi::FACTOR as u128, 1u128 << 20);
         assert_eq!(Gibi::FACTOR as u128, 1u128 << 30);

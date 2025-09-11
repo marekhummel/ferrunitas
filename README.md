@@ -24,8 +24,8 @@ Refer to [this document](https://www.bipm.org/documents/20126/41483022/SI-Brochu
 - **Prefix support**: Metric prefixes (kilo, milli, etc.) with easy unit definition
 - **Custom unit definition**: Macros for defining your own units, quantities, and prefixes
 - **Quantity tagging** (optional): Distinguish between dimensionally equivalent but semantically different quantities (e.g., `Angle` vs `Information`)
-- **Zero-cost abstractions**: All dimensional checking happens at compile time
-- **Default no_std support**: No std usage is necessary, if the feature is used its just for propagation to dependencies.
+- **Default no_std support**: No_std usage is default, if the `std` feature is used its just for propagation to dependencies.
+- **Support f64 or f32**: Inner type can either be `f32` or `f64` based on feature (`f64` stays default)
 
 ## Usage
 
@@ -249,7 +249,7 @@ cargo run --example misc --features="quantity_tags"
 
 
 ## Limitations / Notes
-* Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
+* Internal storage uses `Real`, either `f32` or `f64` depending on installed feature; typical floating point caveats apply, see examples/misc.rs.
 * Rounding / formatting of display values is a caller concern, however usual format specifiers are respected.
 * Offsets are supported for temperature scales, but are quite limited in usage besides simple conversion.
 

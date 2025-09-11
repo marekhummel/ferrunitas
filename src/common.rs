@@ -105,15 +105,23 @@ macro_rules! verify_unit {
 /// Assert that two floating point values are almost equal within an epsilon
 #[cfg(test)]
 macro_rules! assert_almost_equal {
+    ($left:expr, $right:expr) => {
+        $crate::common::assert_almost_equal!($left, $right, "");
+    };
+
     ($left:expr, $right:expr, $desc:literal) => {
+        #[cfg(feature = "f64")]
         $crate::common::assert_almost_equal!($left, $right, 1e-5, 1e-8, $desc);
+
+        #[cfg(feature = "f32")]
+        $crate::common::assert_almost_equal!($left, $right, 1e-3, 1e-5, $desc);
     };
     ($left:expr, $right:expr, $epsilon_abs:expr, $epsilon_rel:expr, $desc:literal) => {
-        let left_val: f64 = $left;
-        let right_val: f64 = $right;
+        let left_val: $crate::Real = $left;
+        let right_val: $crate::Real = $right;
         let diff = (left_val - right_val).abs();
         let max_val = left_val.abs().max(right_val.abs());
-        let epsilon = $epsilon_abs + ($epsilon_rel as f64) * max_val;
+        let epsilon = $epsilon_abs + ($epsilon_rel as $crate::Real) * max_val;
 
         assert!(
             diff <= epsilon,

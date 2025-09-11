@@ -4,6 +4,7 @@
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
+use crate::Real;
 use crate::model::dimension::Dimensioned;
 use crate::model::quantity::{Quantity, QuantityMarker, QuantityTag};
 use crate::model::unit::Unit;
@@ -48,7 +49,7 @@ use crate::model::unit::Unit;
 /// println!("Distance: {}", length);  // "100 m"
 /// ```
 pub struct Measure<U: Unit> {
-    pub(crate) value: f64,
+    pub(crate) value: Real,
     _phantom: PhantomData<U>,
 }
 
@@ -64,10 +65,10 @@ impl<U: Unit> Measure<U> {
     /// let distance = Metre::new(100.5);
     /// assert_eq!(distance.value(), 100.5);
     ///
-    /// let mass = Kilogram::new(5);  // Works with any type that implements Into<f64>
+    /// let mass = Kilogram::new(5i16);  // Works with any type that implements Into<Real>
     /// assert_eq!(mass.value(), 5.0);
     /// ```
-    pub fn new(value: impl Into<f64>) -> Self {
+    pub fn new(value: impl Into<Real>) -> Self {
         Self {
             value: value.into(),
             _phantom: PhantomData,
@@ -90,7 +91,7 @@ impl<U: Unit> Measure<U> {
     /// let feet = Foot::new(10.0);
     /// assert_eq!(feet.value(), 10.0);  // Still 10.0, not converted to metres
     /// ```
-    pub fn value(&self) -> f64 {
+    pub fn value(&self) -> Real {
         self.value
     }
 
@@ -210,7 +211,7 @@ impl<U: Unit> Measure<U> {
     ///
     /// Creates a new measure from a value at compile time. This is useful for defining
     /// const measures or in const contexts where the regular `new` method cannot be used.
-    pub(crate) const fn new_const(value: f64) -> Self {
+    pub(crate) const fn new_const(value: Real) -> Self {
         Self {
             value,
             _phantom: PhantomData,
@@ -221,7 +222,7 @@ impl<U: Unit> Measure<U> {
     ///
     /// Returns the raw numeric value at compile time. This is useful in const contexts
     /// where the regular `value` method cannot be used.
-    pub(crate) const fn value_const(&self) -> f64 {
+    pub(crate) const fn value_const(&self) -> Real {
         self.value
     }
 }
@@ -424,16 +425,16 @@ where
 }
 
 /// RHS Scalar multiplication - no effect on unit or quantity
-impl<U: Unit> Mul<f64> for Measure<U> {
+impl<U: Unit> Mul<Real> for Measure<U> {
     type Output = Self;
 
-    fn mul(self, scalar: f64) -> Self::Output {
+    fn mul(self, scalar: Real) -> Self::Output {
         Self::new(self.value * scalar)
     }
 }
 
 /// LHS Scalar multiplication - no effect on unit or quantity
-impl<U: Unit> Mul<Measure<U>> for f64 {
+impl<U: Unit> Mul<Measure<U>> for Real {
     type Output = Measure<U>;
 
     fn mul(self, rhs: Measure<U>) -> Self::Output {
@@ -442,27 +443,27 @@ impl<U: Unit> Mul<Measure<U>> for f64 {
 }
 
 /// RHS Assigned scalar multiplication - no effect on unit or quantity
-impl<U: Unit> MulAssign<f64> for Measure<U> {
-    fn mul_assign(&mut self, scalar: f64) {
+impl<U: Unit> MulAssign<Real> for Measure<U> {
+    fn mul_assign(&mut self, scalar: Real) {
         self.value *= scalar;
     }
 }
 
 /// RHS Scalar division - no effect on unit or quantity
-impl<U: Unit> Div<f64> for Measure<U> {
+impl<U: Unit> Div<Real> for Measure<U> {
     type Output = Self;
 
-    fn div(self, scalar: f64) -> Self::Output {
+    fn div(self, scalar: Real) -> Self::Output {
         Self::new(self.value / scalar)
     }
 }
 
 /// LHS Scalar division - has to invert quantity, so result cant be unit
-impl<U: Unit> Div<Measure<U>> for f64
+impl<U: Unit> Div<Measure<U>> for Real
 where
-    f64: Div<U::Quantity>,
+    Real: Div<U::Quantity>,
 {
-    type Output = <f64 as Div<U::Quantity>>::Output;
+    type Output = <Real as Div<U::Quantity>>::Output;
 
     fn div(self, rhs: Measure<U>) -> Self::Output {
         self / rhs.into_q()
@@ -470,8 +471,8 @@ where
 }
 
 /// RHS Assigned scalar division - no effect on unit or quantity
-impl<U: Unit> DivAssign<f64> for Measure<U> {
-    fn div_assign(&mut self, scalar: f64) {
+impl<U: Unit> DivAssign<Real> for Measure<U> {
+    fn div_assign(&mut self, scalar: Real) {
         self.value /= scalar;
     }
 }
@@ -479,7 +480,7 @@ impl<U: Unit> DivAssign<f64> for Measure<U> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::system::*;
+    use crate::{common::assert_almost_equal, system::*};
     use alloc::format;
 
     #[test]
@@ -488,7 +489,7 @@ mod tests {
         let distance = Measure::<Metre>::new(100.5);
         assert_eq!(distance.value(), 100.5);
 
-        let mass = Measure::<Kilogram>::new(5); // Test with integer
+        let mass = Measure::<Kilogram>::new(5i16); // Test with integer
         assert_eq!(mass.value(), 5.0);
 
         let time = Measure::<Second>::new(2.34);
@@ -536,7 +537,7 @@ mod tests {
         // Test with mass units
         let kilograms = Kilogram::new(2.0);
         let grams: Measure<Gram> = kilograms.convert();
-        assert_eq!(grams.value(), 2000.0); // 2 kg = 2000 g
+        assert_almost_equal!(grams.value(), 2000.0); // 2 kg = 2000 g
 
         // Test with time units
         let minutes = Minute::new(2.0);
@@ -615,7 +616,7 @@ mod tests {
         assert_eq!(const_measure, regular_measure);
 
         // Test value_const vs value
-        let const_value: f64 = const_measure.value_const();
+        let const_value: Real = const_measure.value_const();
         let regular_value = regular_measure.value();
 
         assert_eq!(const_value, regular_value);

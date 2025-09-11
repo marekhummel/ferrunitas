@@ -1,3 +1,4 @@
+use crate::Real;
 use crate::model::{
     dimension::Dimensioned,
     measure::Measure,
@@ -9,10 +10,10 @@ use approx::{AbsDiffEq, RelativeEq, UlpsEq};
 // ====================== Approx impls for Quantity ===================== //
 
 impl<D: Dimensioned, T: QuantityTag> AbsDiffEq for Quantity<D, T> {
-    type Epsilon = <f64 as AbsDiffEq>::Epsilon;
+    type Epsilon = <Real as AbsDiffEq>::Epsilon;
 
     fn default_epsilon() -> Self::Epsilon {
-        f64::default_epsilon()
+        Real::default_epsilon()
     }
 
     fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
@@ -22,7 +23,7 @@ impl<D: Dimensioned, T: QuantityTag> AbsDiffEq for Quantity<D, T> {
 
 impl<D: Dimensioned, T: QuantityTag> RelativeEq for Quantity<D, T> {
     fn default_max_relative() -> Self::Epsilon {
-        f64::default_max_relative()
+        Real::default_max_relative()
     }
 
     fn relative_eq(
@@ -37,7 +38,7 @@ impl<D: Dimensioned, T: QuantityTag> RelativeEq for Quantity<D, T> {
 
 impl<D: Dimensioned, T: QuantityTag> UlpsEq for Quantity<D, T> {
     fn default_max_ulps() -> u32 {
-        f64::default_max_ulps()
+        Real::default_max_ulps()
     }
 
     fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
@@ -48,10 +49,10 @@ impl<D: Dimensioned, T: QuantityTag> UlpsEq for Quantity<D, T> {
 // ====================== Approx impls for Measure ===================== //
 
 impl<U: Unit> AbsDiffEq for Measure<U> {
-    type Epsilon = <f64 as AbsDiffEq>::Epsilon;
+    type Epsilon = <Real as AbsDiffEq>::Epsilon;
 
     fn default_epsilon() -> Self::Epsilon {
-        f64::default_epsilon()
+        Real::default_epsilon()
     }
 
     fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
@@ -61,7 +62,7 @@ impl<U: Unit> AbsDiffEq for Measure<U> {
 
 impl<U: Unit> RelativeEq for Measure<U> {
     fn default_max_relative() -> Self::Epsilon {
-        f64::default_max_relative()
+        Real::default_max_relative()
     }
 
     fn relative_eq(
@@ -76,7 +77,7 @@ impl<U: Unit> RelativeEq for Measure<U> {
 
 impl<U: Unit> UlpsEq for Measure<U> {
     fn default_max_ulps() -> u32 {
-        f64::default_max_ulps()
+        Real::default_max_ulps()
     }
 
     fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
@@ -86,7 +87,7 @@ impl<U: Unit> UlpsEq for Measure<U> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Unit, system::*};
+    use crate::{Real, Unit, system::*};
     use approx::{assert_abs_diff_eq, assert_relative_eq, assert_ulps_eq};
 
     // ====================== Measure Tests ===================== //
@@ -122,7 +123,7 @@ mod tests {
     #[test]
     fn test_measure_ulps_eq() {
         let mass1 = Kilogram::new(273.15);
-        let mass2 = Kilogram::new(273.15 + f64::EPSILON * 2.0);
+        let mass2 = Kilogram::new(273.15 + Real::EPSILON * 2.0);
 
         // Should be approximately equal within 4 ULPs
         assert_ulps_eq!(mass1, mass2, max_ulps = 4);
@@ -166,7 +167,7 @@ mod tests {
     #[test]
     fn test_quantity_ulps_eq() {
         let length1 = Length::new(6.0);
-        let length2 = Length::new(6.0 + f64::EPSILON * 3.0);
+        let length2 = Length::new(6.0 + Real::EPSILON * 3.0);
 
         // Should be approximately equal within ULP tolerance
         assert_ulps_eq!(length1, length2, max_ulps = 8);

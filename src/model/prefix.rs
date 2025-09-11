@@ -1,6 +1,8 @@
 //! SI prefixes for units. Prefix is just a simple trait, which
 //! can be implemented via the `prefix!` macro.
 
+use crate::Real;
+
 /// Trait for SI prefixes
 ///
 /// Defines the interface for all prefix types created by the [`crate::prefix!`] macro.
@@ -26,7 +28,7 @@
 /// ```
 pub trait Prefix {
     /// The multiplier for this prefix
-    const FACTOR: f64;
+    const FACTOR: Real;
 
     /// The symbol for this prefix
     const SYMBOL: &'static str;
@@ -135,12 +137,12 @@ pub trait Prefixable {}
 /// The macro generates a zero-sized struct that implements [`Prefix`]:
 ///
 /// ```rust
-/// use ferrunitas::__model::Prefix;
+/// use ferrunitas::{Real, __model::Prefix};
 /// #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 /// pub struct YourPrefix;
 ///
 /// impl Prefix for YourPrefix {
-///     const FACTOR: f64 = 1.23; // your factor here
+///     const FACTOR: Real = 1.23; // your factor here
 ///     const SYMBOL: &'static str = "abc"; // your symbol here
 /// }
 /// ```
@@ -152,7 +154,7 @@ macro_rules! prefix {
         pub struct $prefix_name;
 
         impl $crate::__model::Prefix for $prefix_name {
-            const FACTOR: f64 = $factor as f64;
+            const FACTOR: $crate::Real = $factor as $crate::Real;
             const SYMBOL: &'static str = $symbol;
         }
     };

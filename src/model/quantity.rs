@@ -6,6 +6,7 @@ use core::fmt::{self, Debug};
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
+use crate::Real;
 use crate::model::dimension::{Dimensioned, TypePow};
 use crate::model::measure::Measure;
 use crate::model::unit::Unit;
@@ -30,7 +31,7 @@ impl QuantityTag for () {}
 ///
 /// `Quantity` represents a physical quantity with its dimensional information encoded
 /// at the type level, but without being tied to a specific unit. Values are stored
-/// as raw `f64` in canonical SI base units. This makes `Quantity` ideal for dimensional
+/// as raw `Real` in canonical SI base units. This makes `Quantity` ideal for dimensional
 /// arithmetic and calculations where the specific display unit doesn't matter.
 ///
 /// The 7-component dimensional signature is encoded in the type parameter `D`, representing
@@ -102,8 +103,8 @@ impl QuantityTag for () {}
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Quantity<D: Dimensioned, T: QuantityTag> {
-    /// This value holds the raw f64 value of the quantity, only meant for internal use
-    pub(crate) value: f64,
+    /// This value holds the raw Real value of the quantity, only meant for internal use
+    pub(crate) value: Real,
     _phantom: PhantomData<(D, T)>,
 }
 
@@ -116,8 +117,8 @@ pub trait QuantityMarker:
     type DimensionVector: Dimensioned;
     type Tag: QuantityTag;
 
-    fn new(value: f64) -> Self;
-    fn raw_value(&self) -> f64;
+    fn new(value: Real) -> Self;
+    fn raw_value(&self) -> Real;
 }
 
 // ===========================
@@ -279,7 +280,7 @@ macro_rules! quantity {
 /// Default impl
 impl<D: Dimensioned, T: QuantityTag> Quantity<D, T> {
     /// Create a new quantity from a canonical base value (crate internal).
-    pub(crate) fn new(value: f64) -> Self {
+    pub(crate) fn new(value: Real) -> Self {
         Self {
             value,
             _phantom: PhantomData,
@@ -311,7 +312,7 @@ impl<D: Dimensioned, T: QuantityTag> Quantity<D, T> {
     /// let mass = Mass::from::<Kilogram>(5.0);
     /// let same_mass = Mass::from::<Pound>(11.023);
     /// ```
-    pub fn from<U: Unit<Quantity = Self>>(value: impl Into<f64>) -> Self {
+    pub fn from<U: Unit<Quantity = Self>>(value: impl Into<Real>) -> Self {
         Measure::<U>::new(value.into()).into_q()
     }
 
@@ -372,7 +373,7 @@ impl<D: Dimensioned, T: QuantityTag> Quantity<D, T> {
     /// let minutes = Time::convert::<Second, Minute>(3600.0);
     /// assert_eq!(minutes.value(), 60.0);                  // 3600 s = 60 min
     /// ```
-    pub fn convert<U1, U2>(value: f64) -> Measure<U2>
+    pub fn convert<U1, U2>(value: Real) -> Measure<U2>
     where
         U1: Unit<Quantity = Self>,
         U2: Unit<Quantity = Self>,
@@ -415,11 +416,11 @@ impl<D: Dimensioned, T: QuantityTag> QuantityMarker for Quantity<D, T> {
     type DimensionVector = D;
     type Tag = T;
 
-    fn new(value: f64) -> Self {
+    fn new(value: Real) -> Self {
         Self::new(value)
     }
 
-    fn raw_value(&self) -> f64 {
+    fn raw_value(&self) -> Real {
         self.value
     }
 }
@@ -594,23 +595,23 @@ where
 }
 
 /// RHS Scalar multiplication - scales the value but keeps dimensions
-impl<D: Dimensioned, T: QuantityTag> Mul<f64> for Quantity<D, T> {
+impl<D: Dimensioned, T: QuantityTag> Mul<Real> for Quantity<D, T> {
     type Output = Self;
 
-    fn mul(self, scalar: f64) -> Self::Output {
+    fn mul(self, scalar: Real) -> Self::Output {
         Self::new(self.value * scalar)
     }
 }
 
 /// RHS Assigned scalar multiplication - scales the value but keeps dimensions
-impl<D: Dimensioned, T: QuantityTag> MulAssign<f64> for Quantity<D, T> {
-    fn mul_assign(&mut self, scalar: f64) {
+impl<D: Dimensioned, T: QuantityTag> MulAssign<Real> for Quantity<D, T> {
+    fn mul_assign(&mut self, scalar: Real) {
         self.value *= scalar;
     }
 }
 
 /// LHS Scalar multiplication - scales the value but keeps dimensions
-impl<D: Dimensioned, T: QuantityTag> Mul<Quantity<D, T>> for f64 {
+impl<D: Dimensioned, T: QuantityTag> Mul<Quantity<D, T>> for Real {
     type Output = Quantity<D, T>;
 
     fn mul(self, quantity: Quantity<D, T>) -> Self::Output {
@@ -619,23 +620,23 @@ impl<D: Dimensioned, T: QuantityTag> Mul<Quantity<D, T>> for f64 {
 }
 
 /// RHS Scalar division - scales the value but keeps dimensions
-impl<D: Dimensioned, T: QuantityTag> Div<f64> for Quantity<D, T> {
+impl<D: Dimensioned, T: QuantityTag> Div<Real> for Quantity<D, T> {
     type Output = Self;
 
-    fn div(self, scalar: f64) -> Self::Output {
+    fn div(self, scalar: Real) -> Self::Output {
         Self::new(self.value / scalar)
     }
 }
 
 /// RHS Assigned scalar division - scales the value but keeps dimensions
-impl<D: Dimensioned, T: QuantityTag> DivAssign<f64> for Quantity<D, T> {
-    fn div_assign(&mut self, scalar: f64) {
+impl<D: Dimensioned, T: QuantityTag> DivAssign<Real> for Quantity<D, T> {
+    fn div_assign(&mut self, scalar: Real) {
         self.value /= scalar;
     }
 }
 
 // LHS Scalar division - Scale and inverse at the same time
-impl<D: Dimensioned, T: QuantityTag> Div<Quantity<D, T>> for f64
+impl<D: Dimensioned, T: QuantityTag> Div<Quantity<D, T>> for Real
 where
     D: Inv,
     <D as Inv>::Output: Dimensioned,

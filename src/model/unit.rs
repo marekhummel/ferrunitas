@@ -7,6 +7,7 @@
 
 use core::fmt::Debug;
 
+use crate::Real;
 use crate::model::{measure::Measure, quantity::QuantityMarker};
 
 /// Core trait implemented by every concrete unit type.
@@ -77,16 +78,16 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     /// The associated quantity type for this unit.
     type Quantity: QuantityMarker;
     /// The scaling factor to canonical base units.
-    const FACTOR: f64;
+    const FACTOR: Real;
     /// The offset to canonical base units (for affine units like Celsius)
-    const OFFSET: f64;
+    const OFFSET: Real;
     /// The abbreviation for this unit.
     const ABBREV: &'static str;
 
     /// Create a new measure from a raw value
     ///
     /// This is the primary constructor for creating [`Measure`] instances.
-    /// It takes any value that can be converted to `f64` and wraps it in
+    /// It takes any value that can be converted to `crate::Real` and wraps it in
     /// a measure with this unit type.
     ///
     /// # Examples
@@ -95,9 +96,9 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     /// use ferrunitas::{system::*, Unit};
     ///
     /// // Create measures with different numeric types
-    /// let distance1 = Metre::new(100.0);   // f64
-    /// let distance2 = Metre::new(100);     // integer
-    /// let distance3 = Metre::new(100_u32); // u32
+    /// let distance1 = Metre::new(100.0f32);   // f32
+    /// let distance2 = Metre::new(100i16);     // i16
+    /// let distance3 = Metre::new(100u16);     // u16
     ///
     /// // All create equivalent measures
     /// assert_eq!(distance1.value(), 100.0);
@@ -106,10 +107,10 @@ pub trait Unit: Debug + Clone + Copy + PartialEq + PartialOrd {
     ///
     /// // Works with any unit type
     /// let mass = Kilogram::new(5.5);
-    /// let time = Second::new(10);
+    /// let time = Second::new(10i16);
     /// let force = Newton::new(50.0);
     /// ```
-    fn new(value: impl Into<f64>) -> Measure<Self> {
+    fn new(value: impl Into<Real>) -> Measure<Self> {
         Measure::new(value.into())
     }
 }
@@ -303,7 +304,7 @@ macro_rules! unit {
         $crate::__unit!(
             $unit_name,
             <$base_unit as $crate::__model::Unit>::Quantity,
-            ($factor as f64) * <$base_unit as $crate::__model::Unit>::FACTOR,
+            ($factor as $crate::Real) * <$base_unit as $crate::__model::Unit>::FACTOR,
             <$base_unit as $crate::__model::Unit>::OFFSET + (<$base_unit as $crate::__model::Unit>::FACTOR * $offset),
             $abbrev
         );
@@ -338,7 +339,7 @@ macro_rules! unit {
             $quantity_for_tag,
             [
                 $crate::__model::Quantity<$crate::__model::DimensionZero, ()>,
-                1.0;
+                1.0 as $crate::Real;
                 $($components),+
             ]
         );
@@ -365,6 +366,8 @@ macro_rules! unit {
 /// public API. They handle the actual code generation for different unit types.
 #[doc(hidden)]
 pub mod __inner_unit_macros {
+    use crate::Real;
+
     /// Create a unit struct and impl Unit trait
     #[macro_export]
     #[doc(hidden)]
@@ -385,8 +388,8 @@ pub mod __inner_unit_macros {
 
             impl $crate::__model::Unit for $unit_name {
                 type Quantity = $quantity;
-                const FACTOR: f64 = $factor;
-                const OFFSET: f64 = $offset;
+                const FACTOR: $crate::Real = $factor;
+                const OFFSET: $crate::Real = $offset;
                 const ABBREV: &'static str = $abbrev;
             }
 
@@ -396,7 +399,11 @@ pub mod __inner_unit_macros {
                 }
             }
 
+            #[cfg(feature = "f64")]
             $crate::__unit_times_number!($unit_name, [i32, f64]);
+
+            #[cfg(feature = "f32")]
+            $crate::__unit_times_number!($unit_name, [i16, f32]);
         };
     }
 
@@ -423,7 +430,7 @@ pub mod __inner_unit_macros {
                 $unit_name,
                 $abbrev,
                 $name_tag,
-                [$quantity, $factor_acc; (1.0, $unit, $exp) $(, $components)*]
+                [$quantity, $factor_acc; (1.0 as $crate::Real, $unit, $exp) $(, $components)*]
             );
         };
 
@@ -437,7 +444,8 @@ pub mod __inner_unit_macros {
                         <<$unit as $crate::__model::Unit>::Quantity as $crate::__model::TypePow<$exp>>::Output
                     >>::Output,
                     $factor_acc * $crate::__model::__inner_unit_macros::__powi_const(
-                        ($scalar as f64) * <$unit as $crate::__model::Unit>::FACTOR, <$exp as typenum::ToInt<i32>>::INT
+                        ($scalar as $crate::Real) * <$unit as $crate::__model::Unit>::FACTOR,
+                        <$exp as typenum::ToInt<i32>>::INT
                     );
                     $($components),*
                 ]
@@ -488,7 +496,7 @@ pub mod __inner_unit_macros {
     /// This is a compile-time implementation of exponentiation that handles
     /// both positive and negative exponents correctly.
     #[doc(hidden)]
-    pub const fn __powi_const(mut base: f64, mut exp: i32) -> f64 {
+    pub const fn __powi_const(mut base: Real, mut exp: i32) -> Real {
         if exp == 0 {
             return 1.0;
         }
@@ -517,17 +525,17 @@ mod tests {
     #[test]
     fn test_unit_new_method() {
         // Test creating measures with different numeric types
-        let distance_f64 = Metre::new(100.0);
-        let distance_i32 = Metre::new(100);
-        let distance_u32 = Metre::new(100_u32);
+        let distance_f32 = Metre::new(100.0f32);
+        let distance_i16 = Metre::new(100i16);
+        let distance_u16 = Metre::new(100_u16);
 
-        assert_eq!(distance_f64.value(), 100.0);
-        assert_eq!(distance_i32.value(), 100.0);
-        assert_eq!(distance_u32.value(), 100.0);
+        assert_eq!(distance_f32.value(), 100.0);
+        assert_eq!(distance_i16.value(), 100.0);
+        assert_eq!(distance_u16.value(), 100.0);
 
         // Test with different unit types
         let mass = Kilogram::new(5.5);
-        let time = Second::new(10);
+        let time = Second::new(10i16);
         let force = Newton::new(50.0);
 
         assert_eq!(mass.value(), 5.5);
@@ -543,7 +551,7 @@ mod tests {
     #[test]
     fn test_unit_trait_implementation() {
         // Test that units properly implement the Unit trait
-        fn test_unit_trait<U: Unit>(_unit: U) -> (f64, f64, &'static str) {
+        fn test_unit_trait<U: Unit>(_unit: U) -> (Real, Real, &'static str) {
             (U::FACTOR, U::OFFSET, U::ABBREV)
         }
 
@@ -568,32 +576,32 @@ mod tests {
         use super::__inner_unit_macros::__powi_const;
 
         // Positive exponents
-        let square: f64 = __powi_const(2.0, 2);
-        let cube: f64 = __powi_const(3.0, 3);
-        let fourth_power: f64 = __powi_const(10.0, 4);
+        let square: Real = __powi_const(2.0, 2);
+        let cube: Real = __powi_const(3.0, 3);
+        let fourth_power: Real = __powi_const(10.0, 4);
         assert_eq!(square, 4.0); // 2^2 = 4
         assert_eq!(cube, 27.0); // 3^3 = 27
         assert_eq!(fourth_power, 10000.0); // 10^4 = 10000
 
         // Zero exponent (any base to power 0 equals 1)
-        let zero_exp: f64 = __powi_const(42.0, 0);
+        let zero_exp: Real = __powi_const(42.0, 0);
         assert_eq!(zero_exp, 1.0);
 
         // Negative exponents (reciprocals)
-        let neg_square: f64 = __powi_const(2.0, -2);
-        let neg_cube: f64 = __powi_const(4.0, -3);
+        let neg_square: Real = __powi_const(2.0, -2);
+        let neg_cube: Real = __powi_const(4.0, -3);
         assert_eq!(neg_square, 0.25); // 2^-2 = 1/4 = 0.25
         assert_eq!(neg_cube, 1.0 / 64.0); // 4^-3 = 1/64
 
         // Edge cases
-        let one_to_power: f64 = __powi_const(1.0, 100);
-        let first_power: f64 = __powi_const(5.0, 1);
+        let one_to_power: Real = __powi_const(1.0, 100);
+        let first_power: Real = __powi_const(5.0, 1);
         assert_eq!(one_to_power, 1.0); // 1^100 = 1
         assert_eq!(first_power, 5.0); // 5^1 = 5
 
         // Used in compound unit factor calculations
         // For example, m/s² would use: metres_factor * __powi_const(seconds_factor, -2)
-        let acceleration_factor: f64 = 1.0 * __powi_const(1.0, -2); // m * s^-2
+        let acceleration_factor: Real = 1.0 * __powi_const(1.0, -2); // m * s^-2
         assert_eq!(acceleration_factor, 1.0);
     }
 }

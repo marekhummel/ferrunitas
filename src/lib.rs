@@ -6,7 +6,7 @@
 //!
 //! Ferrunitas lets you express physical formulas with compile‑time dimensional
 //! analysis. Using incompatible units results in a compile error
-//! instead of a runtime surprise. Values are stored as raw `f64`, while *types*
+//! instead of a runtime surprise. Values are stored as raw `Real`, while *types*
 //! encode the dimensional signature (mass, length, time, …) via the type system.
 //!
 //! # Goals
@@ -70,7 +70,7 @@
 //! ```
 //!
 //! # Limitations / Notes
-//! * Internal storage uses `f64`; typical floating point caveats apply, see examples/misc.rs.
+//! * Internal storage uses `Real`, either `f32` or `f64`; typical floating point caveats apply, see examples/misc.rs.
 //! * Rounding / formatting of display values is a caller concern, usual format specifiers are respected.
 //! * Offsets are supported for temperature scales, but are quite limited in usage besides simple conversion.
 //!
@@ -81,7 +81,23 @@
 
 // No standard library support
 #![no_std]
+// Ignore precision warning when compilied with f32
+#![cfg_attr(feature = "f32", allow(clippy::excessive_precision))]
+
+// For String / format support
 extern crate alloc;
+
+// Define inner value type
+#[cfg(not(any(feature = "f32", feature = "f64")))]
+compile_error!("Either feature 'f32' or 'f64' must be enabled for internal storage type.");
+
+#[cfg(feature = "f64")]
+#[doc(hidden)]
+pub type Real = f64;
+
+#[cfg(feature = "f32")]
+#[doc(hidden)]
+pub type Real = f32;
 
 // Make all definitions and the common functions public
 /// Common helper functions & utilities shared across units / quantities.

@@ -26,9 +26,9 @@ fn units_measures_and_quantities() {
 
     // -- Measures
     // To express units with a value, use measures. Either of these ways works.
-    let l1: Measure<Foot> = Foot::new(402);
+    let l1: Measure<Foot> = Foot::new(402i16);
     let l2: Measure<Centimetre> = 30 * Centimetre;
-    let l3: Measure<Inch> = Measure::new(6);
+    let l3: Measure<Inch> = Measure::new(6i16);
     let l_sum: Measure<Foot> = l1 + l2 + l3;
     println!("1st Measure in Foot: {}", l1);
     println!("2nd Measure in Centimetres: {}", l2);

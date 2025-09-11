@@ -25,6 +25,15 @@ unit!(compound: KilometrePerSecondPerMegaparsec, "km/(s·Mpc)", [(Kilometre, P1)
 
 // ==============================================================================
 
+// Base math constants
+#[cfg(feature = "f32")]
+pub use core::f32::consts::*;
+
+#[cfg(feature = "f64")]
+pub use core::f64::consts::*;
+
+// ==============================================================================
+
 // Natural and Physical Constants in Rust
 
 // =============================================================================

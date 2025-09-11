@@ -3,6 +3,7 @@ use alloc::format;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::Real;
 use crate::model::dimension::Dimensioned;
 use crate::model::measure::Measure;
 use crate::model::quantity::{Quantity, QuantityTag};
@@ -12,7 +13,7 @@ use crate::model::unit::Unit;
 /// Converts all type params into runtime values.
 #[derive(Serialize, Deserialize)]
 struct RuntimeQuantity<'a> {
-    value: f64,
+    value: Real,
     dimensional_vector: [i8; 7],
     tag: &'a str,
 }
@@ -21,7 +22,7 @@ struct RuntimeQuantity<'a> {
 /// Converts all type params into runtime values.
 #[derive(Serialize, Deserialize)]
 struct RuntimeMeasure<'a> {
-    value: f64,
+    value: Real,
     unit: &'a str,
 }
 
