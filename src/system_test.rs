@@ -3,7 +3,9 @@
 
 #![allow(dead_code, unused_variables)]
 
-use crate::model::quantity::Quantity;
+extern crate std;
+use std::*;
+
 use crate::model::unit::Unit;
 use crate::{prefix, quantity, unit};
 use typenum::*;
@@ -17,56 +19,98 @@ prefix!(Centi, 1e-2, "c");
 
 prefix!(Kilo, 1e3, "k");
 prefix!(Mega, 1e6, "M");
+prefix!(Exa, 1e18, "E");
+prefix!(Yotta, 1e24, "Y");
+prefix!(Yobi, 1u128 << 80, "Yi");
 
-// MASS
-// quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
+// Quantities
 quantity!(Mass: M P1, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0);
+quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
+quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
+quantity!(Velocity: M Z0, L P1, T N1, I Z0, Th Z0, N Z0, J Z0);
+quantity!(ElectricCurrent: M Z0, L Z0, T Z0, I P1, Th Z0, N Z0, J Z0);
+quantity!(Temperature: M Z0, L Z0, T Z0, I Z0, Th P1, N Z0, J Z0);
+quantity!(AmountOfSubstance: M Z0, L Z0, T Z0, I Z0, Th Z0, N P1, J Z0);
+quantity!(LuminousIntensity: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J P1);
+quantity!(Volume: M Z0, L P3, T Z0, I Z0, Th Z0, N Z0, J Z0); // L³
+quantity!(Acceleration: M Z0, L P1, T N2, I Z0, Th Z0, N Z0, J Z0); // L T⁻²
+quantity!(Force: M P1, L P1, T N2, I Z0, Th Z0, N Z0, J Z0); // M L T⁻²
+quantity!(Pressure: M P1, L N1, T N2, I Z0, Th Z0, N Z0, J Z0); // M L⁻¹ T⁻²
+quantity!(Energy: M P1, L P2, T N2, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻²
+quantity!(Power: M P1, L P2, T N3, I Z0, Th Z0, N Z0, J Z0); // M L² T⁻³
+quantity!(Entropy: M P1, L P2, T N2, I Z0, Th N1, N Z0, J Z0); // M L² T⁻² Θ⁻¹
+quantity!(Dimensionless: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0); // Dimensionless
+quantity!(Angle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
+quantity!(SolidAngle: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
+quantity!(Information: M Z0, L Z0, T Z0, I Z0, Th Z0, N Z0, J Z0; marked); // Dimensionless
 
+// Units
 unit!(base: Gram, "g", Mass; prefixable, factor = 0.001);
 unit!(prefix: Kilogram, Kilo, Gram);
 unit!(prefix: Milligram, Milli, Gram);
 unit!(derived: Tonne, "t", (1000, Kilogram); prefixable);
 unit!(derived: Ounce, "oz", (28.349_523_125, Gram));
 unit!(derived: Pound, "lb", (16, Ounce));
-unit!(derived: Stone, "st", (14, Pound));
-
-// LENGTH
-// quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
-quantity!(Length: M Z0, L P1, T Z0, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(base: Metre, "m", Length; prefixable);
-
 unit!(prefix: Kilometre, Kilo, Metre);
 unit!(prefix: Centimetre, Centi, Metre);
 unit!(prefix: Millimetre, Milli, Metre);
-
 unit!(derived: Inch, "in", (2.54, Centimetre));
 unit!(derived: Foot, "ft", (12, Inch));
-unit!(derived: Yard, "yd", (3, Foot));
-unit!(derived: Mile, "mi", (1760, Yard));
-
 unit!(derived: NauticalMile, "NM", (1852, Metre); prefixable);
 
-// Time
-// quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
-quantity!(Time: M Z0, L Z0, T P1, I Z0, Th Z0, N Z0, J Z0);
-
 unit!(base: Second, "s", Time; prefixable);
-
 unit!(prefix: Millisecond, Milli, Second);
-
 unit!(derived: Minute, "min", (60, Second));
 unit!(derived: Hour, "h", (60, Minute));
-unit!(derived: Day, "d", (24, Hour));
-
-// Speed
-// pub type Velocity<U> = Quantity<Z0, P1, N1, Z0, Z0, Z0, Z0, U>; // L T⁻¹
-quantity!(Velocity: M Z0, L P1, T N1, I Z0, Th Z0, N Z0, J Z0);
 
 unit!(compound: MetrePerSecond, "m/s", [(Metre, P1), (Second, N1)]);
 unit!(compound: KilometrePerHour, "km/h", [(Kilometre, P1), (Hour, N1)]);
-unit!(compound: MilePerHour, "mph", [(Mile, P1), (Hour, N1)]);
 unit!(compound: Knot, "kn", [(NauticalMile, P1), (Hour, N1)]);
+
+unit!(base: Ampere, "A", ElectricCurrent; prefixable);
+unit!(base: Mole, "mol", AmountOfSubstance; prefixable);
+unit!(base: Candela, "cd", LuminousIntensity; prefixable);
+unit!(base: Kelvin, "K", Temperature; prefixable);
+unit!(derived: DegreeCelsius, "°C", (1.0, 273.15, Kelvin));
+unit!(derived: DegreeFahrenheit, "°F", (5.0 / 9.0, -32.0 * 5.0/9.0, DegreeCelsius));
+
+unit!(compound: SquareMetre, "m²", [(Metre, P2)]; prefixable);
+unit!(compound: SquareCentimetre, "cm²", [(Centimetre, P2)]);
+unit!(compound: CubicMetre, "m³", [(Metre, P3)]);
+unit!(derived: Litre, "L", (0.001, CubicMetre); prefixable);
+unit!(compound: CubicCentimetre, "cm³", [(Centimetre, P3)]);
+unit!(compound: MetrePerSecondSquared, "m/s²", [(Metre, P1), (Second, N2)]);
+unit!(compound: Newton, "N", [(Kilogram, P1), (Metre, P1), (Second, N2)]; prefixable);
+unit!(prefix: Kilonewton, Kilo, Newton);
+unit!(compound: Pascal, "Pa", [(Newton, P1), (Metre, N2)]; prefixable);
+unit!(compound: Joule, "J", [(Newton, P1), (Metre, P1)]; prefixable);
+unit!(prefix: Kilojoule, Kilo, Joule);
+unit!(derived: FootPoundForce, "ft⋅lbf", (1.355_817_948, Joule));
+unit!(compound: Watt, "W", [(Joule, P1), (Second, N1)]; prefixable);
+unit!(prefix: Milliwatt, Milli, Watt);
+unit!(prefix: Kilowatt, Kilo, Watt);
+unit!(derived: Horsepower, "PS", (0.735_498_75, Kilowatt));
+
+unit!(compound: Coulomb, "C", [(Second, P1), (Ampere, P1)]; prefixable);
+unit!(compound: Volt, "V", [(Watt, P1), (Ampere, N1)]; prefixable);
+unit!(compound: Farad, "F", [(Coulomb, P1), (Volt, N1)]; prefixable);
+unit!(compound: Ohm, "Ω", [(Volt, P1), (Ampere, N1)]; prefixable);
+
+unit!(compound: MolePerLitre, "mol/L", [(Mole, P1), (Litre, N1)]);
+unit!(compound: JoulePerKelvin, "J/K", [(Joule, P1), (Kelvin, N1)]);
+unit!(compound: KilogramPerCubicMetre, "kg/m³", [(Kilogram, P1), (CubicMetre, N1)]);
+unit!(compound: ReciprocalMetre, "m⁻¹", [(Metre, N1)]);
+unit!(compound: Hertz, "Hz", [(Second, N1)]; prefixable);
+
+unit!(base: Radian, "rad", Angle);
+unit!(compound: Steradian, "sr", [(Radian, P2)]; marked SolidAngle);
+unit!(base: Bit, "bit", Information; prefixable);
+unit!(derived: Byte, "B", (8, Bit); prefixable);
+unit!(prefix: Exabyte, Exa, Byte);
+unit!(prefix: Yottabyte, Yotta, Byte);
+unit!(prefix: Yobibyte, Yobi, Byte);
 
 fn computation_units() {
     // Define base variable
