@@ -7,10 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Added
-- Added multiple unit tests for better code coverage.
-- Updated github workflow to push on tags.
-- Added support for serde via a feature.
-- Added support for no_std.
+-
 
 ### Changed
 -
@@ -26,6 +23,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 -
+
+## [0.3.0] - 2025-09-11
+
+### Added
+- Added multiple unit tests for better code coverage.
+- Updated github workflow to push on tags.
+- Added support for serde via a feature.
+- Added support for no_std.
+- Added support for approx crate via a feature.
+
 
 ## [0.2.0] - 2025-09-08
 
