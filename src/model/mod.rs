@@ -15,6 +15,9 @@ pub(crate) mod unit;
 #[cfg(feature = "serde")]
 pub mod serde_support;
 
+#[cfg(feature = "approx")]
+pub mod approx_support;
+
 /// Public trait in private module to prevent external implementations
 mod sealed {
     pub trait Sealed {}

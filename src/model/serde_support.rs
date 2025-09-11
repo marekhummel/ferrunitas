@@ -64,7 +64,7 @@ impl<'de, D: Dimensioned, Tag: QuantityTag> Deserialize<'de> for Quantity<D, Tag
 impl<U: Unit> Serialize for Measure<U> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let rtm = RuntimeMeasure {
-            value: self.value(),
+            value: self.value,
             unit: core::any::type_name::<U>(),
         };
         rtm.serialize(serializer)

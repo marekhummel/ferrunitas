@@ -48,7 +48,7 @@ use crate::model::unit::Unit;
 /// println!("Distance: {}", length);  // "100 m"
 /// ```
 pub struct Measure<U: Unit> {
-    value: f64,
+    pub(crate) value: f64,
     _phantom: PhantomData<U>,
 }
 
@@ -273,7 +273,7 @@ where
     U1::Quantity: Add<U2::Quantity, Output = U1::Quantity>,
 {
     fn add_assign(&mut self, rhs: Measure<U2>) {
-        self.value += rhs.convert::<U1>().value();
+        self.value += rhs.convert::<U1>().value;
     }
 }
 
@@ -285,7 +285,7 @@ where
     T: QuantityTag,
 {
     fn add_assign(&mut self, rhs: Quantity<D, T>) {
-        self.value += rhs.as_measure::<U>().value();
+        self.value += rhs.as_measure::<U>().value;
     }
 }
 
@@ -325,7 +325,7 @@ where
     U1::Quantity: Sub<U2::Quantity, Output = U1::Quantity>,
 {
     fn sub_assign(&mut self, rhs: Measure<U2>) {
-        self.value -= rhs.convert::<U1>().value();
+        self.value -= rhs.convert::<U1>().value;
     }
 }
 
@@ -337,7 +337,7 @@ where
     T: QuantityTag,
 {
     fn sub_assign(&mut self, rhs: Quantity<D, T>) {
-        self.value -= rhs.as_measure::<U>().value();
+        self.value -= rhs.as_measure::<U>().value;
     }
 }
 
@@ -437,7 +437,7 @@ impl<U: Unit> Mul<Measure<U>> for f64 {
     type Output = Measure<U>;
 
     fn mul(self, rhs: Measure<U>) -> Self::Output {
-        Measure::new(self * rhs.value())
+        Measure::new(self * rhs.value)
     }
 }
 

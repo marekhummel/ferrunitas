@@ -31,8 +31,7 @@ jobs:
         run: cargo build --release ${{ matrix.features }} --verbose
 
       - name: Cargo test
-        run: |
-          cargo test ${{ matrix.features }} --verbose
+        run: cargo test ${{ matrix.features }} --verbose
 
       - name: Install no_std_check
         run: cargo install cargo-no-std-check

@@ -25,9 +25,10 @@ path = "src/lib.rs"
 
 [features]
 default = ["std"]
-std = ["num-traits/std", "serde?/std"]
+std = ["num-traits/std", "serde?/std", "approx?/std"]
 quantity_tags = []
 serde = ["dep:serde"]
+approx = ["dep:approx"]
 
 [[example]]
 name = "serialization"
@@ -39,6 +40,7 @@ num-traits = { version = "0.2.19", default-features = false }
 typenum = "1.18.0"
 paste = "1.0"
 serde = { version = "1.0", default-features = false, features = ["derive"], optional = true }
+approx = { version = "0.5.1", default-features = false, optional = true }
 
 
 [dev-dependencies]
