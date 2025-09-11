@@ -74,7 +74,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cargo doc
-        run: cargo doc --all-features --no-deps
+        run: cargo doc --features "quantity_tags serde approx" --no-deps
         env:
           RUSTDOCFLAGS: -Dwarnings
 
