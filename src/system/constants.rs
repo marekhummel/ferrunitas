@@ -26,10 +26,10 @@ unit!(compound: KilometrePerSecondPerMegaparsec, "km/(s·Mpc)", [(Kilometre, P1)
 // ==============================================================================
 
 // Base math constants
-#[cfg(feature = "f32")]
+#[cfg(all(feature = "f32", not(feature = "f64")))]
 pub use core::f32::consts::*;
 
-#[cfg(feature = "f64")]
+#[cfg(all(feature = "f64", not(feature = "f32")))]
 pub use core::f64::consts::*;
 
 // ==============================================================================

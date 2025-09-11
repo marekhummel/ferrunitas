@@ -88,7 +88,10 @@
 extern crate alloc;
 
 // Define inner value type
-#[cfg(not(any(feature = "f32", feature = "f64")))]
+#[cfg(any(
+    not(any(feature = "f32", feature = "f64")),
+    all(feature = "f32", feature = "f64")
+))]
 compile_error!("Either feature 'f32' or 'f64' must be enabled for internal storage type.");
 
 #[cfg(feature = "f64")]

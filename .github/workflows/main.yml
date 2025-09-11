@@ -21,7 +21,7 @@ jobs:
         features: [
           "--no-default-features", # no_std
           "--no-default-features --features \"serde approx\"", # no_std with external crates
-          "--features \"std serde quantity_tags approx\"" # all features
+          "--no-default-features --features \"std serde quantity_tags approx\"" # all features
         ]
         real: ["--features f64", "--features f32"]
 
@@ -61,7 +61,7 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Cargo clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: cargo clippy --all-targets --features "quantity_tags serde approx" -- -D warnings
 
   # Docs
   docs:
