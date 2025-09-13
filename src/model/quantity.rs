@@ -10,7 +10,7 @@ use crate::Real;
 use crate::model::dimension::{Dimensioned, TypePow};
 use crate::model::measure::Measure;
 use crate::model::unit::Unit;
-use num_traits::{Inv, float::FloatCore};
+use num_traits::Inv;
 use typenum::{Integer, NonZero, ToInt};
 
 /// Optional tag type implemented by quantities to distinguish between different
@@ -656,10 +656,6 @@ where
     Exp: Integer + NonZero + ToInt<i32>,
 {
     type Output = Quantity<<D as TypePow<Exp>>::Output, ()>;
-
-    fn pow(self) -> Self::Output {
-        Self::Output::new(FloatCore::powi(self.value, Exp::INT))
-    }
 }
 
 #[cfg(test)]
