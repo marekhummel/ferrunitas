@@ -8,9 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - Support for f32 via feature
+- Added helper to multiply units to get quantity, which allows one to write: `let x: Acceleration = 7 * Metre / (Second * Second);`
 
 ### Changed
--
+- Internal QOL changes
+- Tests and system_test file (internal usage only)
 
 ### Deprecated
 -
